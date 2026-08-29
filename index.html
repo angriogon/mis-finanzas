@@ -19,9 +19,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS & Chart.js -->
+  <!-- Tailwind CSS, Chart.js & Tesseract OCR -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -48,7 +49,6 @@
   </script>
 
   <style>
-    /* Bloqueo estricto de zoom y rebotes en iOS */
     html, body {
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
@@ -67,7 +67,7 @@
     }
     ::-webkit-scrollbar { display: none; }
 
-    /* MODO OSCURO AUTOMÁTICO ADAPTADO A PANTALLAS OLED */
+    /* MODO OSCURO OLED */
     @media (prefers-color-scheme: dark) {
       body { background-color: #0B0F19; color: #F1F5F9; }
       .theme-card { background-color: #151D2C !important; border-color: #1E293B !important; color: #F8FAFC !important; }
@@ -146,7 +146,7 @@
         </div>
       </section>
 
-      <!-- Patrimonio Total y Gráfico Ondas -->
+      <!-- Patrimonio Total -->
       <section class="theme-card bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
         <div class="text-center">
           <p class="text-[11px] font-bold uppercase tracking-wider theme-text-sub">Patrimonio Total</p>
@@ -164,7 +164,7 @@
         <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-2 rounded-xl theme-text-sub transition-all">Cta. Ahorro</button>
       </div>
 
-      <!-- Buscador en tiempo real en memoria -->
+      <!-- Buscador en tiempo real -->
       <div class="relative">
         <input type="text" id="search-input" oninput="renderTransactions()" placeholder="Buscar por concepto, categoría o importe..." class="w-full theme-input bg-white border border-gray-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
         <svg class="w-4 h-4 absolute left-3.5 top-3 theme-text-sub" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -371,7 +371,7 @@
   </nav>
 
   <!-- ==========================================
-       PANEL LATERAL (DRAWER CON EXPORTACIÓN CSV)
+       PANEL LATERAL (DRAWER)
        ========================================== -->
   <div id="sidebar-drawer" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
     <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs theme-modal bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
@@ -412,8 +412,6 @@
         <!-- Exportaciones y Datos -->
         <div class="space-y-2">
           <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Exportación & Hojas de Cálculo</p>
-          
-          <!-- Botón Exportar CSV / Excel -->
           <button onclick="exportToCSV()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-left transition-colors border border-emerald-100 dark:border-emerald-900/40">
             <div class="flex items-center space-x-3">
               <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -442,13 +440,13 @@
       </div>
 
       <div class="pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
-        <p class="text-[10px] theme-text-sub font-semibold">Offline PWA • Ultra Rápida v6.0</p>
+        <p class="text-[10px] theme-text-sub font-semibold">OCR Scanner & iOS Badge • v7.0</p>
       </div>
     </div>
   </div>
 
   <!-- ==========================================
-       MODAL: PAPELERA DE RECICLAJE
+       MODAL: PAPELERA
        ========================================== -->
   <div id="modal-trash" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[85vh] flex flex-col">
@@ -505,7 +503,7 @@
 
   <!-- ==========================================
        MODAL 1: REGISTRAR / EDITAR MOVIMIENTO
-       (CON QUICK CHIPS & BOTONES DE IMPORTE RÁPIDO)
+       (CON ESCÁNER DE TICKETS & QUICK CHIPS)
        ========================================== -->
   <div id="modal-transaction" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
@@ -520,9 +518,18 @@
         </button>
       </div>
 
-      <!-- Quick Chips: Hilera Horizontal de Gastos Frecuentes -->
+      <!-- Botón Escáner de Tickets con Cámara -->
+      <div class="mb-3">
+        <label class="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/50 text-app-purple font-bold text-xs cursor-pointer active:scale-95 transition-transform">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span id="scan-btn-text">Escanear Ticket con Cámara</span>
+          <input type="file" accept="image/*" capture="environment" onchange="scanTicket(event)" class="hidden">
+        </label>
+      </div>
+
+      <!-- Quick Chips: Gastos Frecuentes -->
       <div class="space-y-1.5 pb-2 border-b border-gray-100 dark:border-gray-800">
-        <span class="text-[10px] font-bold uppercase tracking-wider theme-text-sub">Gastos Frecuentes (1 Toque)</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider theme-text-sub">Accesos Rápidos</span>
         <div class="flex space-x-2 overflow-x-auto pb-1 no-scrollbar">
           <button type="button" onclick="applyQuickChip('☕ Desayuno', 'Restaurantes y Ocio', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">☕ Desayuno</button>
           <button type="button" onclick="applyQuickChip('🍽️ Menú / Almuerzo', 'Restaurantes y Ocio', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">🍽️ Menú</button>
@@ -563,7 +570,7 @@
           </div>
         </div>
 
-        <!-- Botones de Importe Rápido (+5€, +10€, +50€, +100€) -->
+        <!-- Botones de Importe Rápido -->
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider">Importe (€)</label>
@@ -686,13 +693,13 @@
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v6')) || [];
-    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v6')) || [
+    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v7')) || [];
+    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v7')) || [
       { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01', timestamp: Date.now() },
       { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15', timestamp: Date.now() },
       { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20', timestamp: Date.now() }
     ];
-    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v6')) || [];
+    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v7')) || [];
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
@@ -708,12 +715,102 @@
       checkURLForApplePayParams();
       renderAll();
       initMiniTrendChart();
+      updateAppBadge(); // Actualiza el globo en pantalla de inicio
     });
 
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // 1. TECLADO & QUICK CHIPS
+    // 1. ESCÁNER DE TICKETS CON CÁMARA (OCR)
+    // ==========================================
+    async function scanTicket(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const scanBtnText = document.getElementById('scan-btn-text');
+      const originalText = scanBtnText.textContent;
+      scanBtnText.textContent = "⏳ Leyendo ticket con OCR...";
+
+      try {
+        const { data: { text } } = await Tesseract.recognize(file, 'spa', {
+          logger: () => {}
+        });
+
+        // 1. Buscar importes monetarios (ej: 12.50, 12,50)
+        const regexAmounts = /\b\d{1,4}[.,]\d{2}\b/g;
+        const matches = text.match(regexAmounts);
+
+        if (matches && matches.length > 0) {
+          const numbers = matches.map(m => parseFloat(m.replace(',', '.'))).filter(n => !isNaN(n));
+          if (numbers.length > 0) {
+            // El importe total casi siempre es el valor numérico más alto
+            const maxAmount = Math.max(...numbers);
+            document.getElementById('amount').value = maxAmount.toFixed(2);
+          }
+        }
+
+        // 2. Extraer Concepto o Nombre del comercio
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
+        if (lines.length > 0) {
+          const storeName = lines[0].replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').slice(0, 24);
+          document.getElementById('concept').value = storeName || 'Compra Ticket';
+        }
+
+        // 3. Autoclasificar categoría por palabras clave detectadas
+        const lower = text.toLowerCase();
+        if (lower.includes('mercadona') || lower.includes('carrefour') || lower.includes('dia') || lower.includes('lidl') || lower.includes('eroski') || lower.includes('super')) {
+          document.getElementById('category').value = 'Supermercado';
+        } else if (lower.includes('farmacia') || lower.includes('salud') || lower.includes('medic')) {
+          document.getElementById('category').value = 'Salud';
+        } else if (lower.includes('repsol') || lower.includes('cepsa') || lower.includes('gasolin') || lower.includes('bp') || lower.includes('shell')) {
+          document.getElementById('category').value = 'Transporte';
+        } else if (lower.includes('restaurante') || lower.includes('bar') || lower.includes('cafeteria') || lower.includes('hamburg') || lower.includes('pizza')) {
+          document.getElementById('category').value = 'Restaurantes y Ocio';
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo leer el ticket con nitidez. Puedes introducir los datos manualmente.");
+      } finally {
+        scanBtnText.textContent = originalText;
+        event.target.value = '';
+      }
+    }
+
+    // ==========================================
+    // 2. APP BADGE API (GLOBOS EN PANTALLA DE INICIO)
+    // ==========================================
+    function updateAppBadge() {
+      // 1. Elementos pendientes en papelera
+      const trashCount = trash.length;
+
+      // 2. Recibos o seguros que vencen en los próximos 5 días
+      const now = new Date();
+      let upcomingBills = 0;
+
+      fixedItems.forEach(item => {
+        if (item.date) {
+          const billDate = new Date(item.date);
+          const diffDays = Math.ceil((billDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (diffDays >= 0 && diffDays <= 5) {
+            upcomingBills++;
+          }
+        }
+      });
+
+      const totalBadge = trashCount + upcomingBills;
+
+      if ('setAppBadge' in navigator) {
+        if (totalBadge > 0) {
+          navigator.setAppBadge(totalBadge).catch(() => {});
+        } else {
+          navigator.clearAppBadge().catch(() => {});
+        }
+      }
+    }
+
+    // ==========================================
+    // QUICK CHIPS & BOTONES RÁPIDOS
     // ==========================================
     function addQuickAmount(val) {
       const input = document.getElementById('amount');
@@ -728,23 +825,18 @@
       document.getElementById('concept').value = conceptName;
       document.getElementById('category').value = categoryName;
 
-      // Enfocar directamente el importe
       const amtInput = document.getElementById('amount');
       amtInput.focus();
       amtInput.select();
     }
 
-    // ==========================================
-    // 2. EXPORTACIÓN DIRECTA A CSV / EXCEL
-    // ==========================================
     function exportToCSV() {
       if (transactions.length === 0) {
         alert("No hay movimientos registrados para exportar.");
         return;
       }
 
-      // Encabezados compatibles con Numbers/Excel
-      let csvContent = "\uFEFF"; // BOM para acentos en Excel
+      let csvContent = "\uFEFF";
       csvContent += "Fecha;Cuenta;Tipo;Concepto;Categoría;Importe (EUR);Amortización\n";
 
       transactions.forEach(t => {
@@ -772,7 +864,7 @@
     }
 
     // ==========================================
-    // MOVIMIENTOS: RENDER & BÚSQUEDA EN TIEMPO REAL
+    // MOVIMIENTOS: RENDER & BÚSQUEDA
     // ==========================================
     function renderTransactions() {
       const list = document.getElementById('transactions-list');
@@ -794,7 +886,6 @@
       document.getElementById('balance-ahorro').textContent = formatCurrency(balanceAhorro);
       document.getElementById('total-net-worth').textContent = formatCurrency(balanceGasto + balanceAhorro);
 
-      // Filtro por cuenta + Búsqueda instantánea en memoria
       const filtered = transactions.filter(t => {
         const matchesAccount = activeFilter === 'all' || (t.account || 'gasto') === activeFilter;
         const matchesSearch = !searchVal || 
@@ -854,9 +945,6 @@
       });
     }
 
-    // ==========================================
-    // APERTURA MODAL CON FOCO Y TECLADO
-    // ==========================================
     function openTransactionModal(editIdx = null) {
       editingIndex = editIdx;
       const form = document.getElementById('transaction-form');
@@ -889,7 +977,6 @@
 
       openModal('modal-transaction');
 
-      // Foco inmediato al campo importe para desplegar teclado numérico en iOS
       setTimeout(() => {
         const amtInput = document.getElementById('amount');
         amtInput.focus();
@@ -915,7 +1002,7 @@
         if (loan) {
           loanName = loan.name;
           loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
-          localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
         }
       }
 
@@ -927,11 +1014,12 @@
         transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
       }
 
-      localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+      localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
       document.getElementById('transaction-form').reset();
       updateFormUI();
       closeModal('modal-transaction');
       setAccountFilter(account);
+      updateAppBadge();
     }
 
     function deleteTransaction(index) {
@@ -941,11 +1029,11 @@
           const loan = fixedItems.find(l => l.id === item.linkedLoanId);
           if (loan) {
             loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
-            localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+            localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
           }
         }
         const removed = transactions.splice(index, 1)[0];
-        localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
         moveToTrash(removed, 'transaction');
         renderAll();
       };
@@ -1052,7 +1140,7 @@
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       const now = Date.now();
       trash = trash.filter(item => (now - item.deletedAt) < THIRTY_DAYS);
-      localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
       updateTrashBadge();
     }
 
@@ -1060,8 +1148,9 @@
       item.deletedAt = Date.now();
       item.itemType = itemType;
       trash.unshift(item);
-      localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
       updateTrashBadge();
+      updateAppBadge();
     }
 
     function updateTrashBadge() {
@@ -1126,23 +1215,25 @@
 
       if (type === 'fixed') {
         fixedItems.unshift(item);
-        localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
       } else {
         transactions.unshift(item);
-        localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
       }
 
-      localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
       renderTrashList();
       renderAll();
+      updateAppBadge();
     }
 
     function deleteFromTrashPermanently(index) {
       if (confirm("¿Eliminar definitivamente este elemento?")) {
         trash.splice(index, 1);
-        localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
+        updateAppBadge();
       }
     }
 
@@ -1150,9 +1241,10 @@
       if (trash.length === 0) return;
       if (confirm("¿Vaciar toda la papelera definitivamente?")) {
         trash = [];
-        localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
+        updateAppBadge();
       }
     }
 
@@ -1519,17 +1611,18 @@
       }
 
       fixedItems.push(itemData);
-      localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+      localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
       renderAll();
+      updateAppBadge();
     }
 
     function deleteFixedItem(index) {
       const item = fixedItems[index];
       const executeDelete = () => {
         const removed = fixedItems.splice(index, 1)[0];
-        localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
         moveToTrash(removed, 'fixed');
         renderAll();
       };
@@ -1645,7 +1738,7 @@
         transactions.unshift({
           account: 'gasto', type: 'expense', amount, concept, category: 'Apple Pay / Tarjeta', date, timestamp: now.getTime()
         });
-        localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
@@ -1766,13 +1859,14 @@
           if (parsed.trash) trash = parsed.trash;
           if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
           
-          localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
-          localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
-          localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
+          localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
           
           alert("Datos importados con éxito.");
           toggleSidebar(false);
           renderAll();
+          updateAppBadge();
         } catch (err) {
           alert("Archivo no válido.");
         }
