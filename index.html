@@ -5,26 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Control de Finanzas</title>
 
-  <!-- PWA & iOS Metatags -->
+  <!-- Configuración PWA e iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Finanzas">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#FFFFFF">
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0B0F19" media="(prefers-color-scheme: dark)">
 
   <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS, Lucide Icons & Chart.js -->
+  <!-- Tailwind CSS & Chart.js -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     tailwind.config = {
+      darkMode: 'media',
       theme: {
         extend: {
           fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
@@ -35,20 +36,11 @@
               pink: '#F8678C',
               pinkLight: '#FF88A7',
               blue: '#4D96FF',
-              blueLight: '#6EA8FF',
               mint: '#24D297',
               mintLight: '#4DE6B3',
               navy: '#1A1C3D',
               subtext: '#8F92A1',
-              canvas: '#F8FAFF',
             }
-          },
-          boxShadow: {
-            'card-soft': '0 12px 30px -10px rgba(95, 90, 246, 0.12)',
-            'pink-soft': '0 12px 25px -8px rgba(248, 103, 140, 0.35)',
-            'purple-soft': '0 12px 25px -8px rgba(95, 90, 246, 0.35)',
-            'mint-soft': '0 12px 25px -8px rgba(36, 210, 151, 0.35)',
-            'float': '0 10px 30px rgba(26, 28, 61, 0.08)',
           }
         }
       }
@@ -56,6 +48,7 @@
   </script>
 
   <style>
+    /* Bloqueo estricto de zoom y rebotes en iOS */
     html, body {
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
@@ -65,6 +58,7 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       background-color: #F8FAFF;
+      color: #1A1C3D;
     }
     input, select, textarea {
       font-size: 16px !important;
@@ -72,9 +66,21 @@
       font-family: inherit;
     }
     ::-webkit-scrollbar { display: none; }
+
+    /* MODO OSCURO AUTOMÁTICO ADAPTADO A PANTALLAS OLED */
+    @media (prefers-color-scheme: dark) {
+      body { background-color: #0B0F19; color: #F1F5F9; }
+      .theme-card { background-color: #151D2C !important; border-color: #1E293B !important; color: #F8FAFC !important; }
+      .theme-bg-subtle { background-color: #1E293B !important; color: #E2E8F0 !important; }
+      .theme-text-navy { color: #F8FAFC !important; }
+      .theme-text-sub { color: #94A3B8 !important; }
+      .theme-input { background-color: #1E293B !important; border-color: #334155 !important; color: #F8FAFC !important; }
+      .theme-modal { background-color: #111827 !important; color: #F8FAFC !important; }
+      .theme-nav { background-color: rgba(15, 23, 42, 0.94) !important; border-color: #1E293B !important; }
+    }
   </style>
 </head>
-<body class="text-app-navy antialiased min-h-screen flex flex-col items-center">
+<body class="antialiased min-h-screen flex flex-col items-center">
 
   <div class="w-full max-w-md px-5 flex flex-col flex-1 pb-28">
 
@@ -82,25 +88,27 @@
          VISTA 1: MOVIMIENTOS
          ========================================== -->
     <main id="view-movimientos" class="view-panel space-y-4">
+      
+      <!-- Encabezado -->
       <header class="flex justify-between items-center py-2">
         <div class="flex items-center space-x-3">
-          <button onclick="toggleSidebar(true)" class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy active:scale-95 transition-transform relative">
-            <i data-lucide="menu" class="w-5 h-5"></i>
+          <button onclick="toggleSidebar(true)" class="p-2.5 theme-card bg-white rounded-2xl shadow-sm active:scale-95 transition-transform relative border border-gray-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
             <span id="trash-badge" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-app-pink rounded-full border-2 border-white"></span>
           </button>
           <div>
-            <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Mis Cuentas</h1>
-            <p class="text-[11px] font-semibold text-app-subtext">Panel Principal</p>
+            <h1 class="text-xl font-extrabold theme-text-navy tracking-tight">Mis Cuentas</h1>
+            <p class="text-[11px] font-semibold theme-text-sub">Panel Principal</p>
           </div>
         </div>
-        <button onclick="openTransactionModal()" class="p-2.5 bg-gradient-to-r from-app-purple to-app-purpleLight text-white rounded-2xl shadow-purple-soft active:scale-95 transition-transform">
-          <i data-lucide="plus" class="w-5 h-5"></i>
+        <button onclick="openTransactionModal()" class="p-2.5 bg-gradient-to-r from-app-purple to-app-purpleLight text-white rounded-2xl shadow-sm active:scale-95 transition-transform">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         </button>
       </header>
 
+      <!-- Tarjetas Cuentas Gasto / Ahorro -->
       <section class="space-y-3">
-        <!-- Tarjeta Gasto -->
-        <div onclick="setAccountFilter('gasto')" id="card-gasto" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
+        <div onclick="setAccountFilter('gasto')" id="card-gasto" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-sm cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
           <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
           <div class="flex justify-between items-start relative z-10">
             <div>
@@ -119,8 +127,7 @@
           </div>
         </div>
 
-        <!-- Tarjeta Ahorro -->
-        <div onclick="setAccountFilter('ahorro')" id="card-ahorro" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
+        <div onclick="setAccountFilter('ahorro')" id="card-ahorro" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-sm cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
           <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
           <div class="flex justify-between items-start relative z-10">
             <div>
@@ -129,7 +136,7 @@
               <h2 id="balance-ahorro" class="text-2xl font-extrabold tracking-tight mt-0.5">0,00 €</h2>
             </div>
             <div class="p-2 bg-white/20 rounded-2xl">
-              <i data-lucide="piggy-bank" class="w-5 h-5 text-white"></i>
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             </div>
           </div>
           <div class="flex justify-between items-center mt-5 text-[11px] font-medium text-white/80 relative z-10">
@@ -140,71 +147,78 @@
       </section>
 
       <!-- Patrimonio Total y Gráfico Ondas -->
-      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50">
+      <section class="theme-card bg-white rounded-3xl p-4 shadow-sm border border-gray-100">
         <div class="text-center">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-app-subtext">Patrimonio Total</p>
-          <h3 id="total-net-worth" class="text-2xl font-extrabold text-app-navy mt-0.5 tracking-tight">0,00 €</h3>
+          <p class="text-[11px] font-bold uppercase tracking-wider theme-text-sub">Patrimonio Total</p>
+          <h3 id="total-net-worth" class="text-2xl font-extrabold theme-text-navy mt-0.5 tracking-tight">0,00 €</h3>
         </div>
         <div class="h-16 w-full relative mt-1">
           <canvas id="miniTrendChart"></canvas>
         </div>
       </section>
 
-      <div class="flex bg-white p-1 rounded-2xl shadow-card-soft text-xs font-bold border border-indigo-50/40">
-        <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Todos</button>
+      <!-- Pestañas Filtro -->
+      <div class="flex theme-card bg-white p-1 rounded-2xl shadow-sm text-xs font-bold border border-gray-100">
+        <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-2 rounded-xl theme-text-sub transition-all">Todos</button>
         <button onclick="setAccountFilter('gasto')" id="tab-gasto" class="flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all">Cta. Gasto</button>
-        <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Cta. Ahorro</button>
+        <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-2 rounded-xl theme-text-sub transition-all">Cta. Ahorro</button>
       </div>
 
+      <!-- Buscador en tiempo real en memoria -->
+      <div class="relative">
+        <input type="text" id="search-input" oninput="renderTransactions()" placeholder="Buscar por concepto, categoría o importe..." class="w-full theme-input bg-white border border-gray-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+        <svg class="w-4 h-4 absolute left-3.5 top-3 theme-text-sub" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+
+      <!-- Lista de Movimientos -->
       <section class="mt-2 space-y-3">
         <div class="flex justify-between items-center px-1">
-          <h3 id="list-title" class="text-xs font-bold text-app-subtext uppercase tracking-wider">Historial de Pagos</h3>
-          <span id="items-count" class="text-[11px] font-semibold text-app-subtext">0 registros</span>
+          <h3 id="list-title" class="text-xs font-bold theme-text-sub uppercase tracking-wider">Historial de Pagos</h3>
+          <span id="items-count" class="text-[11px] font-semibold theme-text-sub">0 registros</span>
         </div>
         <div id="transactions-list" class="space-y-2.5"></div>
         <div id="empty-state-transactions" class="hidden flex flex-col items-center justify-center py-10 text-center">
-          <div class="p-3 bg-indigo-50 text-app-purple rounded-2xl mb-2">
-            <i data-lucide="receipt" class="w-6 h-6"></i>
+          <div class="p-3 theme-bg-subtle bg-indigo-50 text-app-purple rounded-2xl mb-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           </div>
-          <p class="text-sm font-bold text-app-navy">Sin movimientos registrados</p>
-          <p class="text-xs text-app-subtext mt-0.5">Pulsa (+) para registrar un movimiento.</p>
+          <p class="text-sm font-bold theme-text-navy">Sin movimientos registrados</p>
+          <p class="text-xs theme-text-sub mt-0.5">Pulsa (+) para registrar un movimiento.</p>
         </div>
       </section>
     </main>
 
     <!-- ==========================================
-         VISTA 2: ESTUDIO FINANCIERO & COMPARATIVO
+         VISTA 2: ESTUDIO FINANCIERO
          ========================================== -->
     <main id="view-estudio" class="view-panel hidden space-y-4">
       <header class="py-2">
-        <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Estudio Financiero</h1>
-        <p class="text-[11px] font-semibold text-app-subtext">Diagnóstico, Histórico y Fugas</p>
+        <h1 class="text-xl font-extrabold theme-text-navy tracking-tight">Estudio Financiero</h1>
+        <p class="text-[11px] font-semibold theme-text-sub">Diagnóstico, Histórico y Fugas</p>
       </header>
 
-      <!-- 4 Tarjetas de Resumen -->
       <section class="grid grid-cols-2 gap-3">
-        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft flex flex-col justify-between h-28">
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-sm flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Ingresos Mes</span>
           <div>
             <h3 id="study-income-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
             <span class="text-[10px] text-white/70 font-medium">Mes actual</span>
           </div>
         </div>
-        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-pink to-app-pinkLight text-white shadow-pink-soft flex flex-col justify-between h-28">
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-pink to-app-pinkLight text-white shadow-sm flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Gastos Mes</span>
           <div>
             <h3 id="study-expense-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
             <span class="text-[10px] text-white/70 font-medium">Mes actual</span>
           </div>
         </div>
-        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-blue to-app-blueLight text-white shadow-blue-soft flex flex-col justify-between h-28">
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-blue to-indigo-400 text-white shadow-sm flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Créditos</span>
           <div>
             <h3 id="study-credit-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
             <span class="text-[10px] text-white/70 font-medium">Deuda viva</span>
           </div>
         </div>
-        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft flex flex-col justify-between h-28">
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-sm flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Ahorro</span>
           <div>
             <h3 id="study-savings-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
@@ -213,12 +227,11 @@
         </div>
       </section>
 
-      <!-- Comparativo Intermensual (Mes actual vs Promedio) -->
-      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-3">
+      <section class="theme-card bg-white rounded-3xl p-4 shadow-sm border border-gray-100 space-y-3">
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Histórico Intermensual</h3>
-            <p class="text-[11px] text-app-subtext" id="intermensual-comparison-text">Calculando comparación...</p>
+            <h3 class="text-xs font-bold theme-text-navy uppercase tracking-wider">Histórico Intermensual</h3>
+            <p class="text-[11px] theme-text-sub" id="intermensual-comparison-text">Comparando meses...</p>
           </div>
           <span id="intermensual-badge" class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-app-mint">0%</span>
         </div>
@@ -227,22 +240,18 @@
         </div>
       </section>
 
-      <!-- Detector de Fugas y Micropagos -->
-      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-3">
+      <section class="theme-card bg-white rounded-3xl p-4 shadow-sm border border-gray-100 space-y-3">
         <div class="flex items-center space-x-2 text-app-pink">
           <div class="p-1.5 bg-rose-50 rounded-xl">
-            <i data-lucide="radar" class="w-4 h-4 text-app-pink"></i>
+            <svg class="w-4 h-4 text-app-pink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
           </div>
-          <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Detector de Fugas y Micropagos</h3>
+          <h3 class="text-xs font-bold theme-text-navy uppercase tracking-wider">Detector de Fugas y Micropagos</h3>
         </div>
-        <div id="leaks-container" class="space-y-2">
-          <!-- Render dinámico de alertas de fugas -->
-        </div>
+        <div id="leaks-container" class="space-y-2"></div>
       </section>
 
-      <!-- Perfil de Gastos (Donut) -->
-      <section class="bg-white rounded-3xl p-5 shadow-card-soft border border-indigo-50/50 space-y-4">
-        <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Distribución por Categorías</h3>
+      <section class="theme-card bg-white rounded-3xl p-5 shadow-sm border border-gray-100 space-y-4">
+        <h3 class="text-xs font-bold theme-text-navy uppercase tracking-wider">Distribución por Categorías</h3>
         <div class="h-48 relative flex items-center justify-center">
           <canvas id="categoryDonutChart"></canvas>
         </div>
@@ -251,52 +260,48 @@
     </main>
 
     <!-- ==========================================
-         VISTA 3: GASTOS FIJOS & SIMULADOR DE AMORTIZACIÓN
+         VISTA 3: GASTOS FIJOS & SIMULADOR
          ========================================== -->
     <main id="view-fijos" class="view-panel hidden space-y-4">
       <header class="flex justify-between items-center py-2">
         <div>
-          <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Gastos Fijos</h1>
-          <p class="text-[11px] font-semibold text-app-subtext">Créditos, Seguros y Estrategias</p>
+          <h1 class="text-xl font-extrabold theme-text-navy tracking-tight">Gastos Fijos</h1>
+          <p class="text-[11px] font-semibold theme-text-sub">Créditos, Seguros y Estrategias</p>
         </div>
-        <button onclick="openFixedModal()" class="p-2.5 bg-gradient-to-r from-app-navy to-indigo-900 text-white rounded-2xl shadow-float active:scale-95 transition-transform">
-          <i data-lucide="plus" class="w-5 h-5"></i>
+        <button onclick="openFixedModal()" class="p-2.5 bg-app-navy text-white rounded-2xl shadow-sm active:scale-95 transition-transform">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         </button>
       </header>
 
-      <!-- Resumen Fijos -->
       <section class="grid grid-cols-2 gap-3">
-        <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
-          <p class="text-[11px] font-bold text-app-subtext uppercase">Cuota Mensual Fija</p>
+        <div class="theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+          <p class="text-[11px] font-bold theme-text-sub uppercase">Cuota Mensual Fija</p>
           <p id="total-fixed-monthly" class="text-xl font-extrabold text-app-pink mt-1">0,00 €</p>
-          <p class="text-[10px] text-app-subtext mt-0.5">Compromisos recurrentes</p>
+          <p class="text-[10px] theme-text-sub mt-0.5">Compromisos fijos</p>
         </div>
-        <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
-          <p class="text-[11px] font-bold text-app-subtext uppercase">Deuda Total Activa</p>
+        <div class="theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
+          <p class="text-[11px] font-bold theme-text-sub uppercase">Deuda Total Activa</p>
           <p id="total-loans-debt" class="text-xl font-extrabold text-app-blue mt-1">0,00 €</p>
-          <p class="text-[10px] text-app-subtext mt-0.5">Hipotecas y préstamos</p>
+          <p class="text-[10px] theme-text-sub mt-0.5">Hipotecas y préstamos</p>
         </div>
       </section>
 
-      <!-- Tarjeta Simulador de Amortización & Estrategias -->
-      <section class="bg-gradient-to-br from-indigo-900 via-app-navy to-gray-900 text-white p-5 rounded-3xl shadow-float space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2.5">
-            <div class="p-2 bg-white/10 rounded-2xl">
-              <i data-lucide="calculator" class="w-5 h-5 text-app-mint"></i>
-            </div>
-            <div>
-              <h3 class="text-sm font-extrabold">Simulador de Amortización</h3>
-              <p class="text-[10px] text-white/70">Calcula el ahorro exacto de intereses</p>
-            </div>
+      <!-- Simulador de Amortización -->
+      <section class="bg-gradient-to-br from-indigo-900 via-app-navy to-gray-900 text-white p-5 rounded-3xl shadow-sm space-y-4">
+        <div class="flex items-center space-x-2.5">
+          <div class="p-2 bg-white/10 rounded-2xl">
+            <svg class="w-5 h-5 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold">Simulador de Amortización</h3>
+            <p class="text-[10px] text-white/70">Calcula el impacto exacto de amortizar</p>
           </div>
         </div>
 
         <div class="space-y-3 pt-1">
           <div>
             <label class="block text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">Seleccionar Crédito</label>
-            <select id="sim-loan-select" onchange="runAmortizationSimulation()" class="w-full bg-white/10 border border-white/20 rounded-2xl px-3.5 py-2.5 text-xs font-semibold text-white focus:outline-none">
-            </select>
+            <select id="sim-loan-select" onchange="runAmortizationSimulation()" class="w-full bg-white/10 border border-white/20 rounded-2xl px-3.5 py-2.5 text-xs font-semibold text-white focus:outline-none"></select>
           </div>
 
           <div class="grid grid-cols-2 gap-2.5">
@@ -310,7 +315,6 @@
             </div>
           </div>
 
-          <!-- Resultados de la Simulación -->
           <div class="grid grid-cols-2 gap-2.5 pt-2">
             <div class="bg-white/10 p-3 rounded-2xl border border-white/10">
               <p class="text-[10px] font-semibold text-app-mint">Opción A: Reducir Plazo</p>
@@ -320,26 +324,22 @@
             <div class="bg-white/10 p-3 rounded-2xl border border-white/10">
               <p class="text-[10px] font-semibold text-app-blue">Opción B: Reducir Cuota</p>
               <h4 id="sim-fee-new" class="text-base font-extrabold mt-0.5">0,00 €/m</h4>
-              <p id="sim-fee-saved" class="text-[10px] text-white/70 font-medium">Rebaja: 0,00 €/m</p>
+              <p id="sim-fee-saved" class="text-[10px] text-white/70 font-medium">Baja: 0,00 €/m</p>
             </div>
           </div>
 
-          <!-- Recomendación Estratégica: Avalancha vs Bola de Nieve -->
-          <div class="p-3 bg-white/5 rounded-2xl border border-white/10 text-[11px] leading-relaxed" id="sim-strategy-text">
-            Analizando tus deudas activas para recomendarte la estrategia óptima...
-          </div>
+          <div class="p-3 bg-white/5 rounded-2xl border border-white/10 text-[11px] leading-relaxed" id="sim-strategy-text"></div>
         </div>
       </section>
 
-      <!-- Lista de Créditos Activos -->
+      <!-- Listas de Créditos y Seguros -->
       <section class="space-y-2.5">
-        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos en Curso</h3>
+        <h3 class="text-xs font-bold theme-text-sub uppercase tracking-wider px-1">Créditos Activos</h3>
         <div id="loans-list" class="space-y-3"></div>
       </section>
 
-      <!-- Lista de Seguros e IBI -->
       <section class="space-y-2.5 mt-4">
-        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Seguros, IBI y Recibos Periódicos</h3>
+        <h3 class="text-xs font-bold theme-text-sub uppercase tracking-wider px-1">Seguros, IBI y Recibos Periódicos</h3>
         <div id="fixed-costs-list" class="space-y-2.5"></div>
       </section>
     </main>
@@ -347,77 +347,102 @@
   </div>
 
   <!-- ==========================================
-       BARRA DE NAVEGACIÓN INFERIOR
+       BARRA INFERIOR DE HERRAMIENTAS
        ========================================== -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-indigo-50 px-6 py-2.5 flex justify-around items-center z-40 shadow-float" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8px);">
+  <nav class="fixed bottom-0 left-0 right-0 theme-nav bg-white/90 backdrop-blur-xl border-t border-gray-100 px-6 py-2.5 flex justify-around items-center z-40 shadow-sm" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8px);">
     <button onclick="switchTab('movimientos')" id="nav-movimientos" class="flex flex-col items-center space-y-1 text-app-purple transition-all">
-      <div class="p-1.5 rounded-xl bg-indigo-50"><i data-lucide="credit-card" class="w-5 h-5"></i></div>
+      <div class="p-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      </div>
       <span class="text-[10px] font-bold">Cuentas</span>
     </button>
-    <button onclick="switchTab('estudio')" id="nav-estudio" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
-      <div class="p-1.5 rounded-xl"><i data-lucide="pie-chart" class="w-5 h-5"></i></div>
+    <button onclick="switchTab('estudio')" id="nav-estudio" class="flex flex-col items-center space-y-1 theme-text-sub transition-all">
+      <div class="p-1.5 rounded-xl">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+      </div>
       <span class="text-[10px] font-bold">Estudio</span>
     </button>
-    <button onclick="switchTab('fijos')" id="nav-fijos" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
-      <div class="p-1.5 rounded-xl"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+    <button onclick="switchTab('fijos')" id="nav-fijos" class="flex flex-col items-center space-y-1 theme-text-sub transition-all">
+      <div class="p-1.5 rounded-xl">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
       <span class="text-[10px] font-bold">Gastos Fijos</span>
     </button>
   </nav>
 
   <!-- ==========================================
-       PANEL LATERAL: AJUSTES & PAPELERA
+       PANEL LATERAL (DRAWER CON EXPORTACIÓN CSV)
        ========================================== -->
-  <div id="sidebar-drawer" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
-    <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
+  <div id="sidebar-drawer" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
+    <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs theme-modal bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
       <div class="space-y-6">
-        <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
           <div class="flex items-center space-x-2">
-            <div class="p-2 bg-indigo-50 text-app-purple rounded-xl"><i data-lucide="shield" class="w-5 h-5"></i></div>
-            <h2 class="text-lg font-extrabold text-app-navy">Panel y Ajustes</h2>
+            <div class="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-app-purple rounded-xl">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h2 class="text-lg font-extrabold theme-text-navy">Panel y Ajustes</h2>
           </div>
-          <button onclick="toggleSidebar(false)" class="p-1 text-app-subtext hover:text-app-navy"><i data-lucide="x" class="w-5 h-5"></i></button>
+          <button onclick="toggleSidebar(false)" class="p-1 theme-text-sub hover:opacity-80">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
         </div>
 
+        <!-- Seguridad y Papelera -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Seguridad y Papelera</p>
-          <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/60 hover:bg-indigo-50 text-left transition-colors border border-indigo-100/50">
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Seguridad y Papelera</p>
+          <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl theme-bg-subtle bg-indigo-50/60 text-left transition-colors">
             <div class="flex items-center space-x-3">
-              <i data-lucide="trash-2" class="w-4 h-4 text-app-purple"></i>
+              <svg class="w-4 h-4 text-app-purple" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               <div>
-                <span class="text-xs font-bold text-app-navy block">Papelera de Reciclaje</span>
-                <span class="text-[10px] text-app-subtext">Retención de 30 días</span>
+                <span class="text-xs font-bold theme-text-navy block">Papelera de Reciclaje</span>
+                <span class="text-[10px] theme-text-sub">Retención de 30 días</span>
               </div>
             </div>
             <span id="trash-count-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-app-purple text-white">0</span>
           </button>
-          <button onclick="promptChangeMasterKey()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
+          <button onclick="promptChangeMasterKey()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
             <div class="flex items-center space-x-3">
-              <i data-lucide="key-round" class="w-4 h-4 text-app-blue"></i>
-              <span class="text-xs font-bold text-app-navy">Cambiar Clave Maestra</span>
+              <svg class="w-4 h-4 text-app-blue" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+              <span class="text-xs font-bold theme-text-navy">Cambiar Clave Maestra</span>
             </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-app-subtext"></i>
           </button>
         </div>
 
+        <!-- Exportaciones y Datos -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Copias de Seguridad</p>
-          <button onclick="exportData()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Exportación & Hojas de Cálculo</p>
+          
+          <!-- Botón Exportar CSV / Excel -->
+          <button onclick="exportToCSV()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-left transition-colors border border-emerald-100 dark:border-emerald-900/40">
             <div class="flex items-center space-x-3">
-              <i data-lucide="download" class="w-4 h-4 text-app-purple"></i>
-              <span class="text-xs font-bold text-app-navy">Exportar Copia (.json)</span>
+              <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <div>
+                <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300 block">Exportar a Excel / CSV</span>
+                <span class="text-[10px] theme-text-sub">Compatible con Numbers y Excel</span>
+              </div>
             </div>
           </button>
-          <label class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors cursor-pointer">
+
+          <button onclick="exportData()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
             <div class="flex items-center space-x-3">
-              <i data-lucide="upload" class="w-4 h-4 text-app-mint"></i>
-              <span class="text-xs font-bold text-app-navy">Importar Copia</span>
+              <svg class="w-4 h-4 text-app-purple" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span class="text-xs font-bold theme-text-navy">Copia de Seguridad (.json)</span>
+            </div>
+          </button>
+
+          <label class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors cursor-pointer">
+            <div class="flex items-center space-x-3">
+              <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              <span class="text-xs font-bold theme-text-navy">Importar Copia JSON</span>
             </div>
             <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
           </label>
         </div>
       </div>
-      <div class="pt-4 border-t border-gray-100 text-center">
-        <p class="text-[10px] text-app-subtext font-semibold">Offline PWA • v5.0 iOS</p>
+
+      <div class="pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
+        <p class="text-[10px] theme-text-sub font-semibold">Offline PWA • Ultra Rápida v6.0</p>
       </div>
     </div>
   </div>
@@ -425,21 +450,22 @@
   <!-- ==========================================
        MODAL: PAPELERA DE RECICLAJE
        ========================================== -->
-  <div id="modal-trash" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[85vh] flex flex-col">
+  <div id="modal-trash" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <h3 class="text-lg font-extrabold text-app-navy">Papelera de Reciclaje</h3>
-          <p class="text-xs text-app-subtext">Se eliminan automáticamente a los 30 días</p>
+          <h3 class="text-lg font-extrabold theme-text-navy">Papelera de Reciclaje</h3>
+          <p class="text-xs theme-text-sub">Se eliminan automáticamente a los 30 días</p>
         </div>
-        <button onclick="closeModal('modal-trash')" class="p-2 bg-gray-100 text-app-subtext rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <button onclick="closeModal('modal-trash')" class="p-2 theme-bg-subtle bg-gray-100 rounded-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <div id="trash-list" class="space-y-2.5 overflow-y-auto flex-1 pr-1"></div>
       <div id="empty-state-trash" class="hidden flex flex-col items-center justify-center py-12 text-center">
-        <div class="p-3 bg-gray-100 text-app-subtext rounded-2xl mb-2"><i data-lucide="trash" class="w-6 h-6"></i></div>
-        <p class="text-sm font-bold text-app-navy">La papelera está vacía</p>
+        <p class="text-sm font-bold theme-text-navy">La papelera está vacía</p>
       </div>
-      <div class="pt-4 mt-2 border-t border-gray-100 flex space-x-2">
+      <div class="pt-4 mt-2 border-t border-gray-100 dark:border-gray-800 flex space-x-2">
         <button onclick="emptyTrashPermanently()" class="flex-1 py-3 rounded-2xl bg-rose-50 text-app-pink text-xs font-bold hover:bg-rose-100 transition-colors">Vaciar Todo</button>
       </div>
     </div>
@@ -448,149 +474,177 @@
   <!-- ==========================================
        MODAL: SEGURIDAD (>24H)
        ========================================== -->
-  <div id="modal-security" class="fixed inset-0 bg-app-navy/60 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-5">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-float transform scale-95 transition-transform duration-200 space-y-4">
+  <div id="modal-security" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-5">
+    <div class="theme-modal bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-200 space-y-4">
       <div class="text-center space-y-1">
-        <div class="w-12 h-12 bg-indigo-50 text-app-purple rounded-2xl flex items-center justify-center mx-auto mb-2">
-          <i data-lucide="lock" class="w-6 h-6"></i>
+        <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/40 text-app-purple rounded-2xl flex items-center justify-center mx-auto mb-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
         </div>
-        <h3 id="security-modal-title" class="text-lg font-extrabold text-app-navy">Clave Maestra</h3>
-        <p id="security-modal-desc" class="text-xs text-app-subtext">Han pasado más de 24 horas desde la creación de este registro.</p>
+        <h3 id="security-modal-title" class="text-lg font-extrabold theme-text-navy">Clave Maestra</h3>
+        <p id="security-modal-desc" class="text-xs theme-text-sub">Han pasado más de 24 horas desde la creación del registro.</p>
       </div>
 
       <div id="security-normal-flow" class="space-y-3">
-        <input type="password" id="security-key-input" placeholder="Introduce tu clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
-        <button onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform text-sm">Confirmar</button>
+        <input type="password" id="security-key-input" placeholder="Introduce tu clave maestra" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
+        <button onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-sm active:scale-[0.98] transition-transform text-sm">Confirmar</button>
         <button onclick="showRecoveryFlow()" class="w-full text-center text-xs font-bold text-app-purple hover:underline pt-1">¿Has olvidado tu clave?</button>
       </div>
 
-      <div id="security-recovery-flow" class="hidden space-y-3 border-t border-gray-100 pt-3">
-        <div class="p-3 bg-amber-50 rounded-2xl border border-amber-100">
-          <p class="text-[11px] font-semibold text-amber-800">Escribe la palabra de desbloqueo de emergencia para restablecer tu clave.</p>
+      <div id="security-recovery-flow" class="hidden space-y-3 border-t border-gray-100 dark:border-gray-800 pt-3">
+        <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-100 dark:border-amber-900/40">
+          <p class="text-[11px] font-semibold text-amber-800 dark:text-amber-300">Escribe la palabra de desbloqueo de emergencia.</p>
         </div>
-        <input type="text" id="recovery-word-input" placeholder="Palabra de desbloqueo" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none">
-        <input type="password" id="new-master-key-input" placeholder="Nueva clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none">
+        <input type="text" id="recovery-word-input" placeholder="Palabra de desbloqueo" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none">
+        <input type="password" id="new-master-key-input" placeholder="Nueva clave maestra" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none">
         <button onclick="submitEmergencyRecovery()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs">Restablecer Clave</button>
-        <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs text-app-subtext font-bold">Volver</button>
+        <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs theme-text-sub font-bold">Volver</button>
       </div>
-      <button onclick="closeModal('modal-security')" class="w-full text-center text-xs text-app-subtext font-bold pt-1">Cancelar</button>
+      <button onclick="closeModal('modal-security')" class="w-full text-center text-xs theme-text-sub font-bold pt-1">Cancelar</button>
     </div>
   </div>
 
   <!-- ==========================================
-       MODAL: MOVIMIENTO (CREAR / EDITAR)
+       MODAL 1: REGISTRAR / EDITAR MOVIMIENTO
+       (CON QUICK CHIPS & BOTONES DE IMPORTE RÁPIDO)
        ========================================== -->
-  <div id="modal-transaction" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
+  <div id="modal-transaction" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex justify-between items-center mb-3">
         <div>
-          <h3 id="transaction-modal-title" class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
-          <p class="text-xs text-app-subtext">Registra ingresos o gastos</p>
+          <h3 id="transaction-modal-title" class="text-lg font-extrabold theme-text-navy">Nuevo Movimiento</h3>
+          <p class="text-xs theme-text-sub">Registra ingresos o gastos diarios</p>
         </div>
-        <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <button onclick="closeModal('modal-transaction')" class="p-2 theme-bg-subtle bg-gray-100 rounded-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
-      <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-4">
+      <!-- Quick Chips: Hilera Horizontal de Gastos Frecuentes -->
+      <div class="space-y-1.5 pb-2 border-b border-gray-100 dark:border-gray-800">
+        <span class="text-[10px] font-bold uppercase tracking-wider theme-text-sub">Gastos Frecuentes (1 Toque)</span>
+        <div class="flex space-x-2 overflow-x-auto pb-1 no-scrollbar">
+          <button type="button" onclick="applyQuickChip('☕ Desayuno', 'Restaurantes y Ocio', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">☕ Desayuno</button>
+          <button type="button" onclick="applyQuickChip('🍽️ Menú / Almuerzo', 'Restaurantes y Ocio', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">🍽️ Menú</button>
+          <button type="button" onclick="applyQuickChip('⛽ Gasolina', 'Transporte', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">⛽ Gasolina</button>
+          <button type="button" onclick="applyQuickChip('🛒 Supermercado', 'Supermercado', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">🛒 Super</button>
+          <button type="button" onclick="applyQuickChip('💊 Farmacia', 'Salud', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">💊 Farmacia</button>
+          <button type="button" onclick="applyQuickChip('🐖 Ahorro Extra', 'Aporte mensual', 'ahorro')" class="flex-shrink-0 px-3 py-1.5 rounded-full bg-emerald-50 text-app-mint text-xs font-bold active:scale-95 transition-transform">🐖 +Ahorro</button>
+        </div>
+      </div>
+
+      <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-3.5 pt-2">
+        <!-- Cuenta Destino -->
         <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Cuenta Destino</label>
-          <div class="flex bg-gray-100 p-1 rounded-2xl">
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Cuenta Destino</label>
+          <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="account" value="gasto" class="hidden peer" checked onchange="updateFormUI()">
-              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-purple peer-checked:text-white transition-all shadow-sm">💳 Cuenta Gasto</span>
+              <span class="block py-2 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-app-purple peer-checked:text-white transition-all shadow-sm">💳 Cta. Gasto</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="account" value="ahorro" class="hidden peer" onchange="updateFormUI()">
-              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-mint peer-checked:text-white transition-all shadow-sm">🐖 Cuenta Ahorro</span>
+              <span class="block py-2 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-app-mint peer-checked:text-white transition-all shadow-sm">🐖 Cta. Ahorro</span>
             </label>
           </div>
         </div>
 
+        <!-- Tipo -->
         <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo</label>
-          <div class="flex bg-gray-100 p-1 rounded-2xl">
+          <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="income" class="hidden peer" checked onchange="updateCategories()">
-              <span id="label-income" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso</span>
+              <span id="label-income" class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="expense" class="hidden peer" onchange="updateCategories()">
-              <span id="label-expense" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-pink peer-checked:shadow-sm transition-all">- Gasto</span>
+              <span id="label-expense" class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-pink peer-checked:shadow-sm transition-all">- Gasto</span>
             </label>
           </div>
         </div>
 
+        <!-- Botones de Importe Rápido (+5€, +10€, +50€, +100€) -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider">Importe (€)</label>
+            <div class="flex space-x-1.5">
+              <button type="button" onclick="addQuickAmount(5)" class="px-2 py-0.5 rounded-lg theme-bg-subtle bg-gray-100 text-[11px] font-bold hover:bg-gray-200 active:scale-95">+5€</button>
+              <button type="button" onclick="addQuickAmount(10)" class="px-2 py-0.5 rounded-lg theme-bg-subtle bg-gray-100 text-[11px] font-bold hover:bg-gray-200 active:scale-95">+10€</button>
+              <button type="button" onclick="addQuickAmount(50)" class="px-2 py-0.5 rounded-lg theme-bg-subtle bg-gray-100 text-[11px] font-bold hover:bg-gray-200 active:scale-95">+50€</button>
+              <button type="button" onclick="addQuickAmount(100)" class="px-2 py-0.5 rounded-lg theme-bg-subtle bg-gray-100 text-[11px] font-bold hover:bg-gray-200 active:scale-95">+100€</button>
+            </div>
+          </div>
+          <input type="number" step="0.01" min="0.01" id="amount" inputmode="decimal" required placeholder="0.00" class="w-full text-2xl font-extrabold theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-app-purple">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Concepto</label>
+          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado..." class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Categoría</label>
+          <select id="category" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none"></select>
+        </div>
+
         <div id="linked-loan-container" class="hidden">
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">¿Amortiza crédito?</label>
-          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-2.5 text-xs font-semibold text-app-navy focus:outline-none">
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">¿Amortiza crédito?</label>
+          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full theme-input bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-2 text-xs font-semibold focus:outline-none">
             <option value="">Ninguno (Gasto general)</option>
           </select>
         </div>
 
-        <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Importe (€)</label>
-          <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none text-app-navy">
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Concepto</label>
-          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Categoría</label>
-          <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none"></select>
-        </div>
-
-        <button type="submit" id="submit-transaction-btn" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">Guardar Movimiento</button>
+        <button type="submit" id="submit-transaction-btn" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-sm active:scale-[0.98] transition-transform mt-2 text-sm">Guardar Movimiento</button>
       </form>
     </div>
   </div>
 
   <!-- Modal Fijo -->
-  <div id="modal-fixed" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+  <div id="modal-fixed" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <h3 class="text-lg font-extrabold text-app-navy">Compromiso Fijo</h3>
-          <p class="text-xs text-app-subtext">Hipotecas, préstamos y seguros</p>
+          <h3 class="text-lg font-extrabold theme-text-navy">Compromiso Fijo</h3>
+          <p class="text-xs theme-text-sub">Hipotecas, préstamos y seguros</p>
         </div>
-        <button onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <button onclick="closeModal('modal-fixed')" class="p-2 theme-bg-subtle bg-gray-100 rounded-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <form id="fixed-form" onsubmit="saveFixedItem(event)" class="space-y-4">
         <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo de Elemento</label>
-          <div class="flex bg-gray-100 p-1 rounded-2xl">
+          <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="fixed_type" value="credit" class="hidden peer" checked onchange="toggleFixedFormFields()">
-              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-blue peer-checked:text-white transition-all shadow-sm">🏦 Crédito / Hipoteca</span>
+              <span class="block py-2 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-app-blue peer-checked:text-white transition-all shadow-sm">🏦 Crédito / Hipoteca</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="fixed_type" value="bill" class="hidden peer" onchange="toggleFixedFormFields()">
-              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-pink peer-checked:text-white transition-all shadow-sm">🛡️ Seguro / IBI</span>
+              <span class="block py-2 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-app-pink peer-checked:text-white transition-all shadow-sm">🛡️ Seguro / IBI</span>
             </label>
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Nombre / Entidad</label>
-          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca Casa, Seguro Coche..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Nombre / Entidad</label>
+          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca Casa, Seguro Coche..." class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Cuota Periódica (€)</label>
-          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" required placeholder="0.00" class="w-full text-xl font-bold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none text-app-navy">
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Cuota Periódica (€)</label>
+          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" inputmode="decimal" required placeholder="0.00" class="w-full text-xl font-bold theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none">
         </div>
 
         <div id="credit-fields" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Total Crédito (€)</label>
-              <input type="number" step="0.01" id="fixed-total-amount" placeholder="120000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
+              <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Total Crédito (€)</label>
+              <input type="number" step="0.01" id="fixed-total-amount" inputmode="decimal" placeholder="120000" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Pendiente (€)</label>
-              <input type="number" step="0.01" id="fixed-remaining-amount" placeholder="95000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
+              <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Pendiente (€)</label>
+              <input type="number" step="0.01" id="fixed-remaining-amount" inputmode="decimal" placeholder="95000" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
             </div>
           </div>
         </div>
@@ -598,52 +652,26 @@
         <div id="bill-fields" class="hidden space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Periodicidad</label>
-              <select id="fixed-frequency" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
+              <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Periodicidad</label>
+              <select id="fixed-frequency" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
                 <option value="monthly">Mensual</option>
                 <option value="quarterly">Trimestral</option>
                 <option value="annual" selected>Anual</option>
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Fecha Cobro</label>
-              <input type="date" id="fixed-date" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
+              <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Fecha Cobro</label>
+              <input type="date" id="fixed-date" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
             </div>
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-app-navy to-indigo-900 text-white font-bold py-3.5 rounded-2xl shadow-float active:scale-[0.98] transition-transform mt-3 text-sm">Guardar Compromiso</button>
+        <button type="submit" class="w-full bg-app-navy text-white font-bold py-3.5 rounded-2xl shadow-sm active:scale-[0.98] transition-transform mt-3 text-sm">Guardar Compromiso</button>
       </form>
     </div>
   </div>
 
   <script>
-    // ==========================================
-    // 1. REGISTRO SERVICE WORKER (OFFLINE PWA)
-    // ==========================================
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then((reg) => {
-          console.log('PWA Service Worker registrado correctamente:', reg.scope);
-        }).catch((err) => {
-          console.log('Fallo al registrar Service Worker:', err);
-        });
-      });
-    }
-
-    // ==========================================
-    // BLOQUEO TOTAL DE ZOOM EN iOS
-    // ==========================================
-    document.addEventListener('gesturestart', (e) => e.preventDefault());
-    document.addEventListener('gesturechange', (e) => e.preventDefault());
-    document.addEventListener('gestureend', (e) => e.preventDefault());
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', (event) => {
-      const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) event.preventDefault();
-      lastTouchEnd = now;
-    }, false);
-
     // ==========================================
     // BASE DE DATOS LOCAL & ESTADO
     // ==========================================
@@ -658,13 +686,13 @@
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v5')) || [];
-    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v5')) || [
+    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v6')) || [];
+    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v6')) || [
       { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01', timestamp: Date.now() },
       { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15', timestamp: Date.now() },
       { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20', timestamp: Date.now() }
     ];
-    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v5')) || [];
+    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v6')) || [];
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
@@ -675,7 +703,6 @@
     let donutChartInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
       updateFormUI();
       purgeOldTrash();
       checkURLForApplePayParams();
@@ -684,6 +711,255 @@
     });
 
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
+
+    // ==========================================
+    // 1. TECLADO & QUICK CHIPS
+    // ==========================================
+    function addQuickAmount(val) {
+      const input = document.getElementById('amount');
+      const current = parseFloat(input.value) || 0;
+      input.value = (current + val).toFixed(2);
+    }
+
+    function applyQuickChip(conceptName, categoryName, accountType) {
+      document.querySelector(`input[name="account"][value="${accountType}"]`).checked = true;
+      document.querySelector(`input[name="type"][value="expense"]`).checked = true;
+      updateFormUI();
+      document.getElementById('concept').value = conceptName;
+      document.getElementById('category').value = categoryName;
+
+      // Enfocar directamente el importe
+      const amtInput = document.getElementById('amount');
+      amtInput.focus();
+      amtInput.select();
+    }
+
+    // ==========================================
+    // 2. EXPORTACIÓN DIRECTA A CSV / EXCEL
+    // ==========================================
+    function exportToCSV() {
+      if (transactions.length === 0) {
+        alert("No hay movimientos registrados para exportar.");
+        return;
+      }
+
+      // Encabezados compatibles con Numbers/Excel
+      let csvContent = "\uFEFF"; // BOM para acentos en Excel
+      csvContent += "Fecha;Cuenta;Tipo;Concepto;Categoría;Importe (EUR);Amortización\n";
+
+      transactions.forEach(t => {
+        const row = [
+          `"${t.date || ''}"`,
+          `"${t.account === 'ahorro' ? 'Ahorro' : 'Gasto'}"`,
+          `"${t.type === 'income' ? 'Ingreso' : 'Gasto'}"`,
+          `"${(t.concept || '').replace(/"/g, '""')}"`,
+          `"${t.category || ''}"`,
+          `"${(t.amount || 0).toFixed(2).replace('.', ',')}"`,
+          `"${t.loanName || ''}"`
+        ];
+        csvContent += row.join(";") + "\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Finanzas_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toggleSidebar(false);
+    }
+
+    // ==========================================
+    // MOVIMIENTOS: RENDER & BÚSQUEDA EN TIEMPO REAL
+    // ==========================================
+    function renderTransactions() {
+      const list = document.getElementById('transactions-list');
+      const emptyState = document.getElementById('empty-state-transactions');
+      const countLabel = document.getElementById('items-count');
+      const listTitle = document.getElementById('list-title');
+      const searchVal = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+      list.innerHTML = '';
+
+      let balanceGasto = 0, balanceAhorro = 0;
+
+      transactions.forEach(t => {
+        const amount = parseFloat(t.amount);
+        if (t.account === 'ahorro') balanceAhorro += (t.type === 'income' ? amount : -amount);
+        else balanceGasto += (t.type === 'income' ? amount : -amount);
+      });
+
+      document.getElementById('balance-gasto').textContent = formatCurrency(balanceGasto);
+      document.getElementById('balance-ahorro').textContent = formatCurrency(balanceAhorro);
+      document.getElementById('total-net-worth').textContent = formatCurrency(balanceGasto + balanceAhorro);
+
+      // Filtro por cuenta + Búsqueda instantánea en memoria
+      const filtered = transactions.filter(t => {
+        const matchesAccount = activeFilter === 'all' || (t.account || 'gasto') === activeFilter;
+        const matchesSearch = !searchVal || 
+          (t.concept || '').toLowerCase().includes(searchVal) ||
+          (t.category || '').toLowerCase().includes(searchVal) ||
+          String(t.amount).includes(searchVal);
+        return matchesAccount && matchesSearch;
+      });
+
+      listTitle.textContent = activeFilter === 'all' ? 'Todos los movimientos' : (activeFilter === 'ahorro' ? 'Movimientos: Ahorro' : 'Movimientos: Gasto');
+      countLabel.textContent = `${filtered.length} registros`;
+
+      if (filtered.length === 0) emptyState.classList.remove('hidden');
+      else emptyState.classList.add('hidden');
+
+      filtered.forEach(item => {
+        const originalIndex = transactions.indexOf(item);
+        const isIncome = item.type === 'income';
+        const isAhorro = item.account === 'ahorro';
+        const isLocked = isOlderThan24Hours(item.timestamp);
+        
+        const card = document.createElement('div');
+        card.className = "theme-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between";
+        card.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="p-3 rounded-2xl ${isAhorro ? 'bg-emerald-50 text-app-mint' : (isIncome ? 'bg-indigo-50 text-app-purple' : 'bg-rose-50 text-app-pink')}">
+              ${isAhorro 
+                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>'
+                : (isIncome 
+                  ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>'
+                  : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>')}
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md ${isAhorro ? 'bg-emerald-100 text-app-mint' : 'bg-indigo-50 text-app-purple'}">
+                  ${isAhorro ? 'Ahorro' : 'Gasto'}
+                </span>
+                <p class="text-xs font-bold theme-text-navy">${item.concept}</p>
+                ${isLocked ? '<svg class="w-3 h-3 theme-text-sub" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>' : ''}
+              </div>
+              <p class="text-[11px] theme-text-sub mt-0.5 font-medium">${item.category} • ${item.date} ${item.loanName ? `• <span class="text-app-blue font-bold">${item.loanName}</span>` : ''}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'theme-text-navy'} mr-1">
+              ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
+            </span>
+            <button onclick="openTransactionModal(${originalIndex})" title="Editar" class="text-gray-300 hover:text-app-purple p-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            </button>
+            <button onclick="deleteTransaction(${originalIndex})" title="Eliminar" class="text-gray-300 hover:text-app-pink p-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // ==========================================
+    // APERTURA MODAL CON FOCO Y TECLADO
+    // ==========================================
+    function openTransactionModal(editIdx = null) {
+      editingIndex = editIdx;
+      const form = document.getElementById('transaction-form');
+      const title = document.getElementById('transaction-modal-title');
+      const btn = document.getElementById('submit-transaction-btn');
+
+      if (editIdx !== null) {
+        const item = transactions[editIdx];
+        if (isOlderThan24Hours(item.timestamp)) {
+          requireSecurityAuth(() => openTransactionModal(editIdx));
+          return;
+        }
+
+        title.textContent = 'Editar Movimiento';
+        btn.textContent = 'Actualizar Movimiento';
+
+        document.querySelector(`input[name="account"][value="${item.account || 'gasto'}"]`).checked = true;
+        document.querySelector(`input[name="type"][value="${item.type}"]`).checked = true;
+        updateFormUI();
+        document.getElementById('amount').value = item.amount;
+        document.getElementById('concept').value = item.concept;
+        document.getElementById('category').value = item.category;
+        if (item.linkedLoanId) document.getElementById('linked-loan').value = item.linkedLoanId;
+      } else {
+        title.textContent = 'Nuevo Movimiento';
+        btn.textContent = 'Guardar Movimiento';
+        form.reset();
+        updateFormUI();
+      }
+
+      openModal('modal-transaction');
+
+      // Foco inmediato al campo importe para desplegar teclado numérico en iOS
+      setTimeout(() => {
+        const amtInput = document.getElementById('amount');
+        amtInput.focus();
+        amtInput.select();
+      }, 150);
+    }
+
+    function saveTransaction(e) {
+      e.preventDefault();
+      const account = document.querySelector('input[name="account"]:checked').value;
+      const type = document.querySelector('input[name="type"]:checked').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const concept = document.getElementById('concept').value.trim();
+      const category = document.getElementById('category').value;
+      const linkedLoanId = document.getElementById('linked-loan').value;
+      
+      const now = new Date();
+      const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+
+      let loanName = '';
+      if (linkedLoanId && type === 'expense') {
+        const loan = fixedItems.find(item => item.id === linkedLoanId);
+        if (loan) {
+          loanName = loan.name;
+          loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
+          localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+        }
+      }
+
+      if (editingIndex !== null) {
+        const original = transactions[editingIndex];
+        transactions[editingIndex] = { ...original, account, type, amount, concept, category, linkedLoanId, loanName };
+        editingIndex = null;
+      } else {
+        transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
+      }
+
+      localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+      document.getElementById('transaction-form').reset();
+      updateFormUI();
+      closeModal('modal-transaction');
+      setAccountFilter(account);
+    }
+
+    function deleteTransaction(index) {
+      const item = transactions[index];
+      const executeDelete = () => {
+        if (item.linkedLoanId && item.type === 'expense') {
+          const loan = fixedItems.find(l => l.id === item.linkedLoanId);
+          if (loan) {
+            loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
+            localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+          }
+        }
+        const removed = transactions.splice(index, 1)[0];
+        localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+        moveToTrash(removed, 'transaction');
+        renderAll();
+      };
+
+      if (isOlderThan24Hours(item.timestamp)) {
+        requireSecurityAuth(() => {
+          if (confirm("¿Enviar este movimiento a la papelera?")) executeDelete();
+        });
+      } else {
+        if (confirm("¿Deseas eliminar este movimiento? Se guardará 30 días en la papelera.")) {
+          executeDelete();
+        }
+      }
+    }
 
     // ==========================================
     // SEGURIDAD & CLAVE MAESTRA
@@ -776,7 +1052,7 @@
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       const now = Date.now();
       trash = trash.filter(item => (now - item.deletedAt) < THIRTY_DAYS);
-      localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
       updateTrashBadge();
     }
 
@@ -784,7 +1060,7 @@
       item.deletedAt = Date.now();
       item.itemType = itemType;
       trash.unshift(item);
-      localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
       updateTrashBadge();
     }
 
@@ -818,29 +1094,28 @@
         const daysLeft = Math.max(1, 30 - daysElapsed);
 
         const card = document.createElement('div');
-        card.className = "bg-gray-50 p-3.5 rounded-2xl border border-gray-100 flex items-center justify-between";
+        card.className = "theme-bg-subtle bg-gray-50 p-3.5 rounded-2xl flex items-center justify-between";
         card.innerHTML = `
           <div>
             <div class="flex items-center space-x-1.5">
-              <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gray-200 text-gray-700">
-                ${item.itemType === 'fixed' ? 'Compromiso Fijo' : (item.account === 'ahorro' ? 'Ahorro' : 'Gasto')}
+              <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700">
+                ${item.itemType === 'fixed' ? 'Fijo' : (item.account === 'ahorro' ? 'Ahorro' : 'Gasto')}
               </span>
-              <p class="text-xs font-bold text-app-navy">${item.concept || item.name}</p>
+              <p class="text-xs font-bold theme-text-navy">${item.concept || item.name}</p>
             </div>
             <p class="text-[10px] text-app-pink font-semibold mt-0.5">Se eliminará en ${daysLeft} días</p>
           </div>
           <div class="flex items-center space-x-2">
-            <button onclick="restoreFromTrash(${index})" title="Restaurar" class="p-2 bg-white rounded-xl shadow-sm text-app-mint hover:bg-emerald-50">
-              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <button onclick="restoreFromTrash(${index})" title="Restaurar" class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm text-app-mint">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             </button>
-            <button onclick="deleteFromTrashPermanently(${index})" title="Eliminar definitivamente" class="p-2 bg-white rounded-xl shadow-sm text-app-pink hover:bg-rose-50">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <button onclick="deleteFromTrashPermanently(${index})" title="Eliminar" class="p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm text-app-pink">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
         `;
         container.appendChild(card);
       });
-      lucide.createIcons();
     }
 
     function restoreFromTrash(index) {
@@ -851,13 +1126,13 @@
 
       if (type === 'fixed') {
         fixedItems.unshift(item);
-        localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
       } else {
         transactions.unshift(item);
-        localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
       }
 
-      localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
       renderTrashList();
       renderAll();
     }
@@ -865,7 +1140,7 @@
     function deleteFromTrashPermanently(index) {
       if (confirm("¿Eliminar definitivamente este elemento?")) {
         trash.splice(index, 1);
-        localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
       }
@@ -875,150 +1150,21 @@
       if (trash.length === 0) return;
       if (confirm("¿Vaciar toda la papelera definitivamente?")) {
         trash = [];
-        localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
       }
     }
 
     // ==========================================
-    // MOVIMIENTOS: CRUD & APPLE PAY
-    // ==========================================
-    function openTransactionModal(editIdx = null) {
-      editingIndex = editIdx;
-      const form = document.getElementById('transaction-form');
-      const title = document.getElementById('transaction-modal-title');
-      const btn = document.getElementById('submit-transaction-btn');
-
-      if (editIdx !== null) {
-        const item = transactions[editIdx];
-        if (isOlderThan24Hours(item.timestamp)) {
-          requireSecurityAuth(() => openTransactionModal(editIdx));
-          return;
-        }
-
-        title.textContent = 'Editar Movimiento';
-        btn.textContent = 'Actualizar Movimiento';
-
-        document.querySelector(`input[name="account"][value="${item.account || 'gasto'}"]`).checked = true;
-        document.querySelector(`input[name="type"][value="${item.type}"]`).checked = true;
-        updateFormUI();
-        document.getElementById('amount').value = item.amount;
-        document.getElementById('concept').value = item.concept;
-        document.getElementById('category').value = item.category;
-        if (item.linkedLoanId) document.getElementById('linked-loan').value = item.linkedLoanId;
-      } else {
-        title.textContent = 'Nuevo Movimiento';
-        btn.textContent = 'Guardar Movimiento';
-        form.reset();
-        updateFormUI();
-      }
-      openModal('modal-transaction');
-    }
-
-    function saveTransaction(e) {
-      e.preventDefault();
-      const account = document.querySelector('input[name="account"]:checked').value;
-      const type = document.querySelector('input[name="type"]:checked').value;
-      const amount = parseFloat(document.getElementById('amount').value);
-      const concept = document.getElementById('concept').value.trim();
-      const category = document.getElementById('category').value;
-      const linkedLoanId = document.getElementById('linked-loan').value;
-      
-      const now = new Date();
-      const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-
-      let loanName = '';
-      if (linkedLoanId && type === 'expense') {
-        const loan = fixedItems.find(item => item.id === linkedLoanId);
-        if (loan) {
-          loanName = loan.name;
-          loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
-          localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
-        }
-      }
-
-      if (editingIndex !== null) {
-        const original = transactions[editingIndex];
-        transactions[editingIndex] = { ...original, account, type, amount, concept, category, linkedLoanId, loanName };
-        editingIndex = null;
-      } else {
-        transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
-      }
-
-      localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
-      document.getElementById('transaction-form').reset();
-      updateFormUI();
-      closeModal('modal-transaction');
-      setAccountFilter(account);
-    }
-
-    function deleteTransaction(index) {
-      const item = transactions[index];
-      const executeDelete = () => {
-        if (item.linkedLoanId && item.type === 'expense') {
-          const loan = fixedItems.find(l => l.id === item.linkedLoanId);
-          if (loan) {
-            loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
-            localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
-          }
-        }
-        const removed = transactions.splice(index, 1)[0];
-        localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
-        moveToTrash(removed, 'transaction');
-        renderAll();
-      };
-
-      if (isOlderThan24Hours(item.timestamp)) {
-        requireSecurityAuth(() => {
-          if (confirm("¿Enviar este movimiento a la papelera?")) executeDelete();
-        });
-      } else {
-        if (confirm("¿Deseas eliminar este movimiento? Se guardará 30 días en la papelera.")) {
-          executeDelete();
-        }
-      }
-    }
-
-    function checkURLForApplePayParams() {
-      const params = new URLSearchParams(window.location.search);
-      const amount = parseFloat(params.get('amount'));
-      const concept = params.get('concept') || 'Pago Apple Pay';
-      
-      if (amount && !isNaN(amount)) {
-        const now = new Date();
-        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-        
-        transactions.unshift({
-          account: 'gasto',
-          type: 'expense',
-          amount: amount,
-          concept: concept,
-          category: 'Apple Pay / Tarjeta',
-          date: date,
-          timestamp: now.getTime()
-        });
-
-        localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-
-    // ==========================================
-    // 2. ESTUDIO FINANCIERO: COMPARATIVO & FUGAS
+    // ESTUDIO FINANCIERO & GRÁFICOS
     // ==========================================
     function renderFinancialStudy() {
       const now = new Date();
       const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-      let currentMonthIncome = 0;
-      let currentMonthExpense = 0;
-      let totalSavings = 0;
-      let totalDebt = 0;
-
-      const monthlyTotals = {}; // { '2026-07': { income: X, expense: Y }, ... }
-      const categoryTotals = {};
-      const microExpenses = [];
+      let currentMonthIncome = 0, currentMonthExpense = 0, totalSavings = 0, totalDebt = 0;
+      const monthlyTotals = {}, categoryTotals = {}, microExpenses = [];
 
       transactions.forEach(t => {
         const amt = parseFloat(t.amount);
@@ -1037,11 +1183,7 @@
           if (monthKey === currentMonthKey) {
             currentMonthExpense += amt;
             categoryTotals[t.category] = (categoryTotals[t.category] || 0) + amt;
-            
-            // Detección de micropagos (< 15€)
-            if (amt <= 15) {
-              microExpenses.push(t);
-            }
+            if (amt <= 15) microExpenses.push(t);
           }
         }
       });
@@ -1053,13 +1195,8 @@
       document.getElementById('study-credit-total').textContent = formatCurrency(totalDebt);
       document.getElementById('study-savings-total').textContent = formatCurrency(totalSavings);
 
-      // Comparativa Intermensual
       renderIntermonthlyComparison(monthlyTotals, currentMonthKey, currentMonthExpense);
-
-      // Detector de Fugas
       renderLeaksDetector(microExpenses, categoryTotals, currentMonthExpense);
-
-      // Gráfico Donut de Categorías
       renderDonutChart(categoryTotals, currentMonthExpense);
     }
 
@@ -1071,7 +1208,7 @@
         const totalPast = pastMonths.reduce((acc, k) => acc + monthlyTotals[k].expense, 0);
         avgPastExpense = totalPast / pastMonths.length;
       } else {
-        avgPastExpense = currentMonthExpense; // Si no hay histórico previo
+        avgPastExpense = currentMonthExpense;
       }
 
       const compText = document.getElementById('intermensual-comparison-text');
@@ -1080,7 +1217,7 @@
       if (avgPastExpense > 0 && pastMonths.length > 0) {
         const diffPct = Math.round(((currentMonthExpense - avgPastExpense) / avgPastExpense) * 100);
         if (diffPct > 0) {
-          compText.textContent = `Gastas un ${diffPct}% MÁS que tu promedio histórico (${formatCurrency(avgPastExpense)})`;
+          compText.textContent = `Gastas un ${diffPct}% MÁS que tu promedio (${formatCurrency(avgPastExpense)})`;
           compBadge.textContent = `+${diffPct}%`;
           compBadge.className = "text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-rose-50 text-app-pink";
         } else {
@@ -1089,12 +1226,11 @@
           compBadge.className = "text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-app-mint";
         }
       } else {
-        compText.textContent = `Primer mes de registro. Promedio actual: ${formatCurrency(currentMonthExpense)}`;
+        compText.textContent = `Promedio actual: ${formatCurrency(currentMonthExpense)}`;
         compBadge.textContent = 'En curso';
         compBadge.className = "text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-indigo-50 text-app-purple";
       }
 
-      // Render gráfico de barras comparativo mensual
       const ctx = document.getElementById('monthlyCompareChart');
       if (!ctx) return;
       if (monthlyCompareChartInstance) monthlyCompareChartInstance.destroy();
@@ -1109,18 +1245,8 @@
         data: {
           labels: labels,
           datasets: [
-            {
-              label: 'Gastos',
-              data: dataExpenses,
-              backgroundColor: '#F8678C',
-              borderRadius: 8
-            },
-            {
-              label: 'Ingresos',
-              data: dataIncomes,
-              backgroundColor: '#5F5AF6',
-              borderRadius: 8
-            }
+            { label: 'Gastos', data: dataExpenses, backgroundColor: '#F8678C', borderRadius: 8 },
+            { label: 'Ingresos', data: dataIncomes, backgroundColor: '#5F5AF6', borderRadius: 8 }
           ]
         },
         options: {
@@ -1128,7 +1254,7 @@
           maintainAspectRatio: false,
           plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
           scales: {
-            y: { grid: { color: '#F3F4F6' }, ticks: { font: { size: 9 } } },
+            y: { grid: { color: 'rgba(150,150,150,0.1)' }, ticks: { font: { size: 9 } } },
             x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
           }
         }
@@ -1138,53 +1264,45 @@
     function renderLeaksDetector(microExpenses, categoryTotals, totalExpense) {
       const container = document.getElementById('leaks-container');
       container.innerHTML = '';
-
       const alerts = [];
 
-      // 1. Detección de suma de micropagos (fuga de café, snacks, compras hormiga)
       const totalMicro = microExpenses.reduce((acc, t) => acc + t.amount, 0);
       if (totalMicro > 30) {
         alerts.push({
           type: 'danger',
           title: `Fuga de micropagos: ${formatCurrency(totalMicro)} acumulados`,
-          desc: `Tienes ${microExpenses.length} compras de menos de 15€ registradas este mes (cafés, compras rápidas o delivery).`
+          desc: `Tienes ${microExpenses.length} compras de < 15€ registradas este mes.`
         });
       }
 
-      // 2. Detección de concentración excesiva en una sola categoría (> 40% del gasto)
       Object.keys(categoryTotals).forEach(cat => {
         const catAmount = categoryTotals[cat];
         if (totalExpense > 0 && (catAmount / totalExpense) > 0.40) {
           alerts.push({
             type: 'warning',
             title: `Partida elevada en ${cat}`,
-            desc: `Esta categoría absorbe el ${Math.round((catAmount / totalExpense) * 100)}% de tu gasto total del mes (${formatCurrency(catAmount)}).`
+            desc: `Absorbe el ${Math.round((catAmount / totalExpense) * 100)}% de tu gasto mensual (${formatCurrency(catAmount)}).`
           });
         }
       });
 
       if (alerts.length === 0) {
         container.innerHTML = `
-          <div class="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-100/60 flex items-center space-x-2.5">
-            <i data-lucide="check-circle" class="w-4 h-4 text-app-mint flex-shrink-0"></i>
-            <p class="text-xs text-emerald-900 font-semibold">Sin fugas de capital detectadas este mes. ¡Excelente control!</p>
+          <div class="p-3 bg-emerald-50/70 dark:bg-emerald-950/30 rounded-2xl flex items-center space-x-2.5">
+            <p class="text-xs text-emerald-900 dark:text-emerald-300 font-semibold">Sin fugas de capital detectadas este mes. ¡Excelente!</p>
           </div>
         `;
       } else {
         alerts.forEach(al => {
           const el = document.createElement('div');
-          el.className = `p-3 rounded-2xl border ${al.type === 'danger' ? 'bg-rose-50/70 border-rose-100 text-rose-900' : 'bg-amber-50/70 border-amber-100 text-amber-900'} space-y-0.5`;
+          el.className = `p-3 rounded-2xl ${al.type === 'danger' ? 'bg-rose-50/70 dark:bg-rose-950/30 text-rose-900 dark:text-rose-300' : 'bg-amber-50/70 dark:bg-amber-950/30 text-amber-900 dark:text-amber-300'} space-y-0.5`;
           el.innerHTML = `
-            <div class="flex items-center space-x-2">
-              <i data-lucide="${al.type === 'danger' ? 'alert-triangle' : 'info'}" class="w-3.5 h-3.5 ${al.type === 'danger' ? 'text-app-pink' : 'text-amber-600'}"></i>
-              <h4 class="text-xs font-bold">${al.title}</h4>
-            </div>
-            <p class="text-[11px] opacity-90 pl-5 font-medium">${al.desc}</p>
+            <h4 class="text-xs font-bold">${al.title}</h4>
+            <p class="text-[11px] opacity-90 font-medium">${al.desc}</p>
           `;
           container.appendChild(el);
         });
       }
-      lucide.createIcons();
     }
 
     function renderDonutChart(categoryTotals, totalExpense) {
@@ -1214,7 +1332,7 @@
       const legendContainer = document.getElementById('donut-legend');
       legendContainer.innerHTML = '';
       if (labels.length === 0) {
-        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos clasificados</p>';
+        legendContainer.innerHTML = '<p class="text-xs theme-text-sub text-center py-2">No hay gastos clasificados</p>';
         return;
       }
 
@@ -1228,10 +1346,10 @@
         row.innerHTML = `
           <div class="flex items-center space-x-2">
             <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
-            <span class="text-xs font-bold text-app-navy">${label}</span>
+            <span class="text-xs font-bold theme-text-navy">${label}</span>
           </div>
           <div class="flex items-center space-x-3">
-            <span class="text-xs font-extrabold text-app-navy">${formatCurrency(amt)}</span>
+            <span class="text-xs font-extrabold theme-text-navy">${formatCurrency(amt)}</span>
             <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style="background-color: ${color}">${pct}%</span>
           </div>
         `;
@@ -1240,19 +1358,17 @@
     }
 
     // ==========================================
-    // 3. SIMULADOR DE AMORTIZACIÓN Y ESTRATEGIAS
+    // SIMULADOR DE AMORTIZACIÓN
     // ==========================================
     function populateSimLoanDropdown() {
       const select = document.getElementById('sim-loan-select');
       if (!select) return;
       select.innerHTML = '';
-
       const credits = fixedItems.filter(i => i.type === 'credit');
       if (credits.length === 0) {
         select.innerHTML = '<option value="">Sin créditos registrados</option>';
         return;
       }
-
       credits.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.id;
@@ -1265,9 +1381,8 @@
       const credits = fixedItems.filter(i => i.type === 'credit');
       const select = document.getElementById('sim-loan-select');
       const strategyEl = document.getElementById('sim-strategy-text');
-      
       if (!select || credits.length === 0) {
-        if (strategyEl) strategyEl.innerHTML = "Añade al menos un crédito o préstamo para calcular simulaciones.";
+        if (strategyEl) strategyEl.innerHTML = "Añade al menos un crédito para calcular simulaciones.";
         return;
       }
 
@@ -1275,27 +1390,14 @@
       const loan = credits.find(c => c.id === selectedId) || credits[0];
       const extra = parseFloat(document.getElementById('sim-extra-amount').value) || 0;
       const rateAnnual = parseFloat(document.getElementById('sim-interest-rate').value) || 3.5;
-      const r = (rateAnnual / 100) / 12; // Tipo de interés mensual
+      const r = (rateAnnual / 100) / 12;
 
       const balance = loan.remainingAmount || 1;
       const fee = loan.monthlyFee || 1;
 
-      // 1. Cálculo Reducción de Plazo
-      // Meses restantes aprox: n = -ln(1 - (balance * r) / fee) / ln(1 + r)
-      let monthsRemaining = 0;
-      if (fee > balance * r && r > 0) {
-        monthsRemaining = Math.log(fee / (fee - balance * r)) / Math.log(1 + r);
-      } else {
-        monthsRemaining = balance / fee;
-      }
-
+      let monthsRemaining = (fee > balance * r && r > 0) ? Math.log(fee / (fee - balance * r)) / Math.log(1 + r) : (balance / fee);
       const newBalance = Math.max(0, balance - extra);
-      let newMonths = 0;
-      if (fee > newBalance * r && r > 0) {
-        newMonths = Math.log(fee / (fee - newBalance * r)) / Math.log(1 + r);
-      } else {
-        newMonths = newBalance / fee;
-      }
+      let newMonths = (fee > newBalance * r && r > 0) ? Math.log(fee / (fee - newBalance * r)) / Math.log(1 + r) : (newBalance / fee);
 
       const monthsSaved = Math.max(0, Math.round(monthsRemaining - newMonths));
       const interestSavedTerm = Math.max(0, (monthsSaved * fee) - extra);
@@ -1303,189 +1405,28 @@
       document.getElementById('sim-term-saved-months').textContent = `${monthsSaved} meses menos`;
       document.getElementById('sim-term-saved-interest').textContent = `Ahorras ${formatCurrency(interestSavedTerm)} en intereses`;
 
-      // 2. Cálculo Reducción de Cuota
-      // Nueva cuota para los mismos meses restantes:
-      let newFee = fee;
-      if (monthsRemaining > 0 && r > 0) {
-        newFee = (newBalance * r) / (1 - Math.pow(1 + r, -monthsRemaining));
-      } else {
-        newFee = newBalance / (monthsRemaining || 1);
-      }
+      let newFee = (monthsRemaining > 0 && r > 0) ? (newBalance * r) / (1 - Math.pow(1 + r, -monthsRemaining)) : (newBalance / (monthsRemaining || 1));
       const monthlySaved = Math.max(0, fee - newFee);
 
       document.getElementById('sim-fee-new').textContent = `${formatCurrency(newFee)}/mes`;
       document.getElementById('sim-fee-saved').textContent = `Baja ${formatCurrency(monthlySaved)}/mes`;
 
-      // 3. Recomendación de Estrategia: Avalancha vs Bola de Nieve
       if (credits.length > 1) {
-        // Ordenar para Avalancha (mayor cuota/importe) vs Bola de nieve (menor capital)
         const smallestLoan = [...credits].sort((a, b) => a.remainingAmount - b.remainingAmount)[0];
         const largestFeeLoan = [...credits].sort((a, b) => b.monthlyFee - a.monthlyFee)[0];
-
         strategyEl.innerHTML = `
-          ⚡ <strong>Recomendación Estratégica:</strong><br>
-          • <strong>Avalancha Financiera:</strong> Amortiza primero <em>"${largestFeeLoan.name}"</em> para eliminar la cuota más pesada y ahorrar el máximo de intereses.<br>
-          • <strong>Bola de Nieve:</strong> Liquida primero <em>"${smallestLoan.name}"</em> (${formatCurrency(smallestLoan.remainingAmount)}) para una victoria rápida e impulso motivacional.
+          ⚡ <strong>Recomendación:</strong><br>
+          • <strong>Avalancha:</strong> Amortiza <em>"${largestFeeLoan.name}"</em> para eliminar la cuota más alta.<br>
+          • <strong>Bola de Nieve:</strong> Liquida <em>"${smallestLoan.name}"</em> (${formatCurrency(smallestLoan.remainingAmount)}) para una victoria rápida.
         `;
       } else {
-        strategyEl.innerHTML = `
-          💡 <strong>Consejo Financiero:</strong> Reducir plazo te ofrece un <strong>ahorro matemático superior</strong> de intereses a largo plazo, mientras que reducir cuota te otorga mayor <strong>liquidez y desahogo mensual</strong> inmediato.
-        `;
+        strategyEl.innerHTML = `💡 <strong>Consejo:</strong> Reducir plazo ahorra más intereses a largo plazo; reducir cuota te da más liquidez cada mes.`;
       }
     }
 
     // ==========================================
-    // RENDERIZADO GENERAL & HERRAMIENTAS
+    // GASTOS FIJOS
     // ==========================================
-    function switchTab(tabId) {
-      currentTab = tabId;
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
-
-      ['movimientos', 'estudio', 'fijos'].forEach(t => {
-        const btn = document.getElementById(`nav-${t}`);
-        const iconDiv = btn.querySelector('div');
-        if (t === tabId) {
-          btn.className = 'flex flex-col items-center space-y-1 text-app-purple transition-all';
-          iconDiv.className = 'p-1.5 rounded-xl bg-indigo-50';
-        } else {
-          btn.className = 'flex flex-col items-center space-y-1 text-app-subtext transition-all';
-          iconDiv.className = 'p-1.5 rounded-xl';
-        }
-      });
-
-      if (tabId === 'estudio') renderFinancialStudy();
-      else if (tabId === 'fijos') { renderFixedItems(); populateSimLoanDropdown(); runAmortizationSimulation(); }
-      else { renderTransactions(); initMiniTrendChart(); }
-      lucide.createIcons();
-    }
-
-    function renderAll() {
-      renderTransactions();
-      renderFixedItems();
-      populateSimLoanDropdown();
-      runAmortizationSimulation();
-      updateTrashBadge();
-    }
-
-    function setAccountFilter(account) {
-      activeFilter = account;
-      const tabs = { all: 'tab-all', gasto: 'tab-gasto', ahorro: 'tab-ahorro' };
-      Object.keys(tabs).forEach(key => {
-        const el = document.getElementById(tabs[key]);
-        el.className = key === account
-          ? "flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all"
-          : "flex-1 py-2 rounded-xl text-app-subtext transition-all";
-      });
-      renderTransactions();
-    }
-
-    function renderTransactions() {
-      const list = document.getElementById('transactions-list');
-      const emptyState = document.getElementById('empty-state-transactions');
-      const countLabel = document.getElementById('items-count');
-      const listTitle = document.getElementById('list-title');
-      list.innerHTML = '';
-
-      let balanceGasto = 0, balanceAhorro = 0;
-
-      transactions.forEach(t => {
-        const amount = parseFloat(t.amount);
-        if (t.account === 'ahorro') balanceAhorro += (t.type === 'income' ? amount : -amount);
-        else balanceGasto += (t.type === 'income' ? amount : -amount);
-      });
-
-      document.getElementById('balance-gasto').textContent = formatCurrency(balanceGasto);
-      document.getElementById('balance-ahorro').textContent = formatCurrency(balanceAhorro);
-      document.getElementById('total-net-worth').textContent = formatCurrency(balanceGasto + balanceAhorro);
-
-      const filtered = transactions.filter(t => activeFilter === 'all' || (t.account || 'gasto') === activeFilter);
-      listTitle.textContent = activeFilter === 'all' ? 'Todos los movimientos' : (activeFilter === 'ahorro' ? 'Movimientos: Ahorro' : 'Movimientos: Gasto');
-      countLabel.textContent = `${filtered.length} registros`;
-
-      if (filtered.length === 0) emptyState.classList.remove('hidden');
-      else emptyState.classList.add('hidden');
-
-      filtered.forEach(item => {
-        const originalIndex = transactions.indexOf(item);
-        const isIncome = item.type === 'income';
-        const isAhorro = item.account === 'ahorro';
-        const isLocked = isOlderThan24Hours(item.timestamp);
-        
-        const card = document.createElement('div');
-        card.className = "bg-white p-4 rounded-2xl shadow-card-soft border border-indigo-50/40 flex items-center justify-between";
-        card.innerHTML = `
-          <div class="flex items-center space-x-3">
-            <div class="p-3 rounded-2xl ${isAhorro ? 'bg-emerald-50 text-app-mint' : (isIncome ? 'bg-indigo-50 text-app-purple' : 'bg-rose-50 text-app-pink')}">
-              <i data-lucide="${isAhorro ? 'piggy-bank' : (isIncome ? 'arrow-down-left' : 'arrow-up-right')}" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <div class="flex items-center space-x-1.5">
-                <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md ${isAhorro ? 'bg-emerald-100 text-app-mint' : 'bg-indigo-50 text-app-purple'}">
-                  ${isAhorro ? 'Ahorro' : 'Gasto'}
-                </span>
-                <p class="text-xs font-bold text-app-navy">${item.concept}</p>
-                ${isLocked ? '<i data-lucide="lock" title="Protegido (>24h)" class="w-3 h-3 text-app-subtext"></i>' : ''}
-              </div>
-              <p class="text-[11px] text-app-subtext mt-0.5 font-medium">${item.category} • ${item.date} ${item.loanName ? `• <span class="text-app-blue font-bold">${item.loanName}</span>` : ''}</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'text-app-navy'} mr-1">
-              ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
-            </span>
-            <button onclick="openTransactionModal(${originalIndex})" title="Editar" class="text-gray-300 hover:text-app-purple p-1">
-              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
-            </button>
-            <button onclick="deleteTransaction(${originalIndex})" title="Eliminar" class="text-gray-300 hover:text-app-pink p-1">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        `;
-        list.appendChild(card);
-      });
-      lucide.createIcons();
-    }
-
-    function initMiniTrendChart() {
-      const ctx = document.getElementById('miniTrendChart');
-      if (!ctx) return;
-      if (miniTrendChartInstance) miniTrendChartInstance.destroy();
-
-      miniTrendChartInstance = new Chart(ctx.getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: ['1', '2', '3', '4', '5', '6', '7'],
-          datasets: [
-            {
-              data: [15, 22, 19, 35, 28, 30, 42],
-              borderColor: '#5F5AF6',
-              borderWidth: 3,
-              tension: 0.45,
-              pointRadius: 0,
-              fill: true,
-              backgroundColor: 'rgba(95, 90, 246, 0.06)'
-            },
-            {
-              data: [10, 14, 18, 15, 20, 22, 25],
-              borderColor: '#F8678C',
-              borderWidth: 2,
-              borderDash: [4, 4],
-              tension: 0.45,
-              pointRadius: 0,
-              fill: false
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
-          scales: { x: { display: false }, y: { display: false } }
-        }
-      });
-    }
-
     function renderFixedItems() {
       const loansList = document.getElementById('loans-list');
       const fixedCostsList = document.getElementById('fixed-costs-list');
@@ -1501,24 +1442,28 @@
           const progress = item.totalAmount > 0 ? Math.round(((item.totalAmount - item.remainingAmount) / item.totalAmount) * 100) : 0;
 
           const card = document.createElement('div');
-          card.className = "bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50 space-y-3";
+          card.className = "theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100 space-y-3";
           card.innerHTML = `
             <div class="flex justify-between items-start">
               <div class="flex items-center space-x-3">
-                <div class="p-2.5 bg-blue-50 text-app-blue rounded-2xl"><i data-lucide="landmark" class="w-4 h-4"></i></div>
+                <div class="p-2.5 bg-blue-50 text-app-blue rounded-2xl">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+                </div>
                 <div>
-                  <h4 class="text-xs font-bold text-app-navy">${item.name}</h4>
-                  <p class="text-[11px] text-app-subtext">Cuota: <strong class="text-app-navy">${formatCurrency(item.monthlyFee)}/mes</strong></p>
+                  <h4 class="text-xs font-bold theme-text-navy">${item.name}</h4>
+                  <p class="text-[11px] theme-text-sub">Cuota: <strong class="theme-text-navy">${formatCurrency(item.monthlyFee)}/mes</strong></p>
                 </div>
               </div>
-              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
             <div class="space-y-1.5">
               <div class="flex justify-between text-[11px] font-bold">
-                <span class="text-app-subtext">Pendiente: <span class="text-app-navy">${formatCurrency(item.remainingAmount)}</span></span>
+                <span class="theme-text-sub">Pendiente: <span class="theme-text-navy">${formatCurrency(item.remainingAmount)}</span></span>
                 <span class="text-app-mint">${progress}% amortizado</span>
               </div>
-              <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+              <div class="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
                 <div class="bg-gradient-to-r from-app-blue to-app-purple h-full rounded-full transition-all duration-500" style="width: ${progress}%"></div>
               </div>
             </div>
@@ -1531,18 +1476,22 @@
           else if (item.frequency === 'annual') totalMonthlyCommitment += (fee / 12);
 
           const card = document.createElement('div');
-          card.className = "bg-white p-3.5 rounded-2xl shadow-card-soft border border-indigo-50/50 flex items-center justify-between";
+          card.className = "theme-card bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between";
           card.innerHTML = `
             <div class="flex items-center space-x-3">
-              <div class="p-2.5 rounded-2xl bg-rose-50 text-app-pink"><i data-lucide="${item.name.toLowerCase().includes('seguro') ? 'shield-check' : 'calendar'}" class="w-4 h-4"></i></div>
+              <div class="p-2.5 rounded-2xl bg-rose-50 text-app-pink">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              </div>
               <div>
-                <p class="text-xs font-bold text-app-navy">${item.name}</p>
-                <p class="text-[10px] text-app-subtext font-medium">${item.frequency === 'annual' ? 'Anual' : 'Mensual'} ${item.date ? `• Cobro: <strong class="text-app-navy">${item.date}</strong>` : ''}</p>
+                <p class="text-xs font-bold theme-text-navy">${item.name}</p>
+                <p class="text-[10px] theme-text-sub font-medium">${item.frequency === 'annual' ? 'Anual' : 'Mensual'} ${item.date ? `• Cobro: <strong class="theme-text-navy">${item.date}</strong>` : ''}</p>
               </div>
             </div>
             <div class="flex items-center space-x-2">
-              <span class="text-xs font-extrabold text-app-navy">${formatCurrency(item.monthlyFee)}</span>
-              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              <span class="text-xs font-extrabold theme-text-navy">${formatCurrency(item.monthlyFee)}</span>
+              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
           `;
           fixedCostsList.appendChild(card);
@@ -1551,9 +1500,7 @@
 
       document.getElementById('total-fixed-monthly').textContent = formatCurrency(totalMonthlyCommitment);
       document.getElementById('total-loans-debt').textContent = formatCurrency(totalDebt);
-
       populateLoanSelectDropdown();
-      lucide.createIcons();
     }
 
     function saveFixedItem(e) {
@@ -1572,7 +1519,7 @@
       }
 
       fixedItems.push(itemData);
-      localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
+      localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
       renderAll();
@@ -1582,7 +1529,7 @@
       const item = fixedItems[index];
       const executeDelete = () => {
         const removed = fixedItems.splice(index, 1)[0];
-        localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
         moveToTrash(removed, 'fixed');
         renderAll();
       };
@@ -1618,6 +1565,88 @@
           document.getElementById('concept').value = `Cuota: ${loan.name}`;
           document.getElementById('category').value = 'Hipoteca / Préstamo';
         }
+      }
+    }
+
+    // ==========================================
+    // CONTROL DE VISTAS & UTILIDADES
+    // ==========================================
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+      ['movimientos', 'estudio', 'fijos'].forEach(t => {
+        const btn = document.getElementById(`nav-${t}`);
+        const iconDiv = btn.querySelector('div');
+        if (t === tabId) {
+          btn.className = 'flex flex-col items-center space-y-1 text-app-purple transition-all';
+          iconDiv.className = 'p-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40';
+        } else {
+          btn.className = 'flex flex-col items-center space-y-1 theme-text-sub transition-all';
+          iconDiv.className = 'p-1.5 rounded-xl';
+        }
+      });
+
+      if (tabId === 'estudio') renderFinancialStudy();
+      else if (tabId === 'fijos') { renderFixedItems(); populateSimLoanDropdown(); runAmortizationSimulation(); }
+      else { renderTransactions(); initMiniTrendChart(); }
+    }
+
+    function renderAll() {
+      renderTransactions();
+      renderFixedItems();
+      populateSimLoanDropdown();
+      runAmortizationSimulation();
+      updateTrashBadge();
+    }
+
+    function setAccountFilter(account) {
+      activeFilter = account;
+      const tabs = { all: 'tab-all', gasto: 'tab-gasto', ahorro: 'tab-ahorro' };
+      Object.keys(tabs).forEach(key => {
+        const el = document.getElementById(tabs[key]);
+        el.className = key === account
+          ? "flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all"
+          : "flex-1 py-2 rounded-xl theme-text-sub transition-all";
+      });
+      renderTransactions();
+    }
+
+    function initMiniTrendChart() {
+      const ctx = document.getElementById('miniTrendChart');
+      if (!ctx) return;
+      if (miniTrendChartInstance) miniTrendChartInstance.destroy();
+
+      miniTrendChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: ['1', '2', '3', '4', '5', '6', '7'],
+          datasets: [
+            { data: [15, 22, 19, 35, 28, 30, 42], borderColor: '#5F5AF6', borderWidth: 3, tension: 0.45, pointRadius: 0, fill: true, backgroundColor: 'rgba(95, 90, 246, 0.06)' },
+            { data: [10, 14, 18, 15, 20, 22, 25], borderColor: '#F8678C', borderWidth: 2, borderDash: [4, 4], tension: 0.45, pointRadius: 0, fill: false }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    }
+
+    function checkURLForApplePayParams() {
+      const params = new URLSearchParams(window.location.search);
+      const amount = parseFloat(params.get('amount'));
+      const concept = params.get('concept') || 'Pago Apple Pay';
+      if (amount && !isNaN(amount)) {
+        const now = new Date();
+        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        transactions.unshift({
+          account: 'gasto', type: 'expense', amount, concept, category: 'Apple Pay / Tarjeta', date, timestamp: now.getTime()
+        });
+        localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
 
@@ -1737,9 +1766,9 @@
           if (parsed.trash) trash = parsed.trash;
           if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
           
-          localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
-          localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
-          localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
+          localStorage.setItem('my_finances_data_v6', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v6', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_trash_v6', JSON.stringify(trash));
           
           alert("Datos importados con éxito.");
           toggleSidebar(false);
