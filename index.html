@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- Bloqueo estricto de zoom en iOS / Android -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Control de Finanzas</title>
 
   <!-- Configuración iOS Web App -->
@@ -13,7 +14,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
 
-  <!-- Tipografía Google Fonts: Plus Jakarta Sans (Estilo FinTech moderno) -->
+  <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,9 +28,7 @@
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          },
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
           colors: {
             app: {
               purple: '#5F5AF6',
@@ -42,7 +41,6 @@
               mintLight: '#4DE6B3',
               navy: '#1A1C3D',
               subtext: '#8F92A1',
-              cardBg: '#FFFFFF',
               canvas: '#F8FAFF',
             }
           },
@@ -50,7 +48,6 @@
             'card-soft': '0 12px 30px -10px rgba(95, 90, 246, 0.12)',
             'pink-soft': '0 12px 25px -8px rgba(248, 103, 140, 0.35)',
             'purple-soft': '0 12px 25px -8px rgba(95, 90, 246, 0.35)',
-            'blue-soft': '0 12px 25px -8px rgba(77, 150, 255, 0.35)',
             'mint-soft': '0 12px 25px -8px rgba(36, 210, 151, 0.35)',
             'float': '0 10px 30px rgba(26, 28, 61, 0.08)',
           }
@@ -60,19 +57,25 @@
   </script>
 
   <style>
-    body {
+    /* Bloqueo global de zoom y desplazamientos elásticos indeseados */
+    html, body {
+      touch-action: pan-x pan-y;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior-y: none;
       font-family: 'Plus Jakarta Sans', sans-serif;
       padding-top: calc(env(safe-area-inset-top, 20px) + 6px);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       background-color: #F8FAFF;
     }
-    input, select, button { user-select: auto; font-family: inherit; }
-    ::-webkit-scrollbar { display: none; }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
+    
+    /* Prevenir que iOS haga zoom automático al enfocar inputs */
+    input, select, textarea {
+      font-size: 16px !important;
+      user-select: auto;
+      font-family: inherit;
     }
+    ::-webkit-scrollbar { display: none; }
   </style>
 </head>
 <body class="text-app-navy antialiased min-h-screen flex flex-col items-center">
@@ -84,34 +87,30 @@
          ========================================== -->
     <main id="view-movimientos" class="view-panel space-y-4">
       
-      <!-- Barra Superior Estilo App -->
+      <!-- Barra Superior con Botón Menú Funcional -->
       <header class="flex justify-between items-center py-2">
         <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy">
+          <!-- Botón de Menú con funcionalidad -->
+          <button onclick="toggleSidebar(true)" class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy active:scale-95 transition-transform">
             <i data-lucide="menu" class="w-5 h-5"></i>
-          </div>
+          </button>
           <div>
             <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Mis Cuentas</h1>
             <p class="text-[11px] font-semibold text-app-subtext">Panel Principal</p>
           </div>
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="exportData()" title="Copia de seguridad" class="p-2.5 bg-white text-app-subtext hover:text-app-navy rounded-2xl shadow-card-soft active:scale-95 transition-transform">
-            <i data-lucide="download" class="w-5 h-5"></i>
-          </button>
           <button onclick="openTransactionModal()" class="p-2.5 bg-gradient-to-r from-app-purple to-app-purpleLight text-white rounded-2xl shadow-purple-soft active:scale-95 transition-transform">
             <i data-lucide="plus" class="w-5 h-5"></i>
           </button>
         </div>
       </header>
 
-      <!-- Tarjetas de Cuentas: Estilo Tarjetas de Crédito de la Imagen -->
+      <!-- Tarjetas de Cuentas (Estilo FinTech) -->
       <section class="space-y-3">
-        <!-- Tarjeta Cuenta Gasto (Gradiente Morado/Iris) -->
+        <!-- Tarjeta Gasto -->
         <div onclick="setAccountFilter('gasto')" id="card-gasto" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
           <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
-          <div class="absolute right-12 -top-10 w-28 h-28 rounded-full bg-white/10 pointer-events-none"></div>
-          
           <div class="flex justify-between items-start relative z-10">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-widest text-white/80 bg-white/15 px-2.5 py-1 rounded-full">Cuenta Gasto</span>
@@ -123,17 +122,15 @@
               <div class="w-7 h-7 rounded-full bg-white/20"></div>
             </div>
           </div>
-          
           <div class="flex justify-between items-center mt-5 text-[11px] font-medium text-white/80 relative z-10">
-            <span>•••• 2408</span>
+            <span>•••• Tarjeta Principal</span>
             <span>Uso Diario</span>
           </div>
         </div>
 
-        <!-- Tarjeta Cuenta Ahorro (Gradiente Mint/Verde Esmeralda) -->
+        <!-- Tarjeta Ahorro -->
         <div onclick="setAccountFilter('ahorro')" id="card-ahorro" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
           <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
-          
           <div class="flex justify-between items-start relative z-10">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-widest text-white/80 bg-white/15 px-2.5 py-1 rounded-full">Cuenta Ahorro</span>
@@ -144,28 +141,25 @@
               <i data-lucide="piggy-bank" class="w-5 h-5 text-white"></i>
             </div>
           </div>
-          
           <div class="flex justify-between items-center mt-5 text-[11px] font-medium text-white/80 relative z-10">
-            <span>Crecimiento de Ahorro</span>
-            <span>Reserva Segura</span>
+            <span>Fondo de Reserva</span>
+            <span>Ahorro Acumulado</span>
           </div>
         </div>
       </section>
 
-      <!-- Tarjeta Balance Total & Gráfico Curvo de Tendencia -->
+      <!-- Tarjeta Balance Total y Curva Flujo -->
       <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50">
         <div class="text-center">
           <p class="text-[11px] font-bold uppercase tracking-wider text-app-subtext">Patrimonio Total</p>
           <h3 id="total-net-worth" class="text-2xl font-extrabold text-app-navy mt-0.5 tracking-tight">0,00 €</h3>
         </div>
-        
-        <!-- Curva Decorativa Onda Flujo -->
         <div class="h-16 w-full relative mt-1">
           <canvas id="miniTrendChart"></canvas>
         </div>
       </section>
 
-      <!-- Filtros de Pestaña Estilo Pill -->
+      <!-- Pestañas Filtro -->
       <div class="flex bg-white p-1 rounded-2xl shadow-card-soft text-xs font-bold border border-indigo-50/40">
         <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Todos</button>
         <button onclick="setAccountFilter('gasto')" id="tab-gasto" class="flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all">Cta. Gasto</button>
@@ -178,34 +172,27 @@
           <h3 id="list-title" class="text-xs font-bold text-app-subtext uppercase tracking-wider">Historial de Pagos</h3>
           <span id="items-count" class="text-[11px] font-semibold text-app-subtext">0 registros</span>
         </div>
-        
         <div id="transactions-list" class="space-y-2.5"></div>
-        
         <div id="empty-state-transactions" class="hidden flex flex-col items-center justify-center py-10 text-center">
           <div class="p-3 bg-indigo-50 text-app-purple rounded-2xl mb-2">
             <i data-lucide="receipt" class="w-6 h-6"></i>
           </div>
           <p class="text-sm font-bold text-app-navy">Sin movimientos registrados</p>
-          <p class="text-xs text-app-subtext mt-0.5">Pulsa (+) para registrar un nuevo movimiento.</p>
+          <p class="text-xs text-app-subtext mt-0.5">Pulsa (+) para registrar un movimiento.</p>
         </div>
       </section>
-
     </main>
 
     <!-- ==========================================
-         VISTA 2: ESTUDIO FINANCIERO (4 Tarjetas de Colores & Gráfico Donut)
+         VISTA 2: ESTUDIO FINANCIERO
          ========================================== -->
     <main id="view-estudio" class="view-panel hidden space-y-4">
-      
       <header class="py-2">
         <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Estudio Financiero</h1>
         <p class="text-[11px] font-semibold text-app-subtext">Diagnóstico y Previsiones</p>
       </header>
 
-      <!-- Cuadrícula de 4 Tarjetas de Color (Exactas a la pantalla central) -->
       <section class="grid grid-cols-2 gap-3">
-        
-        <!-- Tarjeta 1: Ingresos (Morado) -->
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Ingresos</span>
           <div>
@@ -213,8 +200,6 @@
             <span class="text-[10px] text-white/70 font-medium">Total acumulado</span>
           </div>
         </div>
-
-        <!-- Tarjeta 2: Gastos (Rosa Coral) -->
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-pink to-app-pinkLight text-white shadow-pink-soft flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Gastos</span>
           <div>
@@ -222,8 +207,6 @@
             <span class="text-[10px] text-white/70 font-medium">Total pagado</span>
           </div>
         </div>
-
-        <!-- Tarjeta 3: Créditos (Azul Cielo) -->
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-blue to-app-blueLight text-white shadow-blue-soft flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Créditos</span>
           <div>
@@ -231,8 +214,6 @@
             <span class="text-[10px] text-white/70 font-medium">Deuda viva</span>
           </div>
         </div>
-
-        <!-- Tarjeta 4: Ahorro (Verde Menta) -->
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft flex flex-col justify-between h-28">
           <span class="text-[11px] font-bold text-white/80">Ahorro</span>
           <div>
@@ -240,43 +221,31 @@
             <span class="text-[10px] text-white/70 font-medium">Fondo actual</span>
           </div>
         </div>
-
       </section>
 
-      <!-- Diagnóstico y Recomendación Económica -->
       <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-2">
         <div class="flex items-center space-x-2 text-app-purple">
-          <div class="p-1.5 bg-indigo-50 rounded-xl">
-            <i data-lucide="sparkles" class="w-4 h-4 text-app-purple"></i>
-          </div>
-          <span class="text-xs font-bold uppercase tracking-wider text-app-navy">Diagnóstico de Salud Financiera</span>
+          <div class="p-1.5 bg-indigo-50 rounded-xl"><i data-lucide="sparkles" class="w-4 h-4 text-app-purple"></i></div>
+          <span class="text-xs font-bold uppercase tracking-wider text-app-navy">Diagnóstico Financiero</span>
         </div>
         <p id="advice-text" class="text-xs font-semibold leading-relaxed text-app-subtext">
-          Registra tus primeros ingresos y gastos para recibir recomendaciones personalizadas de ahorro y amortización.
+          Registra tus primeros movimientos para generar previsiones personalizadas.
         </p>
       </section>
 
-      <!-- Distribución de Gastos Estilo Donut con Leyenda de Píldoras -->
       <section class="bg-white rounded-3xl p-5 shadow-card-soft border border-indigo-50/50 space-y-4">
         <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Perfil de Inversión y Gastos</h3>
-        
         <div class="h-48 relative flex items-center justify-center">
           <canvas id="categoryDonutChart"></canvas>
         </div>
-
-        <!-- Leyenda con Porcentajes en Píldoras -->
-        <div id="donut-legend" class="space-y-2 pt-2 border-t border-gray-100">
-          <!-- Renderizado dinámicamente con las píldoras de color -->
-        </div>
+        <div id="donut-legend" class="space-y-2 pt-2 border-t border-gray-100"></div>
       </section>
-
     </main>
 
     <!-- ==========================================
-         VISTA 3: GASTOS FIJOS, SEGUROS Y CRÉDITOS
+         VISTA 3: GASTOS FIJOS Y CRÉDITOS
          ========================================== -->
     <main id="view-fijos" class="view-panel hidden space-y-4">
-      
       <header class="flex justify-between items-center py-2">
         <div>
           <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Gastos Fijos</h1>
@@ -287,12 +256,11 @@
         </button>
       </header>
 
-      <!-- Métricas Resumen -->
       <section class="grid grid-cols-2 gap-3">
         <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
           <p class="text-[11px] font-bold text-app-subtext uppercase">Cuota Mensual Fija</p>
           <p id="total-fixed-monthly" class="text-xl font-extrabold text-app-pink mt-1">0,00 €</p>
-          <p class="text-[10px] text-app-subtext mt-0.5">Compromisos recurrentes</p>
+          <p class="text-[10px] text-app-subtext mt-0.5">Recibos recurrentes</p>
         </div>
         <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
           <p class="text-[11px] font-bold text-app-subtext uppercase">Deuda Total Activa</p>
@@ -301,69 +269,124 @@
         </div>
       </section>
 
-      <!-- Lista de Créditos e Hipotecas -->
       <section class="space-y-2.5">
-        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos en Curso</h3>
+        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos Activos</h3>
         <div id="loans-list" class="space-y-3"></div>
       </section>
 
-      <!-- Lista de Seguros e IBI -->
       <section class="space-y-2.5 mt-4">
         <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Seguros, IBI y Recibos Periódicos</h3>
         <div id="fixed-costs-list" class="space-y-2.5"></div>
       </section>
-
     </main>
 
   </div>
 
   <!-- ==========================================
-       BARRA DE MENÚ INFERIOR ESTILO FINTECH
+       BARRA INFERIOR DE NAVEGACIÓN
        ========================================== -->
   <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-indigo-50 px-6 py-2.5 flex justify-around items-center z-40 shadow-float" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8px);">
-    
     <button onclick="switchTab('movimientos')" id="nav-movimientos" class="flex flex-col items-center space-y-1 text-app-purple transition-all">
-      <div class="p-1.5 rounded-xl bg-indigo-50">
-        <i data-lucide="credit-card" class="w-5 h-5"></i>
-      </div>
+      <div class="p-1.5 rounded-xl bg-indigo-50"><i data-lucide="credit-card" class="w-5 h-5"></i></div>
       <span class="text-[10px] font-bold">Cuentas</span>
     </button>
-
     <button onclick="switchTab('estudio')" id="nav-estudio" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
-      <div class="p-1.5 rounded-xl">
-        <i data-lucide="pie-chart" class="w-5 h-5"></i>
-      </div>
+      <div class="p-1.5 rounded-xl"><i data-lucide="pie-chart" class="w-5 h-5"></i></div>
       <span class="text-[10px] font-bold">Estudio</span>
     </button>
-
     <button onclick="switchTab('fijos')" id="nav-fijos" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
-      <div class="p-1.5 rounded-xl">
-        <i data-lucide="shield-check" class="w-5 h-5"></i>
-      </div>
+      <div class="p-1.5 rounded-xl"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
       <span class="text-[10px] font-bold">Gastos Fijos</span>
     </button>
-
   </nav>
 
   <!-- ==========================================
-       MODAL 1: REGISTRAR MOVIMIENTO
+       PANEL LATERAL (DRAWER) DEL MENÚ HAMBURGUESA
        ========================================== -->
+  <div id="sidebar-drawer" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
+    <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
+      
+      <div class="space-y-6">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+          <div class="flex items-center space-x-2">
+            <div class="p-2 bg-indigo-50 text-app-purple rounded-xl">
+              <i data-lucide="settings" class="w-5 h-5"></i>
+            </div>
+            <h2 class="text-lg font-extrabold text-app-navy">Ajustes</h2>
+          </div>
+          <button onclick="toggleSidebar(false)" class="p-1 text-app-subtext hover:text-app-navy">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Acciones de Datos -->
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Gestión de Datos</p>
+          
+          <button onclick="exportData()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="download" class="w-4 h-4 text-app-purple"></i>
+              <span class="text-xs font-bold text-app-navy">Exportar Copia de Seguridad</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-app-subtext"></i>
+          </button>
+
+          <label class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors cursor-pointer">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="upload" class="w-4 h-4 text-app-blue"></i>
+              <span class="text-xs font-bold text-app-navy">Importar Copia JSON</span>
+            </div>
+            <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
+            <i data-lucide="chevron-right" class="w-4 h-4 text-app-subtext"></i>
+          </label>
+
+          <button onclick="resetAllData()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-left transition-colors">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="trash" class="w-4 h-4 text-app-pink"></i>
+              <span class="text-xs font-bold text-app-pink">Borrar todos los datos</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Integraciones & Automatizaciones -->
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Apple Pay & Atajos</p>
+          <div class="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 space-y-1.5">
+            <div class="flex items-center space-x-2 text-app-purple">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              <span class="text-xs font-bold">Auto-captura activada</span>
+            </div>
+            <p class="text-[11px] text-app-subtext leading-relaxed font-medium">
+              Puedes sincronizar pagos de Apple Pay usando la app <strong>Atajos</strong> de iOS apuntando a esta URL con parámetros.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-gray-100 text-center">
+        <p class="text-[10px] text-app-subtext font-semibold">Control de Finanzas • v3.5 iOS</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODALES
+       ========================================== -->
+  <!-- Modal Movimiento -->
   <div id="modal-transaction" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
-      
       <div class="flex justify-between items-center mb-4">
         <div>
           <h3 class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
-          <p class="text-xs text-app-subtext">Añade un ingreso, gasto o transferencia</p>
+          <p class="text-xs text-app-subtext">Registra ingresos o gastos</p>
         </div>
-        <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext hover:text-app-navy rounded-full">
+        <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
       <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-4">
-        
-        <!-- Selector Cuenta -->
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Cuenta Destino</label>
           <div class="flex bg-gray-100 p-1 rounded-2xl">
@@ -378,13 +401,12 @@
           </div>
         </div>
 
-        <!-- Selector Tipo -->
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo</label>
           <div class="flex bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="income" class="hidden peer" checked onchange="updateCategories()">
-              <span id="label-income" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso / Nómina</span>
+              <span id="label-income" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="expense" class="hidden peer" onchange="updateCategories()">
@@ -393,30 +415,26 @@
           </div>
         </div>
 
-        <!-- Amortización Préstamo -->
         <div id="linked-loan-container" class="hidden">
-          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">¿Amortiza crédito activo?</label>
-          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-2.5 text-xs font-semibold text-app-navy focus:outline-none focus:ring-2 focus:ring-app-purple">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">¿Amortiza crédito?</label>
+          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-2.5 text-xs font-semibold text-app-navy focus:outline-none">
             <option value="">Ninguno (Gasto general)</option>
           </select>
         </div>
 
-        <!-- Importe -->
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Importe (€)</label>
-          <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-app-purple text-app-navy">
+          <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none text-app-navy">
         </div>
 
-        <!-- Concepto -->
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Concepto</label>
-          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado, Cuota Préstamo..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
         </div>
 
-        <!-- Categoría -->
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Categoría</label>
-          <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple"></select>
+          <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none"></select>
         </div>
 
         <button type="submit" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">
@@ -426,18 +444,15 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 2: AÑADIR GASTO FIJO O CRÉDITO
-       ========================================== -->
+  <!-- Modal Fijo -->
   <div id="modal-fixed" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
-      
       <div class="flex justify-between items-center mb-4">
         <div>
           <h3 class="text-lg font-extrabold text-app-navy">Compromiso Fijo</h3>
-          <p class="text-xs text-app-subtext">Añade hipotecas, seguros o tributos</p>
+          <p class="text-xs text-app-subtext">Hipotecas, préstamos y seguros</p>
         </div>
-        <button onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext hover:text-app-navy rounded-full">
+        <button onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -459,23 +474,23 @@
 
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Nombre / Entidad</label>
-          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca Casa, Seguro Mapfre, IBI..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca Casa, Seguro Coche..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
         </div>
 
         <div>
           <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Cuota Periódica (€)</label>
-          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" required placeholder="0.00" class="w-full text-xl font-bold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-app-purple text-app-navy">
+          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" required placeholder="0.00" class="w-full text-xl font-bold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none text-app-navy">
         </div>
 
         <div id="credit-fields" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Total Solicitado (€)</label>
-              <input type="number" step="0.01" id="fixed-total-amount" placeholder="Ej. 120000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Total Crédito (€)</label>
+              <input type="number" step="0.01" id="fixed-total-amount" placeholder="120000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Saldo Pendiente (€)</label>
-              <input type="number" step="0.01" id="fixed-remaining-amount" placeholder="Ej. 95000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Pendiente (€)</label>
+              <input type="number" step="0.01" id="fixed-remaining-amount" placeholder="95000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
             </div>
           </div>
         </div>
@@ -484,7 +499,7 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Periodicidad</label>
-              <select id="fixed-frequency" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+              <select id="fixed-frequency" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
                 <option value="monthly">Mensual</option>
                 <option value="quarterly">Trimestral</option>
                 <option value="annual" selected>Anual</option>
@@ -492,7 +507,7 @@
             </div>
             <div>
               <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Fecha Cobro</label>
-              <input type="date" id="fixed-date" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+              <input type="date" id="fixed-date" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm">
             </div>
           </div>
         </div>
@@ -506,12 +521,29 @@
 
   <script>
     // ==========================================
-    // ESTADO GLOBAL & LOCALSTORAGE
+    // 1. BLOQUEO TOTAL DE ZOOM (iOS Safari / Chrome)
+    // ==========================================
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('gesturechange', (e) => e.preventDefault());
+    document.addEventListener('gestureend', (e) => e.preventDefault());
+    
+    // Evitar zoom por doble toque rápido en iOS
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (event) => {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+
+    // ==========================================
+    // BASE DE DATOS LOCAL & ESTADO
     // ==========================================
     const categoryOptions = {
       gasto: {
         income: ['Nómina / Salario', 'Freelance / Extras', 'Bizum / Reembolso', 'Otros ingresos'],
-        expense: ['Hipoteca / Préstamo', 'Vivienda / Alquiler', 'Seguros / IBI', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas y Suministros', 'Salud', 'Compras', 'Otros']
+        expense: ['Hipoteca / Préstamo', 'Vivienda / Alquiler', 'Seguros / IBI', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas y Suministros', 'Salud', 'Compras', 'Apple Pay / Tarjeta', 'Otros']
       },
       ahorro: {
         income: ['Aporte mensual', 'Traspaso desde Gasto', 'Rendimientos / Intereses', 'Fondo de Emergencia', 'Meta de Ahorro'],
@@ -534,6 +566,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       updateFormUI();
+      checkURLForApplePayParams(); // Escucha auto-pagos de Apple Shortcuts
       renderAll();
       initMiniTrendChart();
     });
@@ -541,7 +574,86 @@
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // NAVEGACIÓN ENTRE PESTAÑAS
+    // DRAWER / MENÚ LATERAL HAMBURGUESA
+    // ==========================================
+    function toggleSidebar(show) {
+      const drawer = document.getElementById('sidebar-drawer');
+      const panel = document.getElementById('sidebar-panel');
+      if (show) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => {
+          drawer.classList.remove('opacity-0');
+          panel.classList.remove('-translate-x-full');
+        }, 10);
+      } else {
+        drawer.classList.add('opacity-0');
+        panel.classList.add('-translate-x-full');
+        setTimeout(() => { drawer.classList.add('hidden'); }, 300);
+      }
+    }
+
+    function resetAllData() {
+      if (confirm("¿Estás seguro de que deseas eliminar TODOS los movimientos y datos? Esta acción no se puede deshacer.")) {
+        localStorage.removeItem('my_finances_data_v3');
+        localStorage.removeItem('my_finances_fixed_v3');
+        transactions = [];
+        fixedItems = [];
+        toggleSidebar(false);
+        renderAll();
+      }
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.transactions) transactions = parsed.transactions;
+          if (parsed.fixedItems) fixedItems = parsed.fixedItems;
+          localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
+          alert("Datos importados correctamente.");
+          toggleSidebar(false);
+          renderAll();
+        } catch (err) {
+          alert("Archivo no válido.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ==========================================
+    // AUTO-REGISTRO DESDE APPLE PAY VIA URL SCHEME
+    // ==========================================
+    function checkURLForApplePayParams() {
+      const params = new URLSearchParams(window.location.search);
+      const amount = parseFloat(params.get('amount'));
+      const concept = params.get('concept') || 'Pago Apple Pay';
+      
+      if (amount && !isNaN(amount)) {
+        const now = new Date();
+        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        
+        transactions.unshift({
+          account: 'gasto',
+          type: 'expense',
+          amount: amount,
+          concept: concept,
+          category: 'Apple Pay / Tarjeta',
+          date: date,
+          timestamp: now.getTime()
+        });
+
+        localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
+        // Limpiar URL para evitar registros duplicados al recargar
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    // ==========================================
+    // NAVEGACIÓN Y RENDERIZADO
     // ==========================================
     function switchTab(tabId) {
       currentTab = tabId;
@@ -560,14 +672,9 @@
         }
       });
 
-      if (tabId === 'estudio') {
-        renderFinancialStudy();
-      } else if (tabId === 'fijos') {
-        renderFixedItems();
-      } else {
-        renderTransactions();
-        initMiniTrendChart();
-      }
+      if (tabId === 'estudio') renderFinancialStudy();
+      else if (tabId === 'fijos') renderFixedItems();
+      else { renderTransactions(); initMiniTrendChart(); }
       lucide.createIcons();
     }
 
@@ -576,9 +683,6 @@
       renderFixedItems();
     }
 
-    // ==========================================
-    // 1. MOVIMIENTOS
-    // ==========================================
     function setAccountFilter(account) {
       activeFilter = account;
       const tabs = { all: 'tab-all', gasto: 'tab-gasto', ahorro: 'tab-ahorro' };
@@ -588,7 +692,6 @@
           ? "flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all"
           : "flex-1 py-2 rounded-xl text-app-subtext transition-all";
       });
-
       renderTransactions();
     }
 
@@ -604,11 +707,8 @@
 
       transactions.forEach(t => {
         const amount = parseFloat(t.amount);
-        if (t.account === 'ahorro') {
-          balanceAhorro += (t.type === 'income' ? amount : -amount);
-        } else {
-          balanceGasto += (t.type === 'income' ? amount : -amount);
-        }
+        if (t.account === 'ahorro') balanceAhorro += (t.type === 'income' ? amount : -amount);
+        else balanceGasto += (t.type === 'income' ? amount : -amount);
       });
 
       document.getElementById('balance-gasto').textContent = formatCurrency(balanceGasto);
@@ -619,11 +719,8 @@
       listTitle.textContent = activeFilter === 'all' ? 'Todos los movimientos' : (activeFilter === 'ahorro' ? 'Movimientos: Ahorro' : 'Movimientos: Gasto');
       countLabel.textContent = `${filtered.length} registros`;
 
-      if (filtered.length === 0) {
-        emptyState.classList.remove('hidden');
-      } else {
-        emptyState.classList.add('hidden');
-      }
+      if (filtered.length === 0) emptyState.classList.remove('hidden');
+      else emptyState.classList.add('hidden');
 
       filtered.forEach(item => {
         const originalIndex = transactions.indexOf(item);
@@ -670,10 +767,10 @@
       miniTrendChartInstance = new Chart(ctx.getContext('2d'), {
         type: 'line',
         data: {
-          labels: ['Mar', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov'],
+          labels: ['1', '2', '3', '4', '5', '6', '7'],
           datasets: [
             {
-              data: [12, 19, 15, 33, 22, 28, 35],
+              data: [15, 22, 19, 35, 28, 30, 42],
               borderColor: '#5F5AF6',
               borderWidth: 3,
               tension: 0.45,
@@ -682,7 +779,7 @@
               backgroundColor: 'rgba(95, 90, 246, 0.06)'
             },
             {
-              data: [8, 11, 14, 12, 16, 18, 20],
+              data: [10, 14, 18, 15, 20, 22, 25],
               borderColor: '#F8678C',
               borderWidth: 2,
               borderDash: [4, 4],
@@ -696,10 +793,7 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { display: false }, tooltip: { enabled: false } },
-          scales: {
-            x: { display: false },
-            y: { display: false }
-          }
+          scales: { x: { display: false }, y: { display: false } }
         }
       });
     }
@@ -726,18 +820,7 @@
         }
       }
 
-      transactions.unshift({ 
-        account, 
-        type, 
-        amount, 
-        concept, 
-        category, 
-        date, 
-        timestamp: now.getTime(),
-        linkedLoanId,
-        loanName
-      });
-
+      transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
       localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
       document.getElementById('transaction-form').reset();
       updateFormUI();
@@ -761,23 +844,15 @@
       }
     }
 
-    // ==========================================
-    // 2. ESTUDIO FINANCIERO (VIBRANT FINTECH)
-    // ==========================================
     function renderFinancialStudy() {
-      let totalIncome = 0;
-      let totalExpense = 0;
-      let totalSavings = 0;
-      let totalDebt = 0;
+      let totalIncome = 0, totalExpense = 0, totalSavings = 0, totalDebt = 0;
       const categoryTotals = {};
 
       transactions.forEach(t => {
         const amt = parseFloat(t.amount);
-        if (t.account === 'ahorro' && t.type === 'income') {
-          totalSavings += amt;
-        } else if (t.type === 'income') {
-          totalIncome += amt;
-        } else if (t.type === 'expense') {
+        if (t.account === 'ahorro' && t.type === 'income') totalSavings += amt;
+        else if (t.type === 'income') totalIncome += amt;
+        else if (t.type === 'expense') {
           totalExpense += amt;
           categoryTotals[t.category] = (categoryTotals[t.category] || 0) + amt;
         }
@@ -790,21 +865,14 @@
       document.getElementById('study-credit-total').textContent = formatCurrency(totalDebt);
       document.getElementById('study-savings-total').textContent = formatCurrency(totalSavings);
 
-      // Diagnóstico y Recomendación
       const rate = totalIncome > 0 ? Math.round(((totalSavings + Math.max(0, totalIncome - totalExpense)) / totalIncome) * 100) : 0;
       const adviceEl = document.getElementById('advice-text');
 
-      if (transactions.length === 0) {
-        adviceEl.innerHTML = "Comienza a registrar tu salario y gastos diarios para generar diagnósticos y previsiones inteligentes.";
-      } else if (totalExpense > totalIncome && totalIncome > 0) {
-        adviceEl.innerHTML = `⚠️ <strong class="text-app-pink">Déficit detectado:</strong> Tus gastos superan a tus ingresos en <strong>${formatCurrency(totalExpense - totalIncome)}</strong>. Conviene moderar partidas no esenciales este mes.`;
-      } else if (rate >= 25) {
-        adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud financiera óptima:</strong> Estás reservando el <strong>${rate}%</strong> de tus ingresos. Es momento de amortizar capital o alimentar tu fondo de inversión.`;
-      } else {
-        adviceEl.innerHTML = `📊 <strong class="text-app-purple">Equilibrio activo:</strong> Tus finanzas son estables. Procura mantener el ahorro mensual por encima del 20% para contingencias futuras.`;
-      }
+      if (transactions.length === 0) adviceEl.innerHTML = "Comienza a registrar movimientos para diagnósticos.";
+      else if (totalExpense > totalIncome && totalIncome > 0) adviceEl.innerHTML = `⚠️ <strong class="text-app-pink">Déficit:</strong> Gastos superan ingresos en <strong>${formatCurrency(totalExpense - totalIncome)}</strong>.`;
+      else if (rate >= 25) adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud óptima:</strong> Ahorras el <strong>${rate}%</strong> de ingresos.`;
+      else adviceEl.innerHTML = `📊 <strong class="text-app-purple">Equilibrio:</strong> Finanzas estables.`;
 
-      // Gráfico Donut estilo Screen 3 (Píldoras y colores precisos)
       renderDonutChart(categoryTotals, totalExpense);
     }
 
@@ -817,36 +885,25 @@
       const labels = Object.keys(categoryTotals);
       const data = Object.values(categoryTotals);
 
-      const chartLabels = labels.length > 0 ? labels : ['Sin gastos registrados'];
-      const chartData = data.length > 0 ? data : [1];
-      const chartColors = labels.length > 0 ? palette.slice(0, labels.length) : ['#E5E7EB'];
-
       donutChartInstance = new Chart(ctx.getContext('2d'), {
         type: 'doughnut',
         data: {
-          labels: chartLabels,
+          labels: labels.length > 0 ? labels : ['Sin datos'],
           datasets: [{
-            data: chartData,
-            backgroundColor: chartColors,
+            data: data.length > 0 ? data : [1],
+            backgroundColor: labels.length > 0 ? palette.slice(0, labels.length) : ['#E5E7EB'],
             borderWidth: 0,
             borderRadius: 6,
             spacing: 4
           }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          cutout: '72%'
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '72%' }
       });
 
-      // Renderizar leyenda interactiva en píldoras (Idéntico a la Screen 3)
       const legendContainer = document.getElementById('donut-legend');
       legendContainer.innerHTML = '';
-
       if (labels.length === 0) {
-        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos para clasificar</p>';
+        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos clasificados</p>';
         return;
       }
 
@@ -871,45 +928,33 @@
       });
     }
 
-    // ==========================================
-    // 3. GASTOS FIJOS Y CRÉDITOS
-    // ==========================================
     function renderFixedItems() {
       const loansList = document.getElementById('loans-list');
       const fixedCostsList = document.getElementById('fixed-costs-list');
       loansList.innerHTML = '';
       fixedCostsList.innerHTML = '';
 
-      let totalMonthlyCommitment = 0;
-      let totalDebt = 0;
+      let totalMonthlyCommitment = 0, totalDebt = 0;
 
       fixedItems.forEach((item, index) => {
         if (item.type === 'credit') {
           totalDebt += parseFloat(item.remainingAmount || 0);
           totalMonthlyCommitment += parseFloat(item.monthlyFee || 0);
-
-          const progress = item.totalAmount > 0 
-            ? Math.round(((item.totalAmount - item.remainingAmount) / item.totalAmount) * 100) 
-            : 0;
+          const progress = item.totalAmount > 0 ? Math.round(((item.totalAmount - item.remainingAmount) / item.totalAmount) * 100) : 0;
 
           const card = document.createElement('div');
           card.className = "bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50 space-y-3";
           card.innerHTML = `
             <div class="flex justify-between items-start">
               <div class="flex items-center space-x-3">
-                <div class="p-2.5 bg-blue-50 text-app-blue rounded-2xl">
-                  <i data-lucide="landmark" class="w-4 h-4"></i>
-                </div>
+                <div class="p-2.5 bg-blue-50 text-app-blue rounded-2xl"><i data-lucide="landmark" class="w-4 h-4"></i></div>
                 <div>
                   <h4 class="text-xs font-bold text-app-navy">${item.name}</h4>
                   <p class="text-[11px] text-app-subtext">Cuota: <strong class="text-app-navy">${formatCurrency(item.monthlyFee)}/mes</strong></p>
                 </div>
               </div>
-              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
+              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
-
             <div class="space-y-1.5">
               <div class="flex justify-between text-[11px] font-bold">
                 <span class="text-app-subtext">Pendiente: <span class="text-app-navy">${formatCurrency(item.remainingAmount)}</span></span>
@@ -921,7 +966,6 @@
             </div>
           `;
           loansList.appendChild(card);
-
         } else {
           const fee = parseFloat(item.monthlyFee || 0);
           if (item.frequency === 'monthly') totalMonthlyCommitment += fee;
@@ -932,22 +976,15 @@
           card.className = "bg-white p-3.5 rounded-2xl shadow-card-soft border border-indigo-50/50 flex items-center justify-between";
           card.innerHTML = `
             <div class="flex items-center space-x-3">
-              <div class="p-2.5 rounded-2xl bg-rose-50 text-app-pink">
-                <i data-lucide="${item.name.toLowerCase().includes('seguro') ? 'shield-check' : 'calendar'}" class="w-4 h-4"></i>
-              </div>
+              <div class="p-2.5 rounded-2xl bg-rose-50 text-app-pink"><i data-lucide="${item.name.toLowerCase().includes('seguro') ? 'shield-check' : 'calendar'}" class="w-4 h-4"></i></div>
               <div>
                 <p class="text-xs font-bold text-app-navy">${item.name}</p>
-                <p class="text-[10px] text-app-subtext font-medium">
-                  ${item.frequency === 'annual' ? 'Anual' : (item.frequency === 'quarterly' ? 'Trimestral' : 'Mensual')} 
-                  ${item.date ? `• Cobro: <strong class="text-app-navy">${item.date}</strong>` : ''}
-                </p>
+                <p class="text-[10px] text-app-subtext font-medium">${item.frequency === 'annual' ? 'Anual' : 'Mensual'} ${item.date ? `• Cobro: <strong class="text-app-navy">${item.date}</strong>` : ''}</p>
               </div>
             </div>
             <div class="flex items-center space-x-2">
               <span class="text-xs font-extrabold text-app-navy">${formatCurrency(item.monthlyFee)}</span>
-              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
+              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
             </div>
           `;
           fixedCostsList.appendChild(card);
@@ -956,7 +993,6 @@
 
       document.getElementById('total-fixed-monthly').textContent = formatCurrency(totalMonthlyCommitment);
       document.getElementById('total-loans-debt').textContent = formatCurrency(totalDebt);
-
       populateLoanSelectDropdown();
       lucide.createIcons();
     }
@@ -968,12 +1004,9 @@
       const monthlyFee = parseFloat(document.getElementById('fixed-monthly-fee').value);
       
       let itemData = { id: Date.now().toString(), type, name, monthlyFee };
-
       if (type === 'credit') {
-        const totalAmount = parseFloat(document.getElementById('fixed-total-amount').value) || monthlyFee;
-        const remainingAmount = parseFloat(document.getElementById('fixed-remaining-amount').value) || totalAmount;
-        itemData.totalAmount = totalAmount;
-        itemData.remainingAmount = remainingAmount;
+        itemData.totalAmount = parseFloat(document.getElementById('fixed-total-amount').value) || monthlyFee;
+        itemData.remainingAmount = parseFloat(document.getElementById('fixed-remaining-amount').value) || itemData.totalAmount;
       } else {
         itemData.frequency = document.getElementById('fixed-frequency').value;
         itemData.date = document.getElementById('fixed-date').value;
@@ -981,7 +1014,6 @@
 
       fixedItems.push(itemData);
       localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
-      
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
       renderFixedItems();
@@ -1018,9 +1050,6 @@
       }
     }
 
-    // ==========================================
-    // CONTROL DE MODALES
-    // ==========================================
     function openTransactionModal() { openModal('modal-transaction'); }
     function openFixedModal() { openModal('modal-fixed'); toggleFixedFormFields(); }
 
@@ -1062,7 +1091,6 @@
           loanContainer.classList.add('hidden');
         }
       }
-
       updateCategories();
     }
 
@@ -1079,13 +1107,6 @@
         opt.textContent = cat;
         select.appendChild(opt);
       });
-
-      const loanContainer = document.getElementById('linked-loan-container');
-      if (account === 'gasto' && type === 'expense' && fixedItems.some(i => i.type === 'credit')) {
-        loanContainer.classList.remove('hidden');
-      } else {
-        loanContainer.classList.add('hidden');
-      }
     }
 
     function toggleFixedFormFields() {
