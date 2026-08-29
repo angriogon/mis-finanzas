@@ -14,7 +14,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
 
-  <!-- Tipografía Google Fonts -->
+  <!-- Tipografía Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -57,7 +57,6 @@
   </script>
 
   <style>
-    /* Bloqueo global de zoom y desplazamientos elásticos indeseados */
     html, body {
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
@@ -68,8 +67,6 @@
       user-select: none;
       background-color: #F8FAFF;
     }
-    
-    /* Prevenir que iOS haga zoom automático al enfocar inputs */
     input, select, textarea {
       font-size: 16px !important;
       user-select: auto;
@@ -87,26 +84,24 @@
          ========================================== -->
     <main id="view-movimientos" class="view-panel space-y-4">
       
-      <!-- Barra Superior con Botón Menú Funcional -->
+      <!-- Barra Superior -->
       <header class="flex justify-between items-center py-2">
         <div class="flex items-center space-x-3">
-          <!-- Botón de Menú con funcionalidad -->
-          <button onclick="toggleSidebar(true)" class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy active:scale-95 transition-transform">
+          <button onclick="toggleSidebar(true)" class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy active:scale-95 transition-transform relative">
             <i data-lucide="menu" class="w-5 h-5"></i>
+            <span id="trash-badge" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-app-pink rounded-full border-2 border-white"></span>
           </button>
           <div>
             <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Mis Cuentas</h1>
             <p class="text-[11px] font-semibold text-app-subtext">Panel Principal</p>
           </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <button onclick="openTransactionModal()" class="p-2.5 bg-gradient-to-r from-app-purple to-app-purpleLight text-white rounded-2xl shadow-purple-soft active:scale-95 transition-transform">
-            <i data-lucide="plus" class="w-5 h-5"></i>
-          </button>
-        </div>
+        <button onclick="openTransactionModal()" class="p-2.5 bg-gradient-to-r from-app-purple to-app-purpleLight text-white rounded-2xl shadow-purple-soft active:scale-95 transition-transform">
+          <i data-lucide="plus" class="w-5 h-5"></i>
+        </button>
       </header>
 
-      <!-- Tarjetas de Cuentas (Estilo FinTech) -->
+      <!-- Tarjetas de Cuentas -->
       <section class="space-y-3">
         <!-- Tarjeta Gasto -->
         <div onclick="setAccountFilter('gasto')" id="card-gasto" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
@@ -123,7 +118,7 @@
             </div>
           </div>
           <div class="flex justify-between items-center mt-5 text-[11px] font-medium text-white/80 relative z-10">
-            <span>•••• Tarjeta Principal</span>
+            <span>•••• Tarjeta Gasto</span>
             <span>Uso Diario</span>
           </div>
         </div>
@@ -148,7 +143,7 @@
         </div>
       </section>
 
-      <!-- Tarjeta Balance Total y Curva Flujo -->
+      <!-- Patrimonio Total y Tendencia -->
       <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50">
         <div class="text-center">
           <p class="text-[11px] font-bold uppercase tracking-wider text-app-subtext">Patrimonio Total</p>
@@ -301,7 +296,7 @@
   </nav>
 
   <!-- ==========================================
-       PANEL LATERAL (DRAWER) DEL MENÚ HAMBURGUESA
+       PANEL LATERAL (DRAWER) CON PAPELERA Y AJUSTES
        ========================================== -->
   <div id="sidebar-drawer" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
     <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
@@ -310,76 +305,161 @@
         <div class="flex justify-between items-center border-b border-gray-100 pb-4">
           <div class="flex items-center space-x-2">
             <div class="p-2 bg-indigo-50 text-app-purple rounded-xl">
-              <i data-lucide="settings" class="w-5 h-5"></i>
+              <i data-lucide="shield" class="w-5 h-5"></i>
             </div>
-            <h2 class="text-lg font-extrabold text-app-navy">Ajustes</h2>
+            <h2 class="text-lg font-extrabold text-app-navy">Panel y Seguridad</h2>
           </div>
           <button onclick="toggleSidebar(false)" class="p-1 text-app-subtext hover:text-app-navy">
             <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
 
-        <!-- Acciones de Datos -->
+        <!-- Papelera y Protección -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Gestión de Datos</p>
+          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Seguridad y Papelera</p>
+          
+          <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/60 hover:bg-indigo-50 text-left transition-colors border border-indigo-100/50">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="trash-2" class="w-4 h-4 text-app-purple"></i>
+              <div>
+                <span class="text-xs font-bold text-app-navy block">Papelera de Reciclaje</span>
+                <span class="text-[10px] text-app-subtext">Retención de 30 días</span>
+              </div>
+            </div>
+            <span id="trash-count-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-app-purple text-white">0</span>
+          </button>
+
+          <button onclick="promptChangeMasterKey()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
+            <div class="flex items-center space-x-3">
+              <i data-lucide="key-round" class="w-4 h-4 text-app-blue"></i>
+              <span class="text-xs font-bold text-app-navy">Cambiar Clave Maestra</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-4 h-4 text-app-subtext"></i>
+          </button>
+        </div>
+
+        <!-- Gestión de Datos -->
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Gestión de Copias</p>
           
           <button onclick="exportData()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
             <div class="flex items-center space-x-3">
               <i data-lucide="download" class="w-4 h-4 text-app-purple"></i>
-              <span class="text-xs font-bold text-app-navy">Exportar Copia de Seguridad</span>
+              <span class="text-xs font-bold text-app-navy">Exportar Copia (.json)</span>
             </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-app-subtext"></i>
           </button>
 
           <label class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors cursor-pointer">
             <div class="flex items-center space-x-3">
-              <i data-lucide="upload" class="w-4 h-4 text-app-blue"></i>
-              <span class="text-xs font-bold text-app-navy">Importar Copia JSON</span>
+              <i data-lucide="upload" class="w-4 h-4 text-app-mint"></i>
+              <span class="text-xs font-bold text-app-navy">Importar Copia</span>
             </div>
             <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
-            <i data-lucide="chevron-right" class="w-4 h-4 text-app-subtext"></i>
           </label>
-
-          <button onclick="resetAllData()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-rose-50 hover:bg-rose-100 text-left transition-colors">
-            <div class="flex items-center space-x-3">
-              <i data-lucide="trash" class="w-4 h-4 text-app-pink"></i>
-              <span class="text-xs font-bold text-app-pink">Borrar todos los datos</span>
-            </div>
-          </button>
-        </div>
-
-        <!-- Integraciones & Automatizaciones -->
-        <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Apple Pay & Atajos</p>
-          <div class="p-3.5 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 space-y-1.5">
-            <div class="flex items-center space-x-2 text-app-purple">
-              <i data-lucide="zap" class="w-4 h-4"></i>
-              <span class="text-xs font-bold">Auto-captura activada</span>
-            </div>
-            <p class="text-[11px] text-app-subtext leading-relaxed font-medium">
-              Puedes sincronizar pagos de Apple Pay usando la app <strong>Atajos</strong> de iOS apuntando a esta URL con parámetros.
-            </p>
-          </div>
         </div>
       </div>
 
       <div class="pt-4 border-t border-gray-100 text-center">
-        <p class="text-[10px] text-app-subtext font-semibold">Control de Finanzas • v3.5 iOS</p>
+        <p class="text-[10px] text-app-subtext font-semibold">Protección 24h & Papelera 30d • v4.0</p>
       </div>
 
     </div>
   </div>
 
   <!-- ==========================================
-       MODALES
+       MODAL: PAPELERA DE RECICLAJE (30 DÍAS)
        ========================================== -->
-  <!-- Modal Movimiento -->
+  <div id="modal-trash" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[85vh] flex flex-col">
+      
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="text-lg font-extrabold text-app-navy">Papelera de Reciclaje</h3>
+          <p class="text-xs text-app-subtext">Se eliminan automáticamente a los 30 días</p>
+        </div>
+        <button onclick="closeModal('modal-trash')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="trash-list" class="space-y-2.5 overflow-y-auto flex-1 pr-1"></div>
+
+      <div id="empty-state-trash" class="hidden flex flex-col items-center justify-center py-12 text-center">
+        <div class="p-3 bg-gray-100 text-app-subtext rounded-2xl mb-2">
+          <i data-lucide="trash" class="w-6 h-6"></i>
+        </div>
+        <p class="text-sm font-bold text-app-navy">La papelera está vacía</p>
+        <p class="text-xs text-app-subtext mt-0.5">Los elementos eliminados se guardarán aquí durante 30 días.</p>
+      </div>
+
+      <div class="pt-4 mt-2 border-t border-gray-100 flex space-x-2">
+        <button onclick="emptyTrashPermanently()" class="flex-1 py-3 rounded-2xl bg-rose-50 text-app-pink text-xs font-bold hover:bg-rose-100 transition-colors">
+          Vaciar Todo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL: CLAVE MAESTRA & SEGURIDAD (>24H)
+       ========================================== -->
+  <div id="modal-security" class="fixed inset-0 bg-app-navy/60 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-5">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-float transform scale-95 transition-transform duration-200 space-y-4">
+      
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 bg-indigo-50 text-app-purple rounded-2xl flex items-center justify-center mx-auto mb-2">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <h3 id="security-modal-title" class="text-lg font-extrabold text-app-navy">Clave Maestra Requerida</h3>
+        <p id="security-modal-desc" class="text-xs text-app-subtext">Han pasado más de 24 horas desde la creación de este registro.</p>
+      </div>
+
+      <div id="security-normal-flow" class="space-y-3">
+        <input type="password" id="security-key-input" placeholder="Introduce tu clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
+        
+        <button onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform text-sm">
+          Confirmar
+        </button>
+
+        <button onclick="showRecoveryFlow()" class="w-full text-center text-xs font-bold text-app-purple hover:underline pt-1">
+          ¿Has olvidado tu clave maestra?
+        </button>
+      </div>
+
+      <!-- Flujo de Emergencia: SERRANITO -->
+      <div id="security-recovery-flow" class="hidden space-y-3 border-t border-gray-100 pt-3">
+        <div class="p-3 bg-amber-50 rounded-2xl border border-amber-100">
+          <p class="text-[11px] font-semibold text-amber-800">
+            Escribe la palabra de desbloqueo de emergencia para restablecer tu clave.
+          </p>
+        </div>
+        <input type="text" id="recovery-word-input" placeholder="Palabra de desbloqueo" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-app-purple">
+        <input type="password" id="new-master-key-input" placeholder="Nueva clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-app-purple">
+        
+        <button onclick="submitEmergencyRecovery()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs active:scale-[0.98] transition-transform">
+          Restablecer Clave
+        </button>
+        <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs text-app-subtext font-bold">
+          Volver
+        </button>
+      </div>
+
+      <button onclick="closeModal('modal-security')" class="w-full text-center text-xs text-app-subtext font-bold pt-1">
+        Cancelar
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: REGISTRAR / EDITAR MOVIMIENTO
+       ========================================== -->
   <div id="modal-transaction" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
         <div>
-          <h3 class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
-          <p class="text-xs text-app-subtext">Registra ingresos o gastos</p>
+          <h3 id="transaction-modal-title" class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
+          <p id="transaction-modal-subtitle" class="text-xs text-app-subtext">Registra ingresos o gastos</p>
         </div>
         <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -437,7 +517,7 @@
           <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none"></select>
         </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">
+        <button type="submit" id="submit-transaction-btn" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">
           Guardar Movimiento
         </button>
       </form>
@@ -521,19 +601,15 @@
 
   <script>
     // ==========================================
-    // 1. BLOQUEO TOTAL DE ZOOM (iOS Safari / Chrome)
+    // BLOQUEO TOTAL DE ZOOM EN iOS
     // ==========================================
     document.addEventListener('gesturestart', (e) => e.preventDefault());
     document.addEventListener('gesturechange', (e) => e.preventDefault());
     document.addEventListener('gestureend', (e) => e.preventDefault());
-    
-    // Evitar zoom por doble toque rápido en iOS
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (event) => {
       const now = (new Date()).getTime();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
+      if (now - lastTouchEnd <= 300) event.preventDefault();
       lastTouchEnd = now;
     }, false);
 
@@ -551,22 +627,26 @@
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v3')) || [];
-    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v3')) || [
-      { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01' },
-      { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15' },
-      { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20' }
+    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v4')) || [];
+    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v4')) || [
+      { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01', timestamp: Date.now() },
+      { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15', timestamp: Date.now() },
+      { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20', timestamp: Date.now() }
     ];
+    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v4')) || [];
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
+    let editingIndex = null;
+    let pendingSecurityAction = null;
     let miniTrendChartInstance = null;
     let donutChartInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       updateFormUI();
-      checkURLForApplePayParams(); // Escucha auto-pagos de Apple Shortcuts
+      purgeOldTrash(); // Eliminar elementos con >30 días
+      checkURLForApplePayParams();
       renderAll();
       initMiniTrendChart();
     });
@@ -574,86 +654,342 @@
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // DRAWER / MENÚ LATERAL HAMBURGUESA
+    // SISTEMA DE SEGURIDAD & CLAVE MAESTRA
     // ==========================================
-    function toggleSidebar(show) {
-      const drawer = document.getElementById('sidebar-drawer');
-      const panel = document.getElementById('sidebar-panel');
-      if (show) {
-        drawer.classList.remove('hidden');
-        setTimeout(() => {
-          drawer.classList.remove('opacity-0');
-          panel.classList.remove('-translate-x-full');
-        }, 10);
+    function isOlderThan24Hours(timestamp) {
+      if (!timestamp) return false;
+      const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+      return (Date.now() - timestamp) > TWENTY_FOUR_HOURS;
+    }
+
+    function requireSecurityAuth(callback) {
+      const storedKey = localStorage.getItem('finances_master_key');
+      pendingSecurityAction = callback;
+
+      if (!storedKey) {
+        // Primera vez: crear clave maestra
+        document.getElementById('security-modal-title').textContent = 'Crear Clave Maestra';
+        document.getElementById('security-modal-desc').textContent = 'Establece tu contraseña maestra de seguridad para proteger modificaciones futuras.';
+        document.getElementById('security-key-input').placeholder = 'Crea tu nueva clave';
       } else {
-        drawer.classList.add('opacity-0');
-        panel.classList.add('-translate-x-full');
-        setTimeout(() => { drawer.classList.add('hidden'); }, 300);
+        document.getElementById('security-modal-title').textContent = 'Clave Maestra Requerida';
+        document.getElementById('security-modal-desc').textContent = 'Han pasado más de 24 horas desde la creación de este registro.';
+        document.getElementById('security-key-input').placeholder = 'Introduce tu clave maestra';
+      }
+
+      hideRecoveryFlow();
+      document.getElementById('security-key-input').value = '';
+      openModal('modal-security');
+    }
+
+    function submitSecurityKey() {
+      const input = document.getElementById('security-key-input').value.trim();
+      const storedKey = localStorage.getItem('finances_master_key');
+
+      if (!input) {
+        alert('Por favor, introduce una clave.');
+        return;
+      }
+
+      if (!storedKey) {
+        // Guardar por primera vez
+        localStorage.setItem('finances_master_key', input);
+        alert('¡Clave maestra establecida con éxito!');
+        closeModal('modal-security');
+        if (pendingSecurityAction) pendingSecurityAction();
+        return;
+      }
+
+      if (input === storedKey) {
+        closeModal('modal-security');
+        if (pendingSecurityAction) pendingSecurityAction();
+      } else {
+        alert('Clave maestra incorrecta.');
       }
     }
 
-    function resetAllData() {
-      if (confirm("¿Estás seguro de que deseas eliminar TODOS los movimientos y datos? Esta acción no se puede deshacer.")) {
-        localStorage.removeItem('my_finances_data_v3');
-        localStorage.removeItem('my_finances_fixed_v3');
-        transactions = [];
-        fixedItems = [];
-        toggleSidebar(false);
-        renderAll();
-      }
+    function showRecoveryFlow() {
+      document.getElementById('security-normal-flow').classList.add('hidden');
+      document.getElementById('security-recovery-flow').classList.remove('hidden');
+      document.getElementById('recovery-word-input').value = '';
+      document.getElementById('new-master-key-input').value = '';
     }
 
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (parsed.transactions) transactions = parsed.transactions;
-          if (parsed.fixedItems) fixedItems = parsed.fixedItems;
-          localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
-          localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
-          alert("Datos importados correctamente.");
-          toggleSidebar(false);
-          renderAll();
-        } catch (err) {
-          alert("Archivo no válido.");
+    function hideRecoveryFlow() {
+      document.getElementById('security-normal-flow').classList.remove('hidden');
+      document.getElementById('security-recovery-flow').classList.add('hidden');
+    }
+
+    function submitEmergencyRecovery() {
+      const recoveryWord = document.getElementById('recovery-word-input').value.trim().toUpperCase();
+      const newKey = document.getElementById('new-master-key-input').value.trim();
+
+      if (recoveryWord !== 'SERRANITO') {
+        alert('Palabra de desbloqueo incorrecta.');
+        return;
+      }
+
+      if (!newKey) {
+        alert('Introduce la nueva clave maestra.');
+        return;
+      }
+
+      localStorage.setItem('finances_master_key', newKey);
+      alert('¡Clave maestra restablecida con éxito!');
+      closeModal('modal-security');
+      if (pendingSecurityAction) pendingSecurityAction();
+    }
+
+    function promptChangeMasterKey() {
+      requireSecurityAuth(() => {
+        const newKey = prompt('Introduce la nueva clave maestra:');
+        if (newKey && newKey.trim()) {
+          localStorage.setItem('finances_master_key', newKey.trim());
+          alert('Clave maestra actualizada.');
         }
-      };
-      reader.readAsText(file);
+      });
     }
 
     // ==========================================
-    // AUTO-REGISTRO DESDE APPLE PAY VIA URL SCHEME
+    // PAPELERA DE RECICLAJE (RETENCIÓN 30 DÍAS)
     // ==========================================
-    function checkURLForApplePayParams() {
-      const params = new URLSearchParams(window.location.search);
-      const amount = parseFloat(params.get('amount'));
-      const concept = params.get('concept') || 'Pago Apple Pay';
-      
-      if (amount && !isNaN(amount)) {
-        const now = new Date();
-        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-        
-        transactions.unshift({
-          account: 'gasto',
-          type: 'expense',
-          amount: amount,
-          concept: concept,
-          category: 'Apple Pay / Tarjeta',
-          date: date,
-          timestamp: now.getTime()
-        });
+    function purgeOldTrash() {
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      trash = trash.filter(item => (now - item.deletedAt) < THIRTY_DAYS);
+      localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+      updateTrashBadge();
+    }
 
-        localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
-        // Limpiar URL para evitar registros duplicados al recargar
-        window.history.replaceState({}, document.title, window.location.pathname);
+    function moveToTrash(item, itemType) {
+      item.deletedAt = Date.now();
+      item.itemType = itemType; // 'transaction' o 'fixed'
+      trash.unshift(item);
+      localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+      updateTrashBadge();
+    }
+
+    function updateTrashBadge() {
+      const count = trash.length;
+      const badge = document.getElementById('trash-badge');
+      const countBadge = document.getElementById('trash-count-badge');
+      if (badge) badge.className = count > 0 ? 'absolute -top-1 -right-1 w-3 h-3 bg-app-pink rounded-full border-2 border-white' : 'hidden';
+      if (countBadge) countBadge.textContent = count;
+    }
+
+    function openTrashModal() {
+      toggleSidebar(false);
+      renderTrashList();
+      openModal('modal-trash');
+    }
+
+    function renderTrashList() {
+      const container = document.getElementById('trash-list');
+      const empty = document.getElementById('empty-state-trash');
+      container.innerHTML = '';
+
+      if (trash.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      const now = Date.now();
+      const ONE_DAY = 24 * 60 * 60 * 1000;
+
+      trash.forEach((item, index) => {
+        const daysElapsed = Math.floor((now - item.deletedAt) / ONE_DAY);
+        const daysLeft = Math.max(1, 30 - daysElapsed);
+
+        const card = document.createElement('div');
+        card.className = "bg-gray-50 p-3.5 rounded-2xl border border-gray-100 flex items-center justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gray-200 text-gray-700">
+                ${item.itemType === 'fixed' ? 'Compromiso Fijo' : (item.account === 'ahorro' ? 'Ahorro' : 'Gasto')}
+              </span>
+              <p class="text-xs font-bold text-app-navy">${item.concept || item.name}</p>
+            </div>
+            <p class="text-[10px] text-app-pink font-semibold mt-0.5">Se eliminará en ${daysLeft} días</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="restoreFromTrash(${index})" title="Restaurar" class="p-2 bg-white rounded-xl shadow-sm text-app-mint hover:bg-emerald-50">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+            <button onclick="deleteFromTrashPermanently(${index})" title="Eliminar definitivamente" class="p-2 bg-white rounded-xl shadow-sm text-app-pink hover:bg-rose-50">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function restoreFromTrash(index) {
+      const item = trash.splice(index, 1)[0];
+      const type = item.itemType;
+      delete item.deletedAt;
+      delete item.itemType;
+
+      if (type === 'fixed') {
+        fixedItems.unshift(item);
+        localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+      } else {
+        transactions.unshift(item);
+        localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+      }
+
+      localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+      renderTrashList();
+      renderAll();
+    }
+
+    function deleteFromTrashPermanently(index) {
+      if (confirm("¿Eliminar definitivamente este elemento? Esta acción no se puede deshacer.")) {
+        trash.splice(index, 1);
+        localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+        renderTrashList();
+        updateTrashBadge();
+      }
+    }
+
+    function emptyTrashPermanently() {
+      if (trash.length === 0) return;
+      if (confirm("¿Vaciar toda la papelera definitivamente?")) {
+        trash = [];
+        localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+        renderTrashList();
+        updateTrashBadge();
       }
     }
 
     // ==========================================
-    // NAVEGACIÓN Y RENDERIZADO
+    // MOVIMIENTOS: EDICIÓN & BORRADO SEGURO
+    // ==========================================
+    function openTransactionModal(editIdx = null) {
+      editingIndex = editIdx;
+      const form = document.getElementById('transaction-form');
+      const title = document.getElementById('transaction-modal-title');
+      const btn = document.getElementById('submit-transaction-btn');
+
+      if (editIdx !== null) {
+        const item = transactions[editIdx];
+        
+        // Comprobar regla de 24 horas
+        if (isOlderThan24Hours(item.timestamp)) {
+          requireSecurityAuth(() => openTransactionModal(editIdx));
+          return;
+        }
+
+        title.textContent = 'Editar Movimiento';
+        btn.textContent = 'Actualizar Movimiento';
+
+        document.querySelector(`input[name="account"][value="${item.account || 'gasto'}"]`).checked = true;
+        document.querySelector(`input[name="type"][value="${item.type}"]`).checked = true;
+        updateFormUI();
+        document.getElementById('amount').value = item.amount;
+        document.getElementById('concept').value = item.concept;
+        document.getElementById('category').value = item.category;
+        if (item.linkedLoanId) document.getElementById('linked-loan').value = item.linkedLoanId;
+      } else {
+        title.textContent = 'Nuevo Movimiento';
+        btn.textContent = 'Guardar Movimiento';
+        form.reset();
+        updateFormUI();
+      }
+
+      openModal('modal-transaction');
+    }
+
+    function saveTransaction(e) {
+      e.preventDefault();
+      const account = document.querySelector('input[name="account"]:checked').value;
+      const type = document.querySelector('input[name="type"]:checked').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const concept = document.getElementById('concept').value.trim();
+      const category = document.getElementById('category').value;
+      const linkedLoanId = document.getElementById('linked-loan').value;
+      
+      const now = new Date();
+      const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+
+      let loanName = '';
+      if (linkedLoanId && type === 'expense') {
+        const loan = fixedItems.find(item => item.id === linkedLoanId);
+        if (loan) {
+          loanName = loan.name;
+          loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
+          localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+        }
+      }
+
+      if (editingIndex !== null) {
+        // Actualizar registro conservando timestamp original
+        const original = transactions[editingIndex];
+        transactions[editingIndex] = {
+          ...original,
+          account,
+          type,
+          amount,
+          concept,
+          category,
+          linkedLoanId,
+          loanName
+        };
+        editingIndex = null;
+      } else {
+        transactions.unshift({ 
+          account, 
+          type, 
+          amount, 
+          concept, 
+          category, 
+          date, 
+          timestamp: now.getTime(),
+          linkedLoanId,
+          loanName
+        });
+      }
+
+      localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+      document.getElementById('transaction-form').reset();
+      updateFormUI();
+      closeModal('modal-transaction');
+      setAccountFilter(account);
+    }
+
+    function deleteTransaction(index) {
+      const item = transactions[index];
+      const executeDelete = () => {
+        if (item.linkedLoanId && item.type === 'expense') {
+          const loan = fixedItems.find(l => l.id === item.linkedLoanId);
+          if (loan) {
+            loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
+            localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+          }
+        }
+        const removed = transactions.splice(index, 1)[0];
+        localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+        moveToTrash(removed, 'transaction');
+        renderAll();
+      };
+
+      if (isOlderThan24Hours(item.timestamp)) {
+        requireSecurityAuth(() => {
+          if (confirm("¿Enviar este movimiento a la papelera?")) executeDelete();
+        });
+      } else {
+        if (confirm("¿Deseas eliminar este movimiento? Se guardará 30 días en la papelera.")) {
+          executeDelete();
+        }
+      }
+    }
+
+    // ==========================================
+    // RENDERIZADO GENERAL & VISTAS
     // ==========================================
     function switchTab(tabId) {
       currentTab = tabId;
@@ -681,6 +1017,7 @@
     function renderAll() {
       renderTransactions();
       renderFixedItems();
+      updateTrashBadge();
     }
 
     function setAccountFilter(account) {
@@ -726,6 +1063,7 @@
         const originalIndex = transactions.indexOf(item);
         const isIncome = item.type === 'income';
         const isAhorro = item.account === 'ahorro';
+        const isLocked = isOlderThan24Hours(item.timestamp);
         
         const card = document.createElement('div');
         card.className = "bg-white p-4 rounded-2xl shadow-card-soft border border-indigo-50/40 flex items-center justify-between";
@@ -740,16 +1078,20 @@
                   ${isAhorro ? 'Ahorro' : 'Gasto'}
                 </span>
                 <p class="text-xs font-bold text-app-navy">${item.concept}</p>
+                ${isLocked ? '<i data-lucide="lock" title="Protegido (>24h)" class="w-3 h-3 text-app-subtext"></i>' : ''}
               </div>
               <p class="text-[11px] text-app-subtext mt-0.5 font-medium">${item.category} • ${item.date} ${item.loanName ? `• <span class="text-app-blue font-bold">${item.loanName}</span>` : ''}</p>
             </div>
           </div>
           <div class="flex items-center space-x-2">
-            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'text-app-navy'}">
+            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'text-app-navy'} mr-1">
               ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
             </span>
-            <button onclick="deleteTransaction(${originalIndex})" class="text-gray-300 hover:text-app-pink p-1">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <button onclick="openTransactionModal(${originalIndex})" title="Editar" class="text-gray-300 hover:text-app-purple p-1">
+              <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="deleteTransaction(${originalIndex})" title="Eliminar" class="text-gray-300 hover:text-app-pink p-1">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         `;
@@ -798,52 +1140,6 @@
       });
     }
 
-    function saveTransaction(e) {
-      e.preventDefault();
-      const account = document.querySelector('input[name="account"]:checked').value;
-      const type = document.querySelector('input[name="type"]:checked').value;
-      const amount = parseFloat(document.getElementById('amount').value);
-      const concept = document.getElementById('concept').value.trim();
-      const category = document.getElementById('category').value;
-      const linkedLoanId = document.getElementById('linked-loan').value;
-      
-      const now = new Date();
-      const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-
-      let loanName = '';
-      if (linkedLoanId && type === 'expense') {
-        const loan = fixedItems.find(item => item.id === linkedLoanId);
-        if (loan) {
-          loanName = loan.name;
-          loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
-          localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
-        }
-      }
-
-      transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
-      localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
-      document.getElementById('transaction-form').reset();
-      updateFormUI();
-      closeModal('modal-transaction');
-      setAccountFilter(account);
-    }
-
-    function deleteTransaction(index) {
-      if (confirm("¿Deseas eliminar este movimiento?")) {
-        const item = transactions[index];
-        if (item.linkedLoanId && item.type === 'expense') {
-          const loan = fixedItems.find(l => l.id === item.linkedLoanId);
-          if (loan) {
-            loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
-            localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
-          }
-        }
-        transactions.splice(index, 1);
-        localStorage.setItem('my_finances_data_v3', JSON.stringify(transactions));
-        renderAll();
-      }
-    }
-
     function renderFinancialStudy() {
       let totalIncome = 0, totalExpense = 0, totalSavings = 0, totalDebt = 0;
       const categoryTotals = {};
@@ -870,7 +1166,7 @@
 
       if (transactions.length === 0) adviceEl.innerHTML = "Comienza a registrar movimientos para diagnósticos.";
       else if (totalExpense > totalIncome && totalIncome > 0) adviceEl.innerHTML = `⚠️ <strong class="text-app-pink">Déficit:</strong> Gastos superan ingresos en <strong>${formatCurrency(totalExpense - totalIncome)}</strong>.`;
-      else if (rate >= 25) adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud óptima:</strong> Ahorras el <strong>${rate}%</strong> de ingresos.`;
+      else if (rate >= 25) adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud óptima:</strong> Ahorras el <strong>${rate}%</strong> de tus ingresos.`;
       else adviceEl.innerHTML = `📊 <strong class="text-app-purple">Equilibrio:</strong> Finanzas estables.`;
 
       renderDonutChart(categoryTotals, totalExpense);
@@ -993,6 +1289,7 @@
 
       document.getElementById('total-fixed-monthly').textContent = formatCurrency(totalMonthlyCommitment);
       document.getElementById('total-loans-debt').textContent = formatCurrency(totalDebt);
+
       populateLoanSelectDropdown();
       lucide.createIcons();
     }
@@ -1003,7 +1300,7 @@
       const name = document.getElementById('fixed-name').value.trim();
       const monthlyFee = parseFloat(document.getElementById('fixed-monthly-fee').value);
       
-      let itemData = { id: Date.now().toString(), type, name, monthlyFee };
+      let itemData = { id: Date.now().toString(), type, name, monthlyFee, timestamp: Date.now() };
       if (type === 'credit') {
         itemData.totalAmount = parseFloat(document.getElementById('fixed-total-amount').value) || monthlyFee;
         itemData.remainingAmount = parseFloat(document.getElementById('fixed-remaining-amount').value) || itemData.totalAmount;
@@ -1013,17 +1310,29 @@
       }
 
       fixedItems.push(itemData);
-      localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
+      localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
       renderFixedItems();
     }
 
     function deleteFixedItem(index) {
-      if (confirm("¿Deseas eliminar este registro fijo?")) {
-        fixedItems.splice(index, 1);
-        localStorage.setItem('my_finances_fixed_v3', JSON.stringify(fixedItems));
+      const item = fixedItems[index];
+      const executeDelete = () => {
+        const removed = fixedItems.splice(index, 1)[0];
+        localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+        moveToTrash(removed, 'fixed');
         renderFixedItems();
+      };
+
+      if (isOlderThan24Hours(item.timestamp)) {
+        requireSecurityAuth(() => {
+          if (confirm("¿Enviar este compromiso a la papelera?")) executeDelete();
+        });
+      } else {
+        if (confirm("¿Deseas eliminar este registro fijo? Se guardará 30 días en la papelera.")) {
+          executeDelete();
+        }
       }
     }
 
@@ -1050,7 +1359,49 @@
       }
     }
 
-    function openTransactionModal() { openModal('modal-transaction'); }
+    // ==========================================
+    // UTILIDADES & APPLE PAY VIA URL
+    // ==========================================
+    function checkURLForApplePayParams() {
+      const params = new URLSearchParams(window.location.search);
+      const amount = parseFloat(params.get('amount'));
+      const concept = params.get('concept') || 'Pago Apple Pay';
+      
+      if (amount && !isNaN(amount)) {
+        const now = new Date();
+        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        
+        transactions.unshift({
+          account: 'gasto',
+          type: 'expense',
+          amount: amount,
+          concept: concept,
+          category: 'Apple Pay / Tarjeta',
+          date: date,
+          timestamp: now.getTime()
+        });
+
+        localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    function toggleSidebar(show) {
+      const drawer = document.getElementById('sidebar-drawer');
+      const panel = document.getElementById('sidebar-panel');
+      if (show) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => {
+          drawer.classList.remove('opacity-0');
+          panel.classList.remove('-translate-x-full');
+        }, 10);
+      } else {
+        drawer.classList.add('opacity-0');
+        panel.classList.add('-translate-x-full');
+        setTimeout(() => { drawer.classList.add('hidden'); }, 300);
+      }
+    }
+
     function openFixedModal() { openModal('modal-fixed'); toggleFixedFormFields(); }
 
     function openModal(modalId) {
@@ -1060,6 +1411,7 @@
       setTimeout(() => {
         modal.classList.remove('opacity-0');
         content.classList.remove('translate-y-full');
+        content.classList.remove('scale-95');
       }, 10);
     }
 
@@ -1068,6 +1420,7 @@
       const content = modal.querySelector('div');
       modal.classList.add('opacity-0');
       content.classList.add('translate-y-full');
+      content.classList.add('scale-95');
       setTimeout(() => { modal.classList.add('hidden'); }, 200);
     }
 
@@ -1083,7 +1436,7 @@
         labelExpense.textContent = '- Retirar Ahorro';
         loanContainer.classList.add('hidden');
       } else {
-        labelIncome.textContent = '+ Ingreso / Nómina';
+        labelIncome.textContent = '+ Ingreso';
         labelExpense.textContent = '- Gasto';
         if (type === 'expense' && fixedItems.some(i => i.type === 'credit')) {
           loanContainer.classList.remove('hidden');
@@ -1121,7 +1474,13 @@
     }
 
     function exportData() {
-      const fullBackup = { transactions, fixedItems, exportDate: new Date().toISOString() };
+      const fullBackup = { 
+        transactions, 
+        fixedItems, 
+        trash,
+        masterKey: localStorage.getItem('finances_master_key'),
+        exportDate: new Date().toISOString() 
+      };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackup, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
@@ -1129,6 +1488,32 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.transactions) transactions = parsed.transactions;
+          if (parsed.fixedItems) fixedItems = parsed.fixedItems;
+          if (parsed.trash) trash = parsed.trash;
+          if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
+          
+          localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+          
+          alert("Datos importados con éxito.");
+          toggleSidebar(false);
+          renderAll();
+        } catch (err) {
+          alert("Archivo de copia no válido.");
+        }
+      };
+      reader.readAsText(file);
     }
   </script>
 </body>
