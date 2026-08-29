@@ -11,26 +11,71 @@
   <meta name="apple-mobile-web-app-title" content="Finanzas">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#F9FAFB">
+  <meta name="theme-color" content="#FFFFFF">
+
+  <!-- Tipografía Google Fonts: Plus Jakarta Sans (Estilo FinTech moderno) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS, Lucide Icons & Chart.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            app: {
+              purple: '#5F5AF6',
+              purpleLight: '#7C78FF',
+              pink: '#F8678C',
+              pinkLight: '#FF88A7',
+              blue: '#4D96FF',
+              blueLight: '#6EA8FF',
+              mint: '#24D297',
+              mintLight: '#4DE6B3',
+              navy: '#1A1C3D',
+              subtext: '#8F92A1',
+              cardBg: '#FFFFFF',
+              canvas: '#F8FAFF',
+            }
+          },
+          boxShadow: {
+            'card-soft': '0 12px 30px -10px rgba(95, 90, 246, 0.12)',
+            'pink-soft': '0 12px 25px -8px rgba(248, 103, 140, 0.35)',
+            'purple-soft': '0 12px 25px -8px rgba(95, 90, 246, 0.35)',
+            'blue-soft': '0 12px 25px -8px rgba(77, 150, 255, 0.35)',
+            'mint-soft': '0 12px 25px -8px rgba(36, 210, 151, 0.35)',
+            'float': '0 10px 30px rgba(26, 28, 61, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
     body {
-      padding-top: calc(env(safe-area-inset-top, 20px) + 8px);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding-top: calc(env(safe-area-inset-top, 20px) + 6px);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      background-color: #F8FAFF;
     }
-    input, select, button { user-select: auto; }
+    input, select, button { user-select: auto; font-family: inherit; }
     ::-webkit-scrollbar { display: none; }
-    .tab-active { color: #111827; }
-    .tab-inactive { color: #9CA3AF; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+    }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans antialiased min-h-screen flex flex-col items-center">
+<body class="text-app-navy antialiased min-h-screen flex flex-col items-center">
 
   <div class="w-full max-w-md px-5 flex flex-col flex-1 pb-28">
 
@@ -38,256 +83,343 @@
          VISTA 1: MOVIMIENTOS
          ========================================== -->
     <main id="view-movimientos" class="view-panel space-y-4">
-      <!-- Patrimonio Total y Acciones -->
+      
+      <!-- Barra Superior Estilo App -->
       <header class="flex justify-between items-center py-2">
-        <div>
-          <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Patrimonio Total</p>
-          <h1 id="total-net-worth" class="text-3xl font-extrabold tracking-tight text-gray-900 mt-0.5">0,00 €</h1>
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Mis Cuentas</h1>
+            <p class="text-[11px] font-semibold text-app-subtext">Panel Principal</p>
+          </div>
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="exportData()" title="Copia de seguridad" class="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full active:scale-95 transition-transform">
+          <button onclick="exportData()" title="Copia de seguridad" class="p-2.5 bg-white text-app-subtext hover:text-app-navy rounded-2xl shadow-card-soft active:scale-95 transition-transform">
             <i data-lucide="download" class="w-5 h-5"></i>
           </button>
-          <button onclick="openTransactionModal()" class="p-2.5 bg-black text-white rounded-full active:scale-95 transition-transform shadow-md">
+          <button onclick="openTransactionModal()" class="p-2.5 bg-gradient-to-r from-app-purple to-app-purpleLight text-white rounded-2xl shadow-purple-soft active:scale-95 transition-transform">
             <i data-lucide="plus" class="w-5 h-5"></i>
           </button>
         </div>
       </header>
 
-      <!-- Tarjetas de Cuentas (Gasto / Ahorro) -->
-      <section class="grid grid-cols-2 gap-3">
-        <div onclick="setAccountFilter('gasto')" id="card-gasto" class="bg-white p-4 rounded-2xl border-2 border-gray-900 shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95">
-          <div class="flex items-center space-x-2 text-gray-800">
-            <span class="p-1.5 bg-gray-100 rounded-lg"><i data-lucide="credit-card" class="w-4 h-4"></i></span>
-            <span class="text-xs font-semibold">Gastos</span>
+      <!-- Tarjetas de Cuentas: Estilo Tarjetas de Crédito de la Imagen -->
+      <section class="space-y-3">
+        <!-- Tarjeta Cuenta Gasto (Gradiente Morado/Iris) -->
+        <div onclick="setAccountFilter('gasto')" id="card-gasto" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
+          <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+          <div class="absolute right-12 -top-10 w-28 h-28 rounded-full bg-white/10 pointer-events-none"></div>
+          
+          <div class="flex justify-between items-start relative z-10">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-white/80 bg-white/15 px-2.5 py-1 rounded-full">Cuenta Gasto</span>
+              <p class="text-xs text-white/70 mt-3 font-medium">Balance Disponible</p>
+              <h2 id="balance-gasto" class="text-2xl font-extrabold tracking-tight mt-0.5">0,00 €</h2>
+            </div>
+            <div class="flex -space-x-2">
+              <div class="w-7 h-7 rounded-full bg-white/40"></div>
+              <div class="w-7 h-7 rounded-full bg-white/20"></div>
+            </div>
           </div>
-          <div>
-            <p id="balance-gasto" class="text-lg font-bold text-gray-900 mt-3">0,00 €</p>
-            <p class="text-[10px] text-gray-400 mt-0.5">Cuenta diaria</p>
+          
+          <div class="flex justify-between items-center mt-5 text-[11px] font-medium text-white/80 relative z-10">
+            <span>•••• 2408</span>
+            <span>Uso Diario</span>
           </div>
         </div>
 
-        <div onclick="setAccountFilter('ahorro')" id="card-ahorro" class="bg-white p-4 rounded-2xl border-2 border-transparent shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95">
-          <div class="flex items-center space-x-2 text-emerald-600">
-            <span class="p-1.5 bg-emerald-50 rounded-lg"><i data-lucide="piggy-bank" class="w-4 h-4"></i></span>
-            <span class="text-xs font-semibold">Ahorro</span>
+        <!-- Tarjeta Cuenta Ahorro (Gradiente Mint/Verde Esmeralda) -->
+        <div onclick="setAccountFilter('ahorro')" id="card-ahorro" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
+          <div class="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+          
+          <div class="flex justify-between items-start relative z-10">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-white/80 bg-white/15 px-2.5 py-1 rounded-full">Cuenta Ahorro</span>
+              <p class="text-xs text-white/70 mt-3 font-medium">Fondo Reservado</p>
+              <h2 id="balance-ahorro" class="text-2xl font-extrabold tracking-tight mt-0.5">0,00 €</h2>
+            </div>
+            <div class="p-2 bg-white/20 rounded-2xl">
+              <i data-lucide="piggy-bank" class="w-5 h-5 text-white"></i>
+            </div>
           </div>
-          <div>
-            <p id="balance-ahorro" class="text-lg font-bold text-emerald-600 mt-3">0,00 €</p>
-            <p class="text-[10px] text-gray-400 mt-0.5">Fondo reservado</p>
+          
+          <div class="flex justify-between items-center mt-5 text-[11px] font-medium text-white/80 relative z-10">
+            <span>Crecimiento de Ahorro</span>
+            <span>Reserva Segura</span>
           </div>
         </div>
       </section>
 
-      <!-- Filtros de Pestaña -->
-      <div class="flex bg-gray-200/70 p-1 rounded-xl text-xs font-semibold">
-        <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-1.5 rounded-lg text-gray-600 transition-all">Todos</button>
-        <button onclick="setAccountFilter('gasto')" id="tab-gasto" class="flex-1 py-1.5 rounded-lg bg-white text-gray-900 shadow-sm transition-all">Cta. Gasto</button>
-        <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-1.5 rounded-lg text-gray-600 transition-all">Cta. Ahorro</button>
+      <!-- Tarjeta Balance Total & Gráfico Curvo de Tendencia -->
+      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50">
+        <div class="text-center">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-app-subtext">Patrimonio Total</p>
+          <h3 id="total-net-worth" class="text-2xl font-extrabold text-app-navy mt-0.5 tracking-tight">0,00 €</h3>
+        </div>
+        
+        <!-- Curva Decorativa Onda Flujo -->
+        <div class="h-16 w-full relative mt-1">
+          <canvas id="miniTrendChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Filtros de Pestaña Estilo Pill -->
+      <div class="flex bg-white p-1 rounded-2xl shadow-card-soft text-xs font-bold border border-indigo-50/40">
+        <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Todos</button>
+        <button onclick="setAccountFilter('gasto')" id="tab-gasto" class="flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all">Cta. Gasto</button>
+        <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Cta. Ahorro</button>
       </div>
 
-      <!-- Lista de Transacciones -->
-      <section class="mt-2">
-        <div class="flex justify-between items-center mb-3">
-          <h2 id="list-title" class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Movimientos: Gasto</h2>
-          <span id="items-count" class="text-xs text-gray-400">0 registros</span>
+      <!-- Lista de Movimientos -->
+      <section class="mt-2 space-y-3">
+        <div class="flex justify-between items-center px-1">
+          <h3 id="list-title" class="text-xs font-bold text-app-subtext uppercase tracking-wider">Historial de Pagos</h3>
+          <span id="items-count" class="text-[11px] font-semibold text-app-subtext">0 registros</span>
         </div>
+        
         <div id="transactions-list" class="space-y-2.5"></div>
-        <div id="empty-state-transactions" class="hidden flex flex-col items-center justify-center py-12 text-center">
-          <div class="p-3 bg-gray-100 rounded-full text-gray-400 mb-2">
+        
+        <div id="empty-state-transactions" class="hidden flex flex-col items-center justify-center py-10 text-center">
+          <div class="p-3 bg-indigo-50 text-app-purple rounded-2xl mb-2">
             <i data-lucide="receipt" class="w-6 h-6"></i>
           </div>
-          <p class="text-sm font-medium text-gray-500">Sin movimientos registrados</p>
-          <p class="text-xs text-gray-400 mt-0.5">Pulsa (+) para añadir un movimiento a esta cuenta.</p>
+          <p class="text-sm font-bold text-app-navy">Sin movimientos registrados</p>
+          <p class="text-xs text-app-subtext mt-0.5">Pulsa (+) para registrar un nuevo movimiento.</p>
         </div>
       </section>
+
     </main>
 
     <!-- ==========================================
-         VISTA 2: ESTUDIO FINANCIERO & RECOMENDACIONES
+         VISTA 2: ESTUDIO FINANCIERO (4 Tarjetas de Colores & Gráfico Donut)
          ========================================== -->
     <main id="view-estudio" class="view-panel hidden space-y-4">
+      
       <header class="py-2">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Análisis Inteligente</p>
-        <h1 class="text-2xl font-extrabold text-gray-900">Estudio Financiero</h1>
+        <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Estudio Financiero</h1>
+        <p class="text-[11px] font-semibold text-app-subtext">Diagnóstico y Previsiones</p>
       </header>
 
-      <!-- Recomendaciones Económicas Activas -->
-      <section id="financial-advice-card" class="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-4 rounded-2xl shadow-sm space-y-2">
-        <div class="flex items-center space-x-2 text-emerald-400">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-          <span class="text-xs font-bold uppercase tracking-wider">Diagnóstico de tu cuenta</span>
+      <!-- Cuadrícula de 4 Tarjetas de Color (Exactas a la pantalla central) -->
+      <section class="grid grid-cols-2 gap-3">
+        
+        <!-- Tarjeta 1: Ingresos (Morado) -->
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Ingresos</span>
+          <div>
+            <h3 id="study-income-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Total acumulado</span>
+          </div>
         </div>
-        <p id="advice-text" class="text-sm font-medium leading-relaxed text-gray-200">
-          Registra tus primeros ingresos y gastos para recibir recomendaciones de optimización y ahorro.
+
+        <!-- Tarjeta 2: Gastos (Rosa Coral) -->
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-pink to-app-pinkLight text-white shadow-pink-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Gastos</span>
+          <div>
+            <h3 id="study-expense-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Total pagado</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: Créditos (Azul Cielo) -->
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-blue to-app-blueLight text-white shadow-blue-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Créditos</span>
+          <div>
+            <h3 id="study-credit-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Deuda viva</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 4: Ahorro (Verde Menta) -->
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Ahorro</span>
+          <div>
+            <h3 id="study-savings-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Fondo actual</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Diagnóstico y Recomendación Económica -->
+      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-2">
+        <div class="flex items-center space-x-2 text-app-purple">
+          <div class="p-1.5 bg-indigo-50 rounded-xl">
+            <i data-lucide="sparkles" class="w-4 h-4 text-app-purple"></i>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider text-app-navy">Diagnóstico de Salud Financiera</span>
+        </div>
+        <p id="advice-text" class="text-xs font-semibold leading-relaxed text-app-subtext">
+          Registra tus primeros ingresos y gastos para recibir recomendaciones personalizadas de ahorro y amortización.
         </p>
       </section>
 
-      <!-- Métricas Clave -->
-      <section class="grid grid-cols-2 gap-3">
-        <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm">
-          <p class="text-[11px] font-semibold text-gray-400">Tasa de Ahorro</p>
-          <p id="stat-savings-rate" class="text-lg font-bold text-emerald-600 mt-1">0%</p>
-          <p class="text-[10px] text-gray-400">Objetivo ideal: ≥ 20%</p>
+      <!-- Distribución de Gastos Estilo Donut con Leyenda de Píldoras -->
+      <section class="bg-white rounded-3xl p-5 shadow-card-soft border border-indigo-50/50 space-y-4">
+        <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Perfil de Inversión y Gastos</h3>
+        
+        <div class="h-48 relative flex items-center justify-center">
+          <canvas id="categoryDonutChart"></canvas>
         </div>
-        <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm">
-          <p class="text-[11px] font-semibold text-gray-400">Previsión Mes Próximo</p>
-          <p id="stat-next-month-estimate" class="text-lg font-bold text-gray-900 mt-1">0,00 €</p>
-          <p class="text-[10px] text-gray-400">Ahorro proyectado</p>
+
+        <!-- Leyenda con Porcentajes en Píldoras -->
+        <div id="donut-legend" class="space-y-2 pt-2 border-t border-gray-100">
+          <!-- Renderizado dinámicamente con las píldoras de color -->
         </div>
       </section>
 
-      <!-- Gráfico Comparativo -->
-      <section class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Flujo Total Registrado</h3>
-          <span class="text-[10px] text-gray-400">Ingresos vs Gastos</span>
-        </div>
-        <div class="h-48 relative">
-          <canvas id="cashflowChart"></canvas>
-        </div>
-      </section>
-
-      <!-- Gráfico Distribución de Gastos -->
-      <section class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Distribución por Categoría</h3>
-        <div class="h-48 relative">
-          <canvas id="categoryChart"></canvas>
-        </div>
-      </section>
     </main>
 
     <!-- ==========================================
-         VISTA 3: GASTOS FIJOS, SEGUROS, IBI Y CRÉDITOS
+         VISTA 3: GASTOS FIJOS, SEGUROS Y CRÉDITOS
          ========================================== -->
     <main id="view-fijos" class="view-panel hidden space-y-4">
+      
       <header class="flex justify-between items-center py-2">
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Compromisos Periódicos</p>
-          <h1 class="text-2xl font-extrabold text-gray-900">Gastos Fijos y Créditos</h1>
+          <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Gastos Fijos</h1>
+          <p class="text-[11px] font-semibold text-app-subtext">Seguros, IBI y Créditos</p>
         </div>
-        <button onclick="openFixedModal()" class="p-2.5 bg-black text-white rounded-full active:scale-95 transition-transform shadow-md">
+        <button onclick="openFixedModal()" class="p-2.5 bg-gradient-to-r from-app-navy to-indigo-900 text-white rounded-2xl shadow-float active:scale-95 transition-transform">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
       </header>
 
-      <!-- Resumen Fijo Mensual & Deuda Total -->
+      <!-- Métricas Resumen -->
       <section class="grid grid-cols-2 gap-3">
-        <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm">
-          <p class="text-[11px] font-semibold text-gray-400">Compromiso Mensual</p>
-          <p id="total-fixed-monthly" class="text-lg font-bold text-rose-600 mt-1">0,00 €</p>
-          <p class="text-[10px] text-gray-400">Cuotas fijas estimadas</p>
+        <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
+          <p class="text-[11px] font-bold text-app-subtext uppercase">Cuota Mensual Fija</p>
+          <p id="total-fixed-monthly" class="text-xl font-extrabold text-app-pink mt-1">0,00 €</p>
+          <p class="text-[10px] text-app-subtext mt-0.5">Compromisos recurrentes</p>
         </div>
-        <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm">
-          <p class="text-[11px] font-semibold text-gray-400">Deuda Total Pendiente</p>
-          <p id="total-loans-debt" class="text-lg font-bold text-gray-900 mt-1">0,00 €</p>
-          <p class="text-[10px] text-gray-400">Créditos e hipotecas</p>
+        <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
+          <p class="text-[11px] font-bold text-app-subtext uppercase">Deuda Total Activa</p>
+          <p id="total-loans-debt" class="text-xl font-extrabold text-app-blue mt-1">0,00 €</p>
+          <p class="text-[10px] text-app-subtext mt-0.5">Hipotecas y préstamos</p>
         </div>
       </section>
 
-      <!-- Sección de Créditos e Hipotecas en Curso -->
-      <section class="space-y-2">
-        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Créditos y Préstamos Activos</h3>
-        <div id="loans-list" class="space-y-2.5"></div>
+      <!-- Lista de Créditos e Hipotecas -->
+      <section class="space-y-2.5">
+        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos en Curso</h3>
+        <div id="loans-list" class="space-y-3"></div>
       </section>
 
-      <!-- Sección de Seguros, IBI y Servicios Fijos -->
-      <section class="space-y-2 mt-4">
-        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Seguros, IBI y Recibos Periódicos</h3>
+      <!-- Lista de Seguros e IBI -->
+      <section class="space-y-2.5 mt-4">
+        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Seguros, IBI y Recibos Periódicos</h3>
         <div id="fixed-costs-list" class="space-y-2.5"></div>
       </section>
+
     </main>
 
   </div>
 
   <!-- ==========================================
-       BARRA DE MENÚ DE HERRAMIENTAS INFERIOR (iOS STYLE)
+       BARRA DE MENÚ INFERIOR ESTILO FINTECH
        ========================================== -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-gray-200/80 px-6 py-2 flex justify-around items-center z-40" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 6px);">
-    <button onclick="switchTab('movimientos')" id="nav-movimientos" class="flex flex-col items-center space-y-1 tab-active transition-colors">
-      <i data-lucide="wallet" class="w-5 h-5"></i>
-      <span class="text-[10px] font-bold">Movimientos</span>
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-indigo-50 px-6 py-2.5 flex justify-around items-center z-40 shadow-float" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8px);">
+    
+    <button onclick="switchTab('movimientos')" id="nav-movimientos" class="flex flex-col items-center space-y-1 text-app-purple transition-all">
+      <div class="p-1.5 rounded-xl bg-indigo-50">
+        <i data-lucide="credit-card" class="w-5 h-5"></i>
+      </div>
+      <span class="text-[10px] font-bold">Cuentas</span>
     </button>
-    <button onclick="switchTab('estudio')" id="nav-estudio" class="flex flex-col items-center space-y-1 tab-inactive transition-colors">
-      <i data-lucide="trending-up" class="w-5 h-5"></i>
+
+    <button onclick="switchTab('estudio')" id="nav-estudio" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
+      <div class="p-1.5 rounded-xl">
+        <i data-lucide="pie-chart" class="w-5 h-5"></i>
+      </div>
       <span class="text-[10px] font-bold">Estudio</span>
     </button>
-    <button onclick="switchTab('fijos')" id="nav-fijos" class="flex flex-col items-center space-y-1 tab-inactive transition-colors">
-      <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+
+    <button onclick="switchTab('fijos')" id="nav-fijos" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
+      <div class="p-1.5 rounded-xl">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+      </div>
       <span class="text-[10px] font-bold">Gastos Fijos</span>
     </button>
+
   </nav>
 
   <!-- ==========================================
-       MODAL 1: REGISTRAR MOVIMIENTO (HERRAMIENTA 1)
+       MODAL 1: REGISTRAR MOVIMIENTO
        ========================================== -->
-  <div id="modal-transaction" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+  <div id="modal-transaction" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+      
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-gray-900">Registrar Movimiento</h3>
-        <button onclick="closeModal('modal-transaction')" class="text-gray-400 hover:text-gray-600 p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <div>
+          <h3 class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
+          <p class="text-xs text-app-subtext">Añade un ingreso, gasto o transferencia</p>
+        </div>
+        <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext hover:text-app-navy rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
       <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-4">
-        <!-- Cuenta Destino -->
+        
+        <!-- Selector Cuenta -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Cuenta Destino</label>
-          <div class="flex bg-gray-100 p-1 rounded-xl">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Cuenta Destino</label>
+          <div class="flex bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="account" value="gasto" class="hidden peer" checked onchange="updateFormUI()">
-              <span class="block py-2 text-xs font-semibold text-gray-500 rounded-lg peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition-all">💳 Cuenta Gasto</span>
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-purple peer-checked:text-white transition-all shadow-sm">💳 Cuenta Gasto</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="account" value="ahorro" class="hidden peer" onchange="updateFormUI()">
-              <span class="block py-2 text-xs font-semibold text-gray-500 rounded-lg peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">🐖 Cuenta Ahorro</span>
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-mint peer-checked:text-white transition-all shadow-sm">🐖 Cuenta Ahorro</span>
             </label>
           </div>
         </div>
 
-        <!-- Tipo -->
+        <!-- Selector Tipo -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tipo</label>
-          <div class="flex bg-gray-100 p-1 rounded-xl">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo</label>
+          <div class="flex bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="income" class="hidden peer" checked onchange="updateCategories()">
-              <span id="label-income" class="block py-2 text-xs font-semibold text-gray-500 rounded-lg peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm transition-all">Ingreso / Nómina</span>
+              <span id="label-income" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso / Nómina</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="expense" class="hidden peer" onchange="updateCategories()">
-              <span id="label-expense" class="block py-2 text-xs font-semibold text-gray-500 rounded-lg peer-checked:bg-white peer-checked:text-rose-600 peer-checked:shadow-sm transition-all">Gasto</span>
+              <span id="label-expense" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-pink peer-checked:shadow-sm transition-all">- Gasto</span>
             </label>
           </div>
         </div>
 
-        <!-- Vincular con Préstamo / Crédito Activo -->
+        <!-- Amortización Préstamo -->
         <div id="linked-loan-container" class="hidden">
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">¿Amortiza algún crédito activo?</label>
-          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full bg-blue-50/60 border border-blue-200 rounded-xl px-4 py-2.5 text-xs font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-black">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">¿Amortiza crédito activo?</label>
+          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-2.5 text-xs font-semibold text-app-navy focus:outline-none focus:ring-2 focus:ring-app-purple">
             <option value="">Ninguno (Gasto general)</option>
           </select>
         </div>
 
         <!-- Importe -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Importe (€)</label>
-          <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-black">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Importe (€)</label>
+          <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-app-purple text-app-navy">
         </div>
 
         <!-- Concepto -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Concepto</label>
-          <input type="text" id="concept" required placeholder="Ej. Nómina, Pago Hipoteca, IBI..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Concepto</label>
+          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado, Cuota Préstamo..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
         </div>
 
         <!-- Categoría -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Categoría</label>
-          <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"></select>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Categoría</label>
+          <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple"></select>
         </div>
 
-        <button type="submit" class="w-full bg-black text-white font-semibold py-3.5 rounded-xl active:scale-[0.98] transition-transform mt-3 text-sm">
+        <button type="submit" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">
           Guardar Movimiento
         </button>
       </form>
@@ -295,78 +427,77 @@
   </div>
 
   <!-- ==========================================
-       MODAL 2: AÑADIR GASTO FIJO O CRÉDITO (HERRAMIENTA 3)
+       MODAL 2: AÑADIR GASTO FIJO O CRÉDITO
        ========================================== -->
-  <div id="modal-fixed" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+  <div id="modal-fixed" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+      
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-gray-900">Añadir Compromiso Fijo</h3>
-        <button onclick="closeModal('modal-fixed')" class="text-gray-400 hover:text-gray-600 p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        <div>
+          <h3 class="text-lg font-extrabold text-app-navy">Compromiso Fijo</h3>
+          <p class="text-xs text-app-subtext">Añade hipotecas, seguros o tributos</p>
+        </div>
+        <button onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext hover:text-app-navy rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
       <form id="fixed-form" onsubmit="saveFixedItem(event)" class="space-y-4">
-        <!-- Tipo de compromiso -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tipo de Elemento</label>
-          <div class="flex bg-gray-100 p-1 rounded-xl">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo de Elemento</label>
+          <div class="flex bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="fixed_type" value="credit" class="hidden peer" checked onchange="toggleFixedFormFields()">
-              <span class="block py-2 text-xs font-semibold text-gray-500 rounded-lg peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition-all">🏦 Crédito / Hipoteca</span>
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-blue peer-checked:text-white transition-all shadow-sm">🏦 Crédito / Hipoteca</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="fixed_type" value="bill" class="hidden peer" onchange="toggleFixedFormFields()">
-              <span class="block py-2 text-xs font-semibold text-gray-500 rounded-lg peer-checked:bg-white peer-checked:text-gray-900 peer-checked:shadow-sm transition-all">🛡️ Seguro / IBI / Recibo</span>
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-pink peer-checked:text-white transition-all shadow-sm">🛡️ Seguro / IBI</span>
             </label>
           </div>
         </div>
 
-        <!-- Nombre / Entidad -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nombre o Entidad</label>
-          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca BBVA, Seguro Coche Mapfre, IBI..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Nombre / Entidad</label>
+          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca Casa, Seguro Mapfre, IBI..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
         </div>
 
-        <!-- Cuota Periódica -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Importe de la Cuota (€)</label>
-          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" required placeholder="0.00" class="w-full text-xl font-bold bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-black">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Cuota Periódica (€)</label>
+          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" required placeholder="0.00" class="w-full text-xl font-bold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-app-purple text-app-navy">
         </div>
 
-        <!-- Campos para Crédito (Total inicial y Pendiente) -->
         <div id="credit-fields" class="space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Solicitado (€)</label>
-              <input type="number" step="0.01" id="fixed-total-amount" placeholder="Ej. 150000" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Total Solicitado (€)</label>
+              <input type="number" step="0.01" id="fixed-total-amount" placeholder="Ej. 120000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Saldo Pendiente (€)</label>
-              <input type="number" step="0.01" id="fixed-remaining-amount" placeholder="Ej. 120000" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Saldo Pendiente (€)</label>
+              <input type="number" step="0.01" id="fixed-remaining-amount" placeholder="Ej. 95000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
             </div>
           </div>
         </div>
 
-        <!-- Campos para Seguros / IBI / Recibos -->
         <div id="bill-fields" class="hidden space-y-4">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Periodicidad</label>
-              <select id="fixed-frequency" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Periodicidad</label>
+              <select id="fixed-frequency" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
                 <option value="monthly">Mensual</option>
                 <option value="quarterly">Trimestral</option>
                 <option value="annual" selected>Anual</option>
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Fecha Cobro / Renovación</label>
-              <input type="date" id="fixed-date" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Fecha Cobro</label>
+              <input type="date" id="fixed-date" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
             </div>
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-black text-white font-semibold py-3.5 rounded-xl active:scale-[0.98] transition-transform mt-3 text-sm">
+        <button type="submit" class="w-full bg-gradient-to-r from-app-navy to-indigo-900 text-white font-bold py-3.5 rounded-2xl shadow-float active:scale-[0.98] transition-transform mt-3 text-sm">
           Guardar Compromiso
         </button>
       </form>
@@ -375,15 +506,15 @@
 
   <script>
     // ==========================================
-    // ESTADO GLOBAL & BASE DE DATOS LOCAL
+    // ESTADO GLOBAL & LOCALSTORAGE
     // ==========================================
     const categoryOptions = {
       gasto: {
-        income: ['Nómina / Salario', 'Freelance / Extras', 'Bizum / Devolución', 'Otros ingresos'],
-        expense: ['Hipoteca / Préstamo', 'Vivienda / Alquiler', 'Seguros / IBI', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas / Suministros', 'Salud', 'Compras', 'Otros']
+        income: ['Nómina / Salario', 'Freelance / Extras', 'Bizum / Reembolso', 'Otros ingresos'],
+        expense: ['Hipoteca / Préstamo', 'Vivienda / Alquiler', 'Seguros / IBI', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas y Suministros', 'Salud', 'Compras', 'Otros']
       },
       ahorro: {
-        income: ['Aporte mensual', 'Traspaso desde Gasto', 'Intereses / Rendimiento', 'Fondo de Emergencia', 'Meta de Ahorro'],
+        income: ['Aporte mensual', 'Traspaso desde Gasto', 'Rendimientos / Intereses', 'Fondo de Emergencia', 'Meta de Ahorro'],
         expense: ['Retirada Imprevisto', 'Uso para Meta', 'Inversión Externa', 'Otros']
       }
     };
@@ -397,19 +528,20 @@
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
-    let cashflowChartInstance = null;
-    let categoryChartInstance = null;
+    let miniTrendChartInstance = null;
+    let donutChartInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       updateFormUI();
       renderAll();
+      initMiniTrendChart();
     });
 
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // NAVEGACIÓN POR PESTAÑAS DEL MENÚ INFERIOR
+    // NAVEGACIÓN ENTRE PESTAÑAS
     // ==========================================
     function switchTab(tabId) {
       currentTab = tabId;
@@ -418,10 +550,13 @@
 
       ['movimientos', 'estudio', 'fijos'].forEach(t => {
         const btn = document.getElementById(`nav-${t}`);
+        const iconDiv = btn.querySelector('div');
         if (t === tabId) {
-          btn.className = 'flex flex-col items-center space-y-1 tab-active transition-colors';
+          btn.className = 'flex flex-col items-center space-y-1 text-app-purple transition-all';
+          iconDiv.className = 'p-1.5 rounded-xl bg-indigo-50';
         } else {
-          btn.className = 'flex flex-col items-center space-y-1 tab-inactive transition-colors';
+          btn.className = 'flex flex-col items-center space-y-1 text-app-subtext transition-all';
+          iconDiv.className = 'p-1.5 rounded-xl';
         }
       });
 
@@ -431,6 +566,7 @@
         renderFixedItems();
       } else {
         renderTransactions();
+        initMiniTrendChart();
       }
       lucide.createIcons();
     }
@@ -441,7 +577,7 @@
     }
 
     // ==========================================
-    // HERRAMIENTA 1: MOVIMIENTOS Y CUENTAS
+    // 1. MOVIMIENTOS
     // ==========================================
     function setAccountFilter(account) {
       activeFilter = account;
@@ -449,12 +585,9 @@
       Object.keys(tabs).forEach(key => {
         const el = document.getElementById(tabs[key]);
         el.className = key === account
-          ? "flex-1 py-1.5 rounded-lg bg-white text-gray-900 shadow-sm transition-all"
-          : "flex-1 py-1.5 rounded-lg text-gray-600 transition-all";
+          ? "flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all"
+          : "flex-1 py-2 rounded-xl text-app-subtext transition-all";
       });
-
-      document.getElementById('card-gasto').className = `bg-white p-4 rounded-2xl border-2 ${account === 'gasto' ? 'border-gray-900' : 'border-transparent'} shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95`;
-      document.getElementById('card-ahorro').className = `bg-white p-4 rounded-2xl border-2 ${account === 'ahorro' ? 'border-emerald-600' : 'border-transparent'} shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95`;
 
       renderTransactions();
     }
@@ -498,27 +631,27 @@
         const isAhorro = item.account === 'ahorro';
         
         const card = document.createElement('div');
-        card.className = "bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between";
+        card.className = "bg-white p-4 rounded-2xl shadow-card-soft border border-indigo-50/40 flex items-center justify-between";
         card.innerHTML = `
           <div class="flex items-center space-x-3">
-            <div class="p-2.5 rounded-xl ${isAhorro ? 'bg-emerald-50 text-emerald-600' : (isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-700')}">
-              <i data-lucide="${isAhorro ? 'piggy-bank' : (isIncome ? 'wallet' : 'shopping-bag')}" class="w-4 h-4"></i>
+            <div class="p-3 rounded-2xl ${isAhorro ? 'bg-emerald-50 text-app-mint' : (isIncome ? 'bg-indigo-50 text-app-purple' : 'bg-rose-50 text-app-pink')}">
+              <i data-lucide="${isAhorro ? 'piggy-bank' : (isIncome ? 'arrow-down-left' : 'arrow-up-right')}" class="w-4 h-4"></i>
             </div>
             <div>
               <div class="flex items-center space-x-1.5">
-                <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${isAhorro ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}">
+                <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md ${isAhorro ? 'bg-emerald-100 text-app-mint' : 'bg-indigo-50 text-app-purple'}">
                   ${isAhorro ? 'Ahorro' : 'Gasto'}
                 </span>
-                <p class="text-sm font-semibold text-gray-900">${item.concept}</p>
+                <p class="text-xs font-bold text-app-navy">${item.concept}</p>
               </div>
-              <p class="text-xs text-gray-400 mt-0.5">${item.category} • ${item.date} ${item.loanName ? `• <span class="text-blue-600 font-medium">Amortiza: ${item.loanName}</span>` : ''}</p>
+              <p class="text-[11px] text-app-subtext mt-0.5 font-medium">${item.category} • ${item.date} ${item.loanName ? `• <span class="text-app-blue font-bold">${item.loanName}</span>` : ''}</p>
             </div>
           </div>
-          <div class="flex items-center space-x-3">
-            <span class="text-sm font-bold ${isIncome ? 'text-emerald-600' : 'text-gray-900'}">
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'text-app-navy'}">
               ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
             </span>
-            <button onclick="deleteTransaction(${originalIndex})" class="text-gray-300 hover:text-rose-500 p-1">
+            <button onclick="deleteTransaction(${originalIndex})" class="text-gray-300 hover:text-app-pink p-1">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </div>
@@ -527,6 +660,48 @@
       });
 
       lucide.createIcons();
+    }
+
+    function initMiniTrendChart() {
+      const ctx = document.getElementById('miniTrendChart');
+      if (!ctx) return;
+      if (miniTrendChartInstance) miniTrendChartInstance.destroy();
+
+      miniTrendChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: ['Mar', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov'],
+          datasets: [
+            {
+              data: [12, 19, 15, 33, 22, 28, 35],
+              borderColor: '#5F5AF6',
+              borderWidth: 3,
+              tension: 0.45,
+              pointRadius: 0,
+              fill: true,
+              backgroundColor: 'rgba(95, 90, 246, 0.06)'
+            },
+            {
+              data: [8, 11, 14, 12, 16, 18, 20],
+              borderColor: '#F8678C',
+              borderWidth: 2,
+              borderDash: [4, 4],
+              tension: 0.45,
+              pointRadius: 0,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { display: false },
+            y: { display: false }
+          }
+        }
+      });
     }
 
     function saveTransaction(e) {
@@ -542,7 +717,6 @@
       const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
 
       let loanName = '';
-      // Si está vinculado a un crédito y es un gasto, descontar del saldo pendiente en Herramienta 3
       if (linkedLoanId && type === 'expense') {
         const loan = fixedItems.find(item => item.id === linkedLoanId);
         if (loan) {
@@ -574,7 +748,6 @@
     function deleteTransaction(index) {
       if (confirm("¿Deseas eliminar este movimiento?")) {
         const item = transactions[index];
-        // Si estaba vinculado a un crédito, devolver el importe descontado
         if (item.linkedLoanId && item.type === 'expense') {
           const loan = fixedItems.find(l => l.id === item.linkedLoanId);
           if (loan) {
@@ -589,12 +762,13 @@
     }
 
     // ==========================================
-    // HERRAMIENTA 2: ESTUDIO FINANCIERO & PROYECCIONES
+    // 2. ESTUDIO FINANCIERO (VIBRANT FINTECH)
     // ==========================================
     function renderFinancialStudy() {
       let totalIncome = 0;
       let totalExpense = 0;
       let totalSavings = 0;
+      let totalDebt = 0;
       const categoryTotals = {};
 
       transactions.forEach(t => {
@@ -609,100 +783,96 @@
         }
       });
 
-      // Tasa de ahorro
-      const netBase = totalIncome > 0 ? totalIncome : (totalExpense + totalSavings);
-      const savingsRate = netBase > 0 ? Math.round(((totalSavings + Math.max(0, totalIncome - totalExpense)) / (totalIncome || 1)) * 100) : 0;
-      document.getElementById('stat-savings-rate').textContent = `${Math.min(100, Math.max(0, savingsRate))}%`;
-
-      // Previsión próximo mes (promedio simple proyectado)
-      const projectedSavings = Math.max(0, totalIncome - totalExpense) + (totalSavings > 0 ? totalSavings : 0);
-      document.getElementById('stat-next-month-estimate').textContent = formatCurrency(projectedSavings);
-
-      // Generador de Recomendación Inteligente
-      generateAdvice(totalIncome, totalExpense, totalSavings, savingsRate);
-
-      // Renderizar Gráficos con Chart.js
-      renderCharts(totalIncome, totalExpense, totalSavings, categoryTotals);
-    }
-
-    function generateAdvice(income, expense, savings, rate) {
-      const adviceEl = document.getElementById('advice-text');
-      
-      let totalDebt = 0;
       fixedItems.filter(i => i.type === 'credit').forEach(i => totalDebt += (i.remainingAmount || 0));
+
+      document.getElementById('study-income-total').textContent = formatCurrency(totalIncome);
+      document.getElementById('study-expense-total').textContent = formatCurrency(totalExpense);
+      document.getElementById('study-credit-total').textContent = formatCurrency(totalDebt);
+      document.getElementById('study-savings-total').textContent = formatCurrency(totalSavings);
+
+      // Diagnóstico y Recomendación
+      const rate = totalIncome > 0 ? Math.round(((totalSavings + Math.max(0, totalIncome - totalExpense)) / totalIncome) * 100) : 0;
+      const adviceEl = document.getElementById('advice-text');
 
       if (transactions.length === 0) {
         adviceEl.innerHTML = "Comienza a registrar tu salario y gastos diarios para generar diagnósticos y previsiones inteligentes.";
-        return;
+      } else if (totalExpense > totalIncome && totalIncome > 0) {
+        adviceEl.innerHTML = `⚠️ <strong class="text-app-pink">Déficit detectado:</strong> Tus gastos superan a tus ingresos en <strong>${formatCurrency(totalExpense - totalIncome)}</strong>. Conviene moderar partidas no esenciales este mes.`;
+      } else if (rate >= 25) {
+        adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud financiera óptima:</strong> Estás reservando el <strong>${rate}%</strong> de tus ingresos. Es momento de amortizar capital o alimentar tu fondo de inversión.`;
+      } else {
+        adviceEl.innerHTML = `📊 <strong class="text-app-purple">Equilibrio activo:</strong> Tus finanzas son estables. Procura mantener el ahorro mensual por encima del 20% para contingencias futuras.`;
       }
 
-      if (expense > income && income > 0) {
-        adviceEl.innerHTML = `⚠️ <strong class="text-rose-400">Déficit detectado:</strong> Tus gastos superan tus ingresos en <strong>${formatCurrency(expense - income)}</strong>. Revisa los recibos prescindibles o reduce compras este mes.`;
-      } else if (rate >= 25) {
-        adviceEl.innerHTML = `🌟 <strong class="text-emerald-400">Excelente salud financiera:</strong> Estás ahorrando el <strong>${rate}%</strong> de tus ingresos. Es un momento idóneo para aportaciones extra a tu fondo de reserva o amortizar créditos pendientes.`;
-      } else if (totalDebt > 0 && (expense / (income || 1)) > 0.6) {
-        adviceEl.innerHTML = `💡 <strong class="text-blue-300">Recomendación de amortización:</strong> Tus costes absorben más del 60% de tus ingresos. Prioriza destinar pequeños excedentes a rebajar el capital del crédito con mayor cuota.`;
-      } else {
-        adviceEl.innerHTML = `📊 <strong class="text-amber-300">Balance estable:</strong> Mantienes un flujo equilibrado. Procura mantener el ahorro mensual por encima del 20% para consolidar un fondo para imprevistos de al menos 3 a 6 meses.`;
-      }
+      // Gráfico Donut estilo Screen 3 (Píldoras y colores precisos)
+      renderDonutChart(categoryTotals, totalExpense);
     }
 
-    function renderCharts(income, expense, savings, categoryTotals) {
-      // 1. Gráfico Cashflow
-      const ctx1 = document.getElementById('cashflowChart').getContext('2d');
-      if (cashflowChartInstance) cashflowChartInstance.destroy();
+    function renderDonutChart(categoryTotals, totalExpense) {
+      const ctx = document.getElementById('categoryDonutChart');
+      if (!ctx) return;
+      if (donutChartInstance) donutChartInstance.destroy();
 
-      cashflowChartInstance = new Chart(ctx1, {
-        type: 'bar',
+      const palette = ['#5F5AF6', '#F8678C', '#24D297', '#4D96FF', '#FFB800', '#9333EA'];
+      const labels = Object.keys(categoryTotals);
+      const data = Object.values(categoryTotals);
+
+      const chartLabels = labels.length > 0 ? labels : ['Sin gastos registrados'];
+      const chartData = data.length > 0 ? data : [1];
+      const chartColors = labels.length > 0 ? palette.slice(0, labels.length) : ['#E5E7EB'];
+
+      donutChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
         data: {
-          labels: ['Ingresos', 'Gastos', 'Ahorro'],
+          labels: chartLabels,
           datasets: [{
-            data: [income, expense, savings],
-            backgroundColor: ['#10B981', '#F43F5E', '#3B82F6'],
-            borderRadius: 8
+            data: chartData,
+            backgroundColor: chartColors,
+            borderWidth: 0,
+            borderRadius: 6,
+            spacing: 4
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
-          scales: {
-            y: { grid: { color: '#F3F4F6' }, ticks: { font: { size: 10 } } },
-            x: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } }
-          }
+          cutout: '72%'
         }
       });
 
-      // 2. Gráfico Categorías
-      const ctx2 = document.getElementById('categoryChart').getContext('2d');
-      if (categoryChartInstance) categoryChartInstance.destroy();
+      // Renderizar leyenda interactiva en píldoras (Idéntico a la Screen 3)
+      const legendContainer = document.getElementById('donut-legend');
+      legendContainer.innerHTML = '';
 
-      const catLabels = Object.keys(categoryTotals);
-      const catData = Object.values(categoryTotals);
+      if (labels.length === 0) {
+        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos para clasificar</p>';
+        return;
+      }
 
-      categoryChartInstance = new Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-          labels: catLabels.length > 0 ? catLabels : ['Sin gastos'],
-          datasets: [{
-            data: catData.length > 0 ? catData : [1],
-            backgroundColor: ['#111827', '#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6', '#6B7280'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-          },
-          cutout: '70%'
-        }
+      labels.forEach((label, i) => {
+        const amt = categoryTotals[label];
+        const pct = totalExpense > 0 ? Math.round((amt / totalExpense) * 100) : 0;
+        const color = palette[i % palette.length];
+
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center py-1";
+        row.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
+            <span class="text-xs font-bold text-app-navy">${label}</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-extrabold text-app-navy">${formatCurrency(amt)}</span>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style="background-color: ${color}">${pct}%</span>
+          </div>
+        `;
+        legendContainer.appendChild(row);
       });
     }
 
     // ==========================================
-    // HERRAMIENTA 3: GASTOS FIJOS, SEGUROS Y CRÉDITOS
+    // 3. GASTOS FIJOS Y CRÉDITOS
     // ==========================================
     function renderFixedItems() {
       const loansList = document.getElementById('loans-list');
@@ -723,58 +893,59 @@
             : 0;
 
           const card = document.createElement('div');
-          card.className = "bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3";
+          card.className = "bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50 space-y-3";
           card.innerHTML = `
             <div class="flex justify-between items-start">
-              <div>
-                <div class="flex items-center space-x-1.5">
-                  <span class="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="landmark" class="w-4 h-4"></i></span>
-                  <h4 class="text-sm font-bold text-gray-900">${item.name}</h4>
+              <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-blue-50 text-app-blue rounded-2xl">
+                  <i data-lucide="landmark" class="w-4 h-4"></i>
                 </div>
-                <p class="text-xs text-gray-400 mt-1">Cuota: <strong class="text-gray-700">${formatCurrency(item.monthlyFee)}/mes</strong></p>
+                <div>
+                  <h4 class="text-xs font-bold text-app-navy">${item.name}</h4>
+                  <p class="text-[11px] text-app-subtext">Cuota: <strong class="text-app-navy">${formatCurrency(item.monthlyFee)}/mes</strong></p>
+                </div>
               </div>
-              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-rose-500 p-1">
+              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
 
-            <div class="space-y-1">
-              <div class="flex justify-between text-xs font-semibold">
-                <span class="text-gray-400">Pendiente: <span class="text-gray-900">${formatCurrency(item.remainingAmount)}</span></span>
-                <span class="text-emerald-600">${progress}% amortizado</span>
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-[11px] font-bold">
+                <span class="text-app-subtext">Pendiente: <span class="text-app-navy">${formatCurrency(item.remainingAmount)}</span></span>
+                <span class="text-app-mint">${progress}% amortizado</span>
               </div>
               <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                <div class="bg-gray-900 h-full rounded-full transition-all duration-500" style="width: ${progress}%"></div>
+                <div class="bg-gradient-to-r from-app-blue to-app-purple h-full rounded-full transition-all duration-500" style="width: ${progress}%"></div>
               </div>
             </div>
           `;
           loansList.appendChild(card);
 
         } else {
-          // Seguros / IBI / Recibos
           const fee = parseFloat(item.monthlyFee || 0);
           if (item.frequency === 'monthly') totalMonthlyCommitment += fee;
           else if (item.frequency === 'quarterly') totalMonthlyCommitment += (fee / 3);
           else if (item.frequency === 'annual') totalMonthlyCommitment += (fee / 12);
 
           const card = document.createElement('div');
-          card.className = "bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between";
+          card.className = "bg-white p-3.5 rounded-2xl shadow-card-soft border border-indigo-50/50 flex items-center justify-between";
           card.innerHTML = `
             <div class="flex items-center space-x-3">
-              <div class="p-2.5 rounded-xl bg-gray-100 text-gray-700">
+              <div class="p-2.5 rounded-2xl bg-rose-50 text-app-pink">
                 <i data-lucide="${item.name.toLowerCase().includes('seguro') ? 'shield-check' : 'calendar'}" class="w-4 h-4"></i>
               </div>
               <div>
-                <p class="text-sm font-semibold text-gray-900">${item.name}</p>
-                <p class="text-xs text-gray-400">
+                <p class="text-xs font-bold text-app-navy">${item.name}</p>
+                <p class="text-[10px] text-app-subtext font-medium">
                   ${item.frequency === 'annual' ? 'Anual' : (item.frequency === 'quarterly' ? 'Trimestral' : 'Mensual')} 
-                  ${item.date ? `• Cobro: <strong class="text-gray-600">${item.date}</strong>` : ''}
+                  ${item.date ? `• Cobro: <strong class="text-app-navy">${item.date}</strong>` : ''}
                 </p>
               </div>
             </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-sm font-bold text-gray-900">${formatCurrency(item.monthlyFee)}</span>
-              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-rose-500 p-1">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-extrabold text-app-navy">${formatCurrency(item.monthlyFee)}</span>
+              <button onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
@@ -796,12 +967,7 @@
       const name = document.getElementById('fixed-name').value.trim();
       const monthlyFee = parseFloat(document.getElementById('fixed-monthly-fee').value);
       
-      let itemData = {
-        id: Date.now().toString(),
-        type,
-        name,
-        monthlyFee
-      };
+      let itemData = { id: Date.now().toString(), type, name, monthlyFee };
 
       if (type === 'credit') {
         const totalAmount = parseFloat(document.getElementById('fixed-total-amount').value) || monthlyFee;
@@ -853,16 +1019,10 @@
     }
 
     // ==========================================
-    // CONTROL DE MODALES Y FORMULARIOS
+    // CONTROL DE MODALES
     // ==========================================
-    function openTransactionModal() {
-      openModal('modal-transaction');
-    }
-
-    function openFixedModal() {
-      openModal('modal-fixed');
-      toggleFixedFormFields();
-    }
+    function openTransactionModal() { openModal('modal-transaction'); }
+    function openFixedModal() { openModal('modal-fixed'); toggleFixedFormFields(); }
 
     function openModal(modalId) {
       const modal = document.getElementById(modalId);
@@ -894,8 +1054,8 @@
         labelExpense.textContent = '- Retirar Ahorro';
         loanContainer.classList.add('hidden');
       } else {
-        labelIncome.textContent = 'Ingreso / Nómina';
-        labelExpense.textContent = 'Gasto';
+        labelIncome.textContent = '+ Ingreso / Nómina';
+        labelExpense.textContent = '- Gasto';
         if (type === 'expense' && fixedItems.some(i => i.type === 'credit')) {
           loanContainer.classList.remove('hidden');
         } else {
@@ -940,11 +1100,7 @@
     }
 
     function exportData() {
-      const fullBackup = {
-        transactions,
-        fixedItems,
-        exportDate: new Date().toISOString()
-      };
+      const fullBackup = { transactions, fixedItems, exportDate: new Date().toISOString() };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackup, null, 2));
       const downloadAnchor = document.createElement('a');
       downloadAnchor.setAttribute("href", dataStr);
@@ -956,4 +1112,3 @@
   </script>
 </body>
 </html>
-
