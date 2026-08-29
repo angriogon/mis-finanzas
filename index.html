@@ -11,8 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="Finanzas">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0B0F19" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#FFFFFF" id="meta-theme-color">
 
   <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +25,7 @@
 
   <script>
     tailwind.config = {
-      darkMode: 'media',
+      darkMode: 'class', // Control manual por clase, no por el sistema operativo
       theme: {
         extend: {
           fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
@@ -49,6 +48,7 @@
   </script>
 
   <style>
+    /* Bloqueo estricto de zoom en iOS */
     html, body {
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
@@ -59,6 +59,7 @@
       user-select: none;
       background-color: #F8FAFF;
       color: #1A1C3D;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
     input, select, textarea {
       font-size: 16px !important;
@@ -67,17 +68,15 @@
     }
     ::-webkit-scrollbar { display: none; }
 
-    /* MODO OSCURO OLED */
-    @media (prefers-color-scheme: dark) {
-      body { background-color: #0B0F19; color: #F1F5F9; }
-      .theme-card { background-color: #151D2C !important; border-color: #1E293B !important; color: #F8FAFC !important; }
-      .theme-bg-subtle { background-color: #1E293B !important; color: #E2E8F0 !important; }
-      .theme-text-navy { color: #F8FAFC !important; }
-      .theme-text-sub { color: #94A3B8 !important; }
-      .theme-input { background-color: #1E293B !important; border-color: #334155 !important; color: #F8FAFC !important; }
-      .theme-modal { background-color: #111827 !important; color: #F8FAFC !important; }
-      .theme-nav { background-color: rgba(15, 23, 42, 0.94) !important; border-color: #1E293B !important; }
-    }
+    /* ESTILOS MANUALES PARA MODO OSCURO (Activados solo con clase .dark) */
+    html.dark body { background-color: #0B0F19 !important; color: #F1F5F9 !important; }
+    html.dark .theme-card { background-color: #151D2C !important; border-color: #1E293B !important; color: #F8FAFC !important; }
+    html.dark .theme-bg-subtle { background-color: #1E293B !important; color: #E2E8F0 !important; }
+    html.dark .theme-text-navy { color: #F8FAFC !important; }
+    html.dark .theme-text-sub { color: #94A3B8 !important; }
+    html.dark .theme-input { background-color: #1E293B !important; border-color: #334155 !important; color: #F8FAFC !important; }
+    html.dark .theme-modal { background-color: #111827 !important; color: #F8FAFC !important; }
+    html.dark .theme-nav { background-color: rgba(15, 23, 42, 0.94) !important; border-color: #1E293B !important; }
   </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col items-center">
@@ -371,12 +370,12 @@
   </nav>
 
   <!-- ==========================================
-       PANEL LATERAL (DRAWER)
+       PANEL LATERAL (DRAWER CON SELECTOR DE TEMA)
        ========================================== -->
   <div id="sidebar-drawer" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
     <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs theme-modal bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
-      <div class="space-y-6">
-        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
+      <div class="space-y-5">
+        <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3">
           <div class="flex items-center space-x-2">
             <div class="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-app-purple rounded-xl">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -388,7 +387,22 @@
           </button>
         </div>
 
-        <!-- Seguridad y Papelera -->
+        <!-- 1. SELECTOR MANUAL DE APARIENCIA (CLARO / OSCURO) -->
+        <div class="space-y-1.5">
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Apariencia de la App</p>
+          <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl border border-gray-200 dark:border-gray-800">
+            <button id="btn-theme-light" onclick="setManualTheme('light')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+              <span>Blanca</span>
+            </button>
+            <button id="btn-theme-dark" onclick="setManualTheme('dark')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+              <span>Oscura</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Seguridad y Papelera -->
         <div class="space-y-2">
           <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Seguridad y Papelera</p>
           <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl theme-bg-subtle bg-indigo-50/60 text-left transition-colors">
@@ -409,9 +423,9 @@
           </button>
         </div>
 
-        <!-- Exportaciones y Datos -->
+        <!-- 3. Exportaciones y Datos -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Exportación & Hojas de Cálculo</p>
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Exportación & Datos</p>
           <button onclick="exportToCSV()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-left transition-colors border border-emerald-100 dark:border-emerald-900/40">
             <div class="flex items-center space-x-3">
               <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -440,7 +454,7 @@
       </div>
 
       <div class="pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
-        <p class="text-[10px] theme-text-sub font-semibold">OCR Scanner & iOS Badge • v7.0</p>
+        <p class="text-[10px] theme-text-sub font-semibold">Tema Independiente • v8.0</p>
       </div>
     </div>
   </div>
@@ -503,7 +517,6 @@
 
   <!-- ==========================================
        MODAL 1: REGISTRAR / EDITAR MOVIMIENTO
-       (CON ESCÁNER DE TICKETS & QUICK CHIPS)
        ========================================== -->
   <div id="modal-transaction" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
@@ -527,7 +540,7 @@
         </label>
       </div>
 
-      <!-- Quick Chips: Gastos Frecuentes -->
+      <!-- Quick Chips -->
       <div class="space-y-1.5 pb-2 border-b border-gray-100 dark:border-gray-800">
         <span class="text-[10px] font-bold uppercase tracking-wider theme-text-sub">Accesos Rápidos</span>
         <div class="flex space-x-2 overflow-x-auto pb-1 no-scrollbar">
@@ -541,7 +554,6 @@
       </div>
 
       <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-3.5 pt-2">
-        <!-- Cuenta Destino -->
         <div>
           <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Cuenta Destino</label>
           <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
@@ -556,7 +568,6 @@
           </div>
         </div>
 
-        <!-- Tipo -->
         <div>
           <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
@@ -570,7 +581,6 @@
           </div>
         </div>
 
-        <!-- Botones de Importe Rápido -->
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider">Importe (€)</label>
@@ -693,13 +703,13 @@
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v7')) || [];
-    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v7')) || [
+    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v8')) || [];
+    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v8')) || [
       { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01', timestamp: Date.now() },
       { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15', timestamp: Date.now() },
       { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20', timestamp: Date.now() }
     ];
-    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v7')) || [];
+    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v8')) || [];
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
@@ -710,18 +720,54 @@
     let donutChartInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
+      // 1. Inicializar tema guardado (Por defecto: Blanca / Light)
+      const currentSavedTheme = localStorage.getItem('theme_preference') || 'light';
+      setManualTheme(currentSavedTheme);
+
       updateFormUI();
       purgeOldTrash();
       checkURLForApplePayParams();
       renderAll();
       initMiniTrendChart();
-      updateAppBadge(); // Actualiza el globo en pantalla de inicio
+      updateAppBadge();
     });
 
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // 1. ESCÁNER DE TICKETS CON CÁMARA (OCR)
+    // CONTROL DE APARIENCIA MANUAL (TEMA BLANCA / OSCURA)
+    // ==========================================
+    function setManualTheme(mode) {
+      const html = document.documentElement;
+      const metaTheme = document.getElementById('meta-theme-color');
+      const lightBtn = document.getElementById('btn-theme-light');
+      const darkBtn = document.getElementById('btn-theme-dark');
+
+      if (mode === 'dark') {
+        html.classList.add('dark');
+        localStorage.setItem('theme_preference', 'dark');
+        if (metaTheme) metaTheme.setAttribute('content', '#0B0F19');
+        if (darkBtn && lightBtn) {
+          darkBtn.className = "flex-1 py-2 rounded-xl bg-app-purple text-white font-bold text-xs shadow-sm flex items-center justify-center space-x-1.5 transition-all";
+          lightBtn.className = "flex-1 py-2 rounded-xl theme-text-sub font-semibold text-xs flex items-center justify-center space-x-1.5 transition-all";
+        }
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('theme_preference', 'light');
+        if (metaTheme) metaTheme.setAttribute('content', '#FFFFFF');
+        if (darkBtn && lightBtn) {
+          lightBtn.className = "flex-1 py-2 rounded-xl bg-white text-app-navy font-bold text-xs shadow-sm flex items-center justify-center space-x-1.5 transition-all";
+          darkBtn.className = "flex-1 py-2 rounded-xl theme-text-sub font-semibold text-xs flex items-center justify-center space-x-1.5 transition-all";
+        }
+      }
+
+      // Re-renderizar gráficos para adaptar colores de rejilla
+      if (currentTab === 'estudio') renderFinancialStudy();
+      else if (currentTab === 'movimientos') initMiniTrendChart();
+    }
+
+    // ==========================================
+    // ESCÁNER DE TICKETS CON CÁMARA (OCR)
     // ==========================================
     async function scanTicket(event) {
       const file = event.target.files[0];
@@ -736,27 +782,23 @@
           logger: () => {}
         });
 
-        // 1. Buscar importes monetarios (ej: 12.50, 12,50)
         const regexAmounts = /\b\d{1,4}[.,]\d{2}\b/g;
         const matches = text.match(regexAmounts);
 
         if (matches && matches.length > 0) {
           const numbers = matches.map(m => parseFloat(m.replace(',', '.'))).filter(n => !isNaN(n));
           if (numbers.length > 0) {
-            // El importe total casi siempre es el valor numérico más alto
             const maxAmount = Math.max(...numbers);
             document.getElementById('amount').value = maxAmount.toFixed(2);
           }
         }
 
-        // 2. Extraer Concepto o Nombre del comercio
         const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
         if (lines.length > 0) {
           const storeName = lines[0].replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').slice(0, 24);
           document.getElementById('concept').value = storeName || 'Compra Ticket';
         }
 
-        // 3. Autoclasificar categoría por palabras clave detectadas
         const lower = text.toLowerCase();
         if (lower.includes('mercadona') || lower.includes('carrefour') || lower.includes('dia') || lower.includes('lidl') || lower.includes('eroski') || lower.includes('super')) {
           document.getElementById('category').value = 'Supermercado';
@@ -778,13 +820,10 @@
     }
 
     // ==========================================
-    // 2. APP BADGE API (GLOBOS EN PANTALLA DE INICIO)
+    // APP BADGE API
     // ==========================================
     function updateAppBadge() {
-      // 1. Elementos pendientes en papelera
       const trashCount = trash.length;
-
-      // 2. Recibos o seguros que vencen en los próximos 5 días
       const now = new Date();
       let upcomingBills = 0;
 
@@ -1002,7 +1041,7 @@
         if (loan) {
           loanName = loan.name;
           loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
-          localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
         }
       }
 
@@ -1014,7 +1053,7 @@
         transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
       }
 
-      localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
+      localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
       document.getElementById('transaction-form').reset();
       updateFormUI();
       closeModal('modal-transaction');
@@ -1029,11 +1068,11 @@
           const loan = fixedItems.find(l => l.id === item.linkedLoanId);
           if (loan) {
             loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
-            localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
+            localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
           }
         }
         const removed = transactions.splice(index, 1)[0];
-        localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
         moveToTrash(removed, 'transaction');
         renderAll();
       };
@@ -1140,7 +1179,7 @@
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       const now = Date.now();
       trash = trash.filter(item => (now - item.deletedAt) < THIRTY_DAYS);
-      localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
       updateTrashBadge();
     }
 
@@ -1148,7 +1187,7 @@
       item.deletedAt = Date.now();
       item.itemType = itemType;
       trash.unshift(item);
-      localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
       updateTrashBadge();
       updateAppBadge();
     }
@@ -1215,13 +1254,13 @@
 
       if (type === 'fixed') {
         fixedItems.unshift(item);
-        localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
       } else {
         transactions.unshift(item);
-        localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
       }
 
-      localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
       renderTrashList();
       renderAll();
       updateAppBadge();
@@ -1230,7 +1269,7 @@
     function deleteFromTrashPermanently(index) {
       if (confirm("¿Eliminar definitivamente este elemento?")) {
         trash.splice(index, 1);
-        localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
         updateAppBadge();
@@ -1241,7 +1280,7 @@
       if (trash.length === 0) return;
       if (confirm("¿Vaciar toda la papelera definitivamente?")) {
         trash = [];
-        localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
         updateAppBadge();
@@ -1611,7 +1650,7 @@
       }
 
       fixedItems.push(itemData);
-      localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
+      localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
       renderAll();
@@ -1622,7 +1661,7 @@
       const item = fixedItems[index];
       const executeDelete = () => {
         const removed = fixedItems.splice(index, 1)[0];
-        localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
         moveToTrash(removed, 'fixed');
         renderAll();
       };
@@ -1738,7 +1777,7 @@
         transactions.unshift({
           account: 'gasto', type: 'expense', amount, concept, category: 'Apple Pay / Tarjeta', date, timestamp: now.getTime()
         });
-        localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
@@ -1836,6 +1875,7 @@
         fixedItems, 
         trash,
         masterKey: localStorage.getItem('finances_master_key'),
+        themePreference: localStorage.getItem('theme_preference'),
         exportDate: new Date().toISOString() 
       };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullBackup, null, 2));
@@ -1858,10 +1898,11 @@
           if (parsed.fixedItems) fixedItems = parsed.fixedItems;
           if (parsed.trash) trash = parsed.trash;
           if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
+          if (parsed.themePreference) setManualTheme(parsed.themePreference);
           
-          localStorage.setItem('my_finances_data_v7', JSON.stringify(transactions));
-          localStorage.setItem('my_finances_fixed_v7', JSON.stringify(fixedItems));
-          localStorage.setItem('my_finances_trash_v7', JSON.stringify(trash));
+          localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
           
           alert("Datos importados con éxito.");
           toggleSidebar(false);
