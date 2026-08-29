@@ -25,7 +25,7 @@
 
   <script>
     tailwind.config = {
-      darkMode: 'class', // Control manual por clase, no por el sistema operativo
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
@@ -48,7 +48,7 @@
   </script>
 
   <style>
-    /* Bloqueo estricto de zoom en iOS */
+    /* Bloqueo estricto de zoom y rebotes en iOS */
     html, body {
       touch-action: pan-x pan-y;
       -webkit-text-size-adjust: 100%;
@@ -68,7 +68,7 @@
     }
     ::-webkit-scrollbar { display: none; }
 
-    /* ESTILOS MANUALES PARA MODO OSCURO (Activados solo con clase .dark) */
+    /* ESTILOS PARA MODO OSCURO */
     html.dark body { background-color: #0B0F19 !important; color: #F1F5F9 !important; }
     html.dark .theme-card { background-color: #151D2C !important; border-color: #1E293B !important; color: #F8FAFC !important; }
     html.dark .theme-bg-subtle { background-color: #1E293B !important; color: #E2E8F0 !important; }
@@ -259,24 +259,62 @@
     </main>
 
     <!-- ==========================================
-         VISTA 3: GASTOS FIJOS & SIMULADOR
+         VISTA 3: GASTOS FIJOS, PREVISIÓN & CALENDARIO
          ========================================== -->
     <main id="view-fijos" class="view-panel hidden space-y-4">
       <header class="flex justify-between items-center py-2">
         <div>
           <h1 class="text-xl font-extrabold theme-text-navy tracking-tight">Gastos Fijos</h1>
-          <p class="text-[11px] font-semibold theme-text-sub">Créditos, Seguros y Estrategias</p>
+          <p class="text-[11px] font-semibold theme-text-sub">Calendario, Previsión y Simulador</p>
         </div>
         <button onclick="openFixedModal()" class="p-2.5 bg-app-navy text-white rounded-2xl shadow-sm active:scale-95 transition-transform">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         </button>
       </header>
 
+      <!-- Previsión de Saldo a Fin de Mes (Estilo Wallet) -->
+      <section class="theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100 space-y-2.5">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-app-purple bg-indigo-50 dark:bg-indigo-950/40 px-2.5 py-1 rounded-full">Previsión a Fin de Mes</span>
+            <p class="text-xs theme-text-sub mt-2 font-medium">Saldo Neto tras Recibos Pendientes</p>
+            <h3 id="projected-month-end-balance" class="text-2xl font-extrabold theme-text-navy mt-0.5">0,00 €</h3>
+          </div>
+          <div class="p-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-app-purple rounded-2xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+        </div>
+        <div class="pt-2 border-t border-gray-100 dark:border-gray-800 flex justify-between text-[11px] font-semibold">
+          <span class="theme-text-sub">Recibos por cobrar este mes:</span>
+          <span id="pending-bills-this-month" class="text-app-pink font-bold">0,00 €</span>
+        </div>
+      </section>
+
+      <!-- Calendario Interactivo de Vencimientos -->
+      <section class="theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-bold theme-text-navy uppercase tracking-wider" id="calendar-month-title">Calendario de Pagos</h3>
+          <span class="text-[10px] theme-text-sub font-semibold">Vencimientos fijados</span>
+        </div>
+        
+        <!-- Rejilla de días del mes -->
+        <div class="grid grid-cols-7 gap-1.5 text-center text-xs font-semibold pt-1" id="calendar-grid">
+          <!-- Render dinámico de días -->
+        </div>
+
+        <!-- Detalle de pagos del día seleccionado en el calendario -->
+        <div id="calendar-day-details" class="pt-2 border-t border-gray-100 dark:border-gray-800 space-y-1.5 hidden">
+          <p class="text-[11px] font-bold theme-text-sub" id="selected-day-label">Compromisos del día:</p>
+          <div id="selected-day-items" class="space-y-1 text-xs"></div>
+        </div>
+      </section>
+
+      <!-- Resumen Fijos & Deuda -->
       <section class="grid grid-cols-2 gap-3">
         <div class="theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
-          <p class="text-[11px] font-bold theme-text-sub uppercase">Cuota Mensual Fija</p>
+          <p class="text-[11px] font-bold theme-text-sub uppercase">Compromiso Mensual</p>
           <p id="total-fixed-monthly" class="text-xl font-extrabold text-app-pink mt-1">0,00 €</p>
-          <p class="text-[10px] theme-text-sub mt-0.5">Compromisos fijos</p>
+          <p class="text-[10px] theme-text-sub mt-0.5">Recibos recurrentes</p>
         </div>
         <div class="theme-card bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
           <p class="text-[11px] font-bold theme-text-sub uppercase">Deuda Total Activa</p>
@@ -370,11 +408,11 @@
   </nav>
 
   <!-- ==========================================
-       PANEL LATERAL (DRAWER CON SELECTOR DE TEMA)
+       PANEL LATERAL (DRAWER CON GESTOR DE CATEGORÍAS)
        ========================================== -->
   <div id="sidebar-drawer" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
     <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs theme-modal bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
-      <div class="space-y-5">
+      <div class="space-y-5 overflow-y-auto pr-1">
         <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3">
           <div class="flex items-center space-x-2">
             <div class="p-2 bg-indigo-50 dark:bg-indigo-950/40 text-app-purple rounded-xl">
@@ -387,30 +425,42 @@
           </button>
         </div>
 
-        <!-- 1. SELECTOR MANUAL DE APARIENCIA (CLARO / OSCURO) -->
+        <!-- Selector de Apariencia -->
         <div class="space-y-1.5">
-          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Apariencia de la App</p>
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Apariencia</p>
           <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl border border-gray-200 dark:border-gray-800">
             <button id="btn-theme-light" onclick="setManualTheme('light')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-              <span>Blanca</span>
+              <span>☀️ Blanca</span>
             </button>
             <button id="btn-theme-dark" onclick="setManualTheme('dark')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-              <span>Oscura</span>
+              <span>🌙 Oscura</span>
             </button>
           </div>
         </div>
 
-        <!-- 2. Seguridad y Papelera -->
+        <!-- 3. GESTOR DE CATEGORÍAS PERSONALIZADAS -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Seguridad y Papelera</p>
-          <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl theme-bg-subtle bg-indigo-50/60 text-left transition-colors">
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Personalización</p>
+          <button onclick="openCategoryModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl theme-bg-subtle bg-indigo-50/60 text-left transition-colors border border-indigo-100/50">
             <div class="flex items-center space-x-3">
-              <svg class="w-4 h-4 text-app-purple" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <svg class="w-4 h-4 text-app-purple" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
               <div>
-                <span class="text-xs font-bold theme-text-navy block">Papelera de Reciclaje</span>
-                <span class="text-[10px] theme-text-sub">Retención de 30 días</span>
+                <span class="text-xs font-bold theme-text-navy block">Gestor de Categorías</span>
+                <span class="text-[10px] theme-text-sub">Añadir o editar categorías</span>
+              </div>
+            </div>
+            <svg class="w-4 h-4 theme-text-sub" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Seguridad y Papelera -->
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Seguridad</p>
+          <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
+            <div class="flex items-center space-x-3">
+              <svg class="w-4 h-4 text-app-pink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <div>
+                <span class="text-xs font-bold theme-text-navy block">Papelera (30 días)</span>
               </div>
             </div>
             <span id="trash-count-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-app-purple text-white">0</span>
@@ -423,26 +473,21 @@
           </button>
         </div>
 
-        <!-- 3. Exportaciones y Datos -->
+        <!-- Exportaciones -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Exportación & Datos</p>
+          <p class="text-[11px] font-bold uppercase theme-text-sub tracking-wider">Exportación</p>
           <button onclick="exportToCSV()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-left transition-colors border border-emerald-100 dark:border-emerald-900/40">
             <div class="flex items-center space-x-3">
               <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-              <div>
-                <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300 block">Exportar a Excel / CSV</span>
-                <span class="text-[10px] theme-text-sub">Compatible con Numbers y Excel</span>
-              </div>
+              <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300">Exportar a Excel / CSV</span>
             </div>
           </button>
-
           <button onclick="exportData()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
             <div class="flex items-center space-x-3">
               <svg class="w-4 h-4 text-app-purple" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
               <span class="text-xs font-bold theme-text-navy">Copia de Seguridad (.json)</span>
             </div>
           </button>
-
           <label class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors cursor-pointer">
             <div class="flex items-center space-x-3">
               <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
@@ -453,9 +498,47 @@
         </div>
       </div>
 
-      <div class="pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
-        <p class="text-[10px] theme-text-sub font-semibold">Tema Independiente • v8.0</p>
+      <div class="pt-3 border-t border-gray-100 dark:border-gray-800 text-center">
+        <p class="text-[10px] theme-text-sub font-semibold">Traspasos, Calendario & Categorías • v9.0</p>
       </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL: GESTOR DE CATEGORÍAS PERSONALIZADAS
+       ========================================== -->
+  <div id="modal-categories" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3">
+        <div>
+          <h3 class="text-lg font-extrabold theme-text-navy">Gestor de Categorías</h3>
+          <p class="text-xs theme-text-sub">Crea o elimina tus propias etiquetas</p>
+        </div>
+        <button onclick="closeModal('modal-categories')" class="p-2 theme-bg-subtle bg-gray-100 rounded-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Selectores de Cuenta y Tipo para Categorías -->
+      <div class="grid grid-cols-2 gap-2 mb-3">
+        <select id="cat-manage-account" onchange="renderCategoriesManager()" class="theme-input bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none">
+          <option value="gasto">Cuenta Gasto</option>
+          <option value="ahorro">Cuenta Ahorro</option>
+        </select>
+        <select id="cat-manage-type" onchange="renderCategoriesManager()" class="theme-input bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none">
+          <option value="expense">Gastos</option>
+          <option value="income">Ingresos</option>
+        </select>
+      </div>
+
+      <!-- Formulario para Añadir Categoría -->
+      <form onsubmit="addCustomCategory(event)" class="flex space-x-2 mb-3">
+        <input type="text" id="new-category-input" required placeholder="Nueva categoría..." class="flex-1 theme-input bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-app-purple">
+        <button type="submit" class="px-4 py-2 bg-app-purple text-white rounded-xl text-xs font-bold active:scale-95 transition-transform">+ Añadir</button>
+      </form>
+
+      <!-- Lista de Categorías Existentes -->
+      <div id="categories-manage-list" class="space-y-2 overflow-y-auto flex-1 pr-1"></div>
     </div>
   </div>
 
@@ -516,7 +599,7 @@
   </div>
 
   <!-- ==========================================
-       MODAL 1: REGISTRAR / EDITAR MOVIMIENTO
+       MODAL 1: REGISTRAR MOVIMIENTO (CON TRASPASOS)
        ========================================== -->
   <div id="modal-transaction" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="theme-modal bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
@@ -524,7 +607,7 @@
       <div class="flex justify-between items-center mb-3">
         <div>
           <h3 id="transaction-modal-title" class="text-lg font-extrabold theme-text-navy">Nuevo Movimiento</h3>
-          <p class="text-xs theme-text-sub">Registra ingresos o gastos diarios</p>
+          <p class="text-xs theme-text-sub">Registra ingresos, gastos o traspasos</p>
         </div>
         <button onclick="closeModal('modal-transaction')" class="p-2 theme-bg-subtle bg-gray-100 rounded-full">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -532,8 +615,8 @@
       </div>
 
       <!-- Botón Escáner de Tickets con Cámara -->
-      <div class="mb-3">
-        <label class="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/50 text-app-purple font-bold text-xs cursor-pointer active:scale-95 transition-transform">
+      <div class="mb-3" id="scan-ticket-container">
+        <label class="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900/50 text-app-purple font-bold text-xs cursor-pointer active:scale-95 transition-transform">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
           <span id="scan-btn-text">Escanear Ticket con Cámara</span>
           <input type="file" accept="image/*" capture="environment" onchange="scanTicket(event)" class="hidden">
@@ -541,7 +624,7 @@
       </div>
 
       <!-- Quick Chips -->
-      <div class="space-y-1.5 pb-2 border-b border-gray-100 dark:border-gray-800">
+      <div class="space-y-1.5 pb-2 border-b border-gray-100 dark:border-gray-800" id="quick-chips-container">
         <span class="text-[10px] font-bold uppercase tracking-wider theme-text-sub">Accesos Rápidos</span>
         <div class="flex space-x-2 overflow-x-auto pb-1 no-scrollbar">
           <button type="button" onclick="applyQuickChip('☕ Desayuno', 'Restaurantes y Ocio', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">☕ Desayuno</button>
@@ -549,38 +632,54 @@
           <button type="button" onclick="applyQuickChip('⛽ Gasolina', 'Transporte', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">⛽ Gasolina</button>
           <button type="button" onclick="applyQuickChip('🛒 Supermercado', 'Supermercado', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">🛒 Super</button>
           <button type="button" onclick="applyQuickChip('💊 Farmacia', 'Salud', 'gasto')" class="flex-shrink-0 px-3 py-1.5 rounded-full theme-bg-subtle bg-gray-100 text-xs font-semibold hover:bg-indigo-50 active:scale-95 transition-transform">💊 Farmacia</button>
-          <button type="button" onclick="applyQuickChip('🐖 Ahorro Extra', 'Aporte mensual', 'ahorro')" class="flex-shrink-0 px-3 py-1.5 rounded-full bg-emerald-50 text-app-mint text-xs font-bold active:scale-95 transition-transform">🐖 +Ahorro</button>
         </div>
       </div>
 
       <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-3.5 pt-2">
+        
+        <!-- 1. TIPO DE OPERACIÓN (INGRESO / GASTO / TRASPASO) -->
         <div>
-          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Cuenta Destino</label>
           <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
             <label class="flex-1 text-center cursor-pointer">
-              <input type="radio" name="account" value="gasto" class="hidden peer" checked onchange="updateFormUI()">
+              <input type="radio" name="type" value="income" class="hidden peer" onchange="updateFormUI()">
+              <span class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso</span>
+            </label>
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="type" value="expense" class="hidden peer" checked onchange="updateFormUI()">
+              <span class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-pink peer-checked:shadow-sm transition-all">- Gasto</span>
+            </label>
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="type" value="transfer" class="hidden peer" onchange="updateFormUI()">
+              <span class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-purple peer-checked:shadow-sm transition-all">🔄 Traspaso</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Selector de Cuenta para Ingreso / Gasto -->
+        <div id="standard-account-selector">
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Cuenta</label>
+          <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="account" value="gasto" class="hidden peer" checked onchange="updateCategories()">
               <span class="block py-2 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-app-purple peer-checked:text-white transition-all shadow-sm">💳 Cta. Gasto</span>
             </label>
             <label class="flex-1 text-center cursor-pointer">
-              <input type="radio" name="account" value="ahorro" class="hidden peer" onchange="updateFormUI()">
+              <input type="radio" name="account" value="ahorro" class="hidden peer" onchange="updateCategories()">
               <span class="block py-2 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-app-mint peer-checked:text-white transition-all shadow-sm">🐖 Cta. Ahorro</span>
             </label>
           </div>
         </div>
 
-        <div>
-          <div class="flex theme-bg-subtle bg-gray-100 p-1 rounded-2xl">
-            <label class="flex-1 text-center cursor-pointer">
-              <input type="radio" name="type" value="income" class="hidden peer" checked onchange="updateCategories()">
-              <span id="label-income" class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso</span>
-            </label>
-            <label class="flex-1 text-center cursor-pointer">
-              <input type="radio" name="type" value="expense" class="hidden peer" onchange="updateCategories()">
-              <span id="label-expense" class="block py-1.5 text-xs font-bold theme-text-sub rounded-xl peer-checked:bg-white dark:peer-checked:bg-gray-800 peer-checked:text-app-pink peer-checked:shadow-sm transition-all">- Gasto</span>
-            </label>
-          </div>
+        <!-- Selector de Dirección para Traspasos -->
+        <div id="transfer-direction-selector" class="hidden space-y-1">
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Dirección del Traspaso</label>
+          <select id="transfer-direction" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-xs font-bold focus:outline-none">
+            <option value="gasto_to_ahorro">💳 De Cuenta Gasto ➔ 🐖 A Cuenta Ahorro</option>
+            <option value="ahorro_to_gasto">🐖 De Cuenta Ahorro ➔ 💳 A Cuenta Gasto</option>
+          </select>
         </div>
 
+        <!-- Botones de Importe Rápido -->
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider">Importe (€)</label>
@@ -596,10 +695,10 @@
 
         <div>
           <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Concepto</label>
-          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado..." class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
+          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado, Traspaso..." class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none">
         </div>
 
-        <div>
+        <div id="category-input-group">
           <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Categoría</label>
           <select id="category" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none"></select>
         </div>
@@ -690,26 +789,27 @@
 
   <script>
     // ==========================================
-    // BASE DE DATOS LOCAL & ESTADO
+    // BASE DE DATOS LOCAL & CATEGORÍAS EDITABLES
     // ==========================================
-    const categoryOptions = {
+    const defaultCategories = {
       gasto: {
         income: ['Nómina / Salario', 'Freelance / Extras', 'Bizum / Reembolso', 'Otros ingresos'],
         expense: ['Hipoteca / Préstamo', 'Vivienda / Alquiler', 'Seguros / IBI', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas y Suministros', 'Salud', 'Compras', 'Apple Pay / Tarjeta', 'Otros']
       },
       ahorro: {
-        income: ['Aporte mensual', 'Traspaso desde Gasto', 'Rendimientos / Intereses', 'Fondo de Emergencia', 'Meta de Ahorro'],
+        income: ['Aporte mensual', 'Rendimientos / Intereses', 'Fondo de Emergencia', 'Meta de Ahorro'],
         expense: ['Retirada Imprevisto', 'Uso para Meta', 'Inversión Externa', 'Otros']
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v8')) || [];
-    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v8')) || [
+    let categoryOptions = JSON.parse(localStorage.getItem('my_finances_categories_v9')) || defaultCategories;
+    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v9')) || [];
+    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v9')) || [
       { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01', timestamp: Date.now() },
       { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15', timestamp: Date.now() },
       { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20', timestamp: Date.now() }
     ];
-    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v8')) || [];
+    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v9')) || [];
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
@@ -720,7 +820,6 @@
     let donutChartInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Inicializar tema guardado (Por defecto: Blanca / Light)
       const currentSavedTheme = localStorage.getItem('theme_preference') || 'light';
       setManualTheme(currentSavedTheme);
 
@@ -735,7 +834,220 @@
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // CONTROL DE APARIENCIA MANUAL (TEMA BLANCA / OSCURA)
+    // 1. TRASPASOS & BALANCE CALCULATIONS
+    // ==========================================
+    function calculateBalances() {
+      let balanceGasto = 0;
+      let balanceAhorro = 0;
+
+      transactions.forEach(t => {
+        const amt = parseFloat(t.amount);
+        if (t.type === 'transfer') {
+          if (t.transferDirection === 'gasto_to_ahorro') {
+            balanceGasto -= amt;
+            balanceAhorro += amt;
+          } else {
+            balanceAhorro -= amt;
+            balanceGasto += amt;
+          }
+        } else if (t.account === 'ahorro') {
+          balanceAhorro += (t.type === 'income' ? amt : -amt);
+        } else {
+          balanceGasto += (t.type === 'income' ? amt : -amt);
+        }
+      });
+
+      return { balanceGasto, balanceAhorro, totalNetWorth: balanceGasto + balanceAhorro };
+    }
+
+    // ==========================================
+    // 2. CALENDARIO & PREVISIÓN A FIN DE MES
+    // ==========================================
+    function renderCalendarSchedule() {
+      const grid = document.getElementById('calendar-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+
+      const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      document.getElementById('calendar-month-title').textContent = `Vencimientos • ${monthNames[month]} ${year}`;
+
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Lunes = 0
+
+      // Días de la semana
+      const dayHeaders = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+      dayHeaders.forEach(d => {
+        const th = document.createElement('div');
+        th.className = "text-[10px] theme-text-sub font-bold py-1";
+        th.textContent = d;
+        grid.appendChild(th);
+      });
+
+      // Espacios vacíos antes del día 1
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        grid.appendChild(emptyCell);
+      }
+
+      // Renderizar días
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('button');
+        cell.type = "button";
+        const isToday = (day === now.getDate());
+
+        // Buscar recibos programados en este día
+        const matchingBills = fixedItems.filter(item => {
+          if (!item.date) return false;
+          const itemDay = parseInt(item.date.split('-')[2]);
+          const itemMonth = parseInt(item.date.split('-')[1]) - 1;
+
+          if (item.frequency === 'monthly' || item.type === 'credit') {
+            return itemDay === day;
+          }
+          if (item.frequency === 'annual') {
+            return itemDay === day && itemMonth === month;
+          }
+          return false;
+        });
+
+        const hasBills = matchingBills.length > 0;
+
+        cell.className = `p-2 rounded-xl text-xs font-bold transition-all relative flex flex-col items-center justify-center ${
+          isToday ? 'bg-app-purple text-white shadow-sm' : (hasBills ? 'bg-rose-50 dark:bg-rose-950/40 text-app-pink font-extrabold' : 'hover:bg-gray-100 dark:hover:bg-gray-800 theme-text-navy')
+        }`;
+        cell.innerHTML = `
+          <span>${day}</span>
+          ${hasBills ? `<span class="w-1.5 h-1.5 rounded-full ${isToday ? 'bg-white' : 'bg-app-pink'} mt-0.5"></span>` : ''}
+        `;
+
+        cell.onclick = () => showDayDetails(day, matchingBills);
+        grid.appendChild(cell);
+      }
+
+      // Previsión de saldo a fin de mes
+      calculateProjectedMonthEnd();
+    }
+
+    function showDayDetails(day, bills) {
+      const container = document.getElementById('calendar-day-details');
+      const label = document.getElementById('selected-day-label');
+      const itemsContainer = document.getElementById('selected-day-items');
+
+      if (bills.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      label.textContent = `Compromisos del día ${day}:`;
+      itemsContainer.innerHTML = '';
+
+      bills.forEach(b => {
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center py-1 theme-bg-subtle bg-gray-50 px-3 rounded-xl";
+        row.innerHTML = `
+          <span class="font-bold theme-text-navy">${b.name}</span>
+          <span class="font-extrabold text-app-pink">-${formatCurrency(b.monthlyFee)}</span>
+        `;
+        itemsContainer.appendChild(row);
+      });
+    }
+
+    function calculateProjectedMonthEnd() {
+      const { balanceGasto } = calculateBalances();
+      const now = new Date();
+      const currentDay = now.getDate();
+      const currentMonth = now.getMonth();
+
+      let pendingBillsTotal = 0;
+
+      fixedItems.forEach(item => {
+        if (!item.date) return;
+        const itemDay = parseInt(item.date.split('-')[2]);
+        const itemMonth = parseInt(item.date.split('-')[1]) - 1;
+
+        // Si el recibo vence después del día de hoy en el mes actual
+        if (itemDay >= currentDay) {
+          if (item.frequency === 'monthly' || item.type === 'credit') {
+            pendingBillsTotal += parseFloat(item.monthlyFee || 0);
+          } else if (item.frequency === 'annual' && itemMonth === currentMonth) {
+            pendingBillsTotal += parseFloat(item.monthlyFee || 0);
+          }
+        }
+      });
+
+      const projected = balanceGasto - pendingBillsTotal;
+      document.getElementById('projected-month-end-balance').textContent = formatCurrency(projected);
+      document.getElementById('pending-bills-this-month').textContent = `-${formatCurrency(pendingBillsTotal)}`;
+    }
+
+    // ==========================================
+    // 3. GESTOR DE CATEGORÍAS (CRUD)
+    // ==========================================
+    function openCategoryModal() {
+      toggleSidebar(false);
+      renderCategoriesManager();
+      openModal('modal-categories');
+    }
+
+    function renderCategoriesManager() {
+      const account = document.getElementById('cat-manage-account').value;
+      const type = document.getElementById('cat-manage-type').value;
+      const list = document.getElementById('categories-manage-list');
+      list.innerHTML = '';
+
+      const currentList = categoryOptions[account][type] || [];
+
+      currentList.forEach((cat, index) => {
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center p-3 rounded-2xl theme-bg-subtle bg-gray-50 border border-gray-100 dark:border-gray-800";
+        row.innerHTML = `
+          <span class="text-xs font-bold theme-text-navy">${cat}</span>
+          <button onclick="deleteCustomCategory('${account}', '${type}', ${index})" class="text-gray-300 hover:text-app-pink p-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function addCustomCategory(e) {
+      e.preventDefault();
+      const account = document.getElementById('cat-manage-account').value;
+      const type = document.getElementById('cat-manage-type').value;
+      const input = document.getElementById('new-category-input');
+      const val = input.value.trim();
+
+      if (!val) return;
+
+      if (!categoryOptions[account][type].includes(val)) {
+        categoryOptions[account][type].push(val);
+        localStorage.setItem('my_finances_categories_v9', JSON.stringify(categoryOptions));
+        input.value = '';
+        renderCategoriesManager();
+        updateCategories();
+      } else {
+        alert("Esta categoría ya existe.");
+      }
+    }
+
+    function deleteCustomCategory(account, type, index) {
+      if (categoryOptions[account][type].length <= 1) {
+        alert("Debe quedar al menos una categoría.");
+        return;
+      }
+      categoryOptions[account][type].splice(index, 1);
+      localStorage.setItem('my_finances_categories_v9', JSON.stringify(categoryOptions));
+      renderCategoriesManager();
+      updateCategories();
+    }
+
+    // ==========================================
+    // CONTROL DE TEMA MANUAL (CLARO / OSCURO)
     // ==========================================
     function setManualTheme(mode) {
       const html = document.documentElement;
@@ -761,100 +1073,44 @@
         }
       }
 
-      // Re-renderizar gráficos para adaptar colores de rejilla
       if (currentTab === 'estudio') renderFinancialStudy();
       else if (currentTab === 'movimientos') initMiniTrendChart();
     }
 
     // ==========================================
-    // ESCÁNER DE TICKETS CON CÁMARA (OCR)
+    // OCR & QUICK ACCESS
     // ==========================================
     async function scanTicket(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const scanBtnText = document.getElementById('scan-btn-text');
-      const originalText = scanBtnText.textContent;
       scanBtnText.textContent = "⏳ Leyendo ticket con OCR...";
 
       try {
-        const { data: { text } } = await Tesseract.recognize(file, 'spa', {
-          logger: () => {}
-        });
-
-        const regexAmounts = /\b\d{1,4}[.,]\d{2}\b/g;
-        const matches = text.match(regexAmounts);
+        const { data: { text } } = await Tesseract.recognize(file, 'spa', { logger: () => {} });
+        const matches = text.match(/\b\d{1,4}[.,]\d{2}\b/g);
 
         if (matches && matches.length > 0) {
           const numbers = matches.map(m => parseFloat(m.replace(',', '.'))).filter(n => !isNaN(n));
-          if (numbers.length > 0) {
-            const maxAmount = Math.max(...numbers);
-            document.getElementById('amount').value = maxAmount.toFixed(2);
-          }
+          if (numbers.length > 0) document.getElementById('amount').value = Math.max(...numbers).toFixed(2);
         }
 
         const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
         if (lines.length > 0) {
-          const storeName = lines[0].replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').slice(0, 24);
-          document.getElementById('concept').value = storeName || 'Compra Ticket';
+          document.getElementById('concept').value = lines[0].replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '').slice(0, 24) || 'Compra Ticket';
         }
-
-        const lower = text.toLowerCase();
-        if (lower.includes('mercadona') || lower.includes('carrefour') || lower.includes('dia') || lower.includes('lidl') || lower.includes('eroski') || lower.includes('super')) {
-          document.getElementById('category').value = 'Supermercado';
-        } else if (lower.includes('farmacia') || lower.includes('salud') || lower.includes('medic')) {
-          document.getElementById('category').value = 'Salud';
-        } else if (lower.includes('repsol') || lower.includes('cepsa') || lower.includes('gasolin') || lower.includes('bp') || lower.includes('shell')) {
-          document.getElementById('category').value = 'Transporte';
-        } else if (lower.includes('restaurante') || lower.includes('bar') || lower.includes('cafeteria') || lower.includes('hamburg') || lower.includes('pizza')) {
-          document.getElementById('category').value = 'Restaurantes y Ocio';
-        }
-
       } catch (err) {
-        console.error(err);
-        alert("No se pudo leer el ticket con nitidez. Puedes introducir los datos manualmente.");
+        alert("No se pudo leer el ticket con nitidez.");
       } finally {
-        scanBtnText.textContent = originalText;
+        scanBtnText.textContent = "Escanear Ticket con Cámara";
         event.target.value = '';
       }
     }
 
-    // ==========================================
-    // APP BADGE API
-    // ==========================================
-    function updateAppBadge() {
-      const trashCount = trash.length;
-      const now = new Date();
-      let upcomingBills = 0;
-
-      fixedItems.forEach(item => {
-        if (item.date) {
-          const billDate = new Date(item.date);
-          const diffDays = Math.ceil((billDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-          if (diffDays >= 0 && diffDays <= 5) {
-            upcomingBills++;
-          }
-        }
-      });
-
-      const totalBadge = trashCount + upcomingBills;
-
-      if ('setAppBadge' in navigator) {
-        if (totalBadge > 0) {
-          navigator.setAppBadge(totalBadge).catch(() => {});
-        } else {
-          navigator.clearAppBadge().catch(() => {});
-        }
-      }
-    }
-
-    // ==========================================
-    // QUICK CHIPS & BOTONES RÁPIDOS
-    // ==========================================
     function addQuickAmount(val) {
       const input = document.getElementById('amount');
-      const current = parseFloat(input.value) || 0;
-      input.value = (current + val).toFixed(2);
+      input.value = ((parseFloat(input.value) || 0) + val).toFixed(2);
     }
 
     function applyQuickChip(conceptName, categoryName, accountType) {
@@ -870,23 +1126,18 @@
     }
 
     function exportToCSV() {
-      if (transactions.length === 0) {
-        alert("No hay movimientos registrados para exportar.");
-        return;
-      }
+      if (transactions.length === 0) { alert("No hay movimientos."); return; }
 
-      let csvContent = "\uFEFF";
-      csvContent += "Fecha;Cuenta;Tipo;Concepto;Categoría;Importe (EUR);Amortización\n";
-
+      let csvContent = "\uFEFFFecha;Cuenta;Tipo;Concepto;Categoría;Importe (EUR);Detalle\n";
       transactions.forEach(t => {
         const row = [
           `"${t.date || ''}"`,
-          `"${t.account === 'ahorro' ? 'Ahorro' : 'Gasto'}"`,
-          `"${t.type === 'income' ? 'Ingreso' : 'Gasto'}"`,
+          `"${t.type === 'transfer' ? 'Traspaso' : (t.account === 'ahorro' ? 'Ahorro' : 'Gasto')}"`,
+          `"${t.type}"`,
           `"${(t.concept || '').replace(/"/g, '""')}"`,
           `"${t.category || ''}"`,
           `"${(t.amount || 0).toFixed(2).replace('.', ',')}"`,
-          `"${t.loanName || ''}"`
+          `"${t.transferDirection || t.loanName || ''}"`
         ];
         csvContent += row.join(";") + "\n";
       });
@@ -903,7 +1154,7 @@
     }
 
     // ==========================================
-    // MOVIMIENTOS: RENDER & BÚSQUEDA
+    // RENDERIZADO DE MOVIMIENTOS
     // ==========================================
     function renderTransactions() {
       const list = document.getElementById('transactions-list');
@@ -913,24 +1164,23 @@
       const searchVal = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
       list.innerHTML = '';
 
-      let balanceGasto = 0, balanceAhorro = 0;
-
-      transactions.forEach(t => {
-        const amount = parseFloat(t.amount);
-        if (t.account === 'ahorro') balanceAhorro += (t.type === 'income' ? amount : -amount);
-        else balanceGasto += (t.type === 'income' ? amount : -amount);
-      });
+      const { balanceGasto, balanceAhorro, totalNetWorth } = calculateBalances();
 
       document.getElementById('balance-gasto').textContent = formatCurrency(balanceGasto);
       document.getElementById('balance-ahorro').textContent = formatCurrency(balanceAhorro);
-      document.getElementById('total-net-worth').textContent = formatCurrency(balanceGasto + balanceAhorro);
+      document.getElementById('total-net-worth').textContent = formatCurrency(totalNetWorth);
 
       const filtered = transactions.filter(t => {
-        const matchesAccount = activeFilter === 'all' || (t.account || 'gasto') === activeFilter;
+        let matchesAccount = false;
+        if (activeFilter === 'all') matchesAccount = true;
+        else if (t.type === 'transfer') matchesAccount = true; // Los traspasos se muestran en ambas cuentas
+        else matchesAccount = (t.account || 'gasto') === activeFilter;
+
         const matchesSearch = !searchVal || 
           (t.concept || '').toLowerCase().includes(searchVal) ||
           (t.category || '').toLowerCase().includes(searchVal) ||
           String(t.amount).includes(searchVal);
+
         return matchesAccount && matchesSearch;
       });
 
@@ -942,25 +1192,42 @@
 
       filtered.forEach(item => {
         const originalIndex = transactions.indexOf(item);
+        const isTransfer = item.type === 'transfer';
         const isIncome = item.type === 'income';
         const isAhorro = item.account === 'ahorro';
         const isLocked = isOlderThan24Hours(item.timestamp);
         
+        let displaySign = isIncome ? '+' : '-';
+        let displayColor = isIncome ? 'text-app-mint' : 'theme-text-navy';
+
+        if (isTransfer) {
+          displayColor = 'text-app-purple';
+          if (activeFilter === 'gasto') {
+            displaySign = (item.transferDirection === 'gasto_to_ahorro') ? '-' : '+';
+          } else if (activeFilter === 'ahorro') {
+            displaySign = (item.transferDirection === 'gasto_to_ahorro') ? '+' : '-';
+          } else {
+            displaySign = '⇄ ';
+          }
+        }
+
         const card = document.createElement('div');
         card.className = "theme-card bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between";
         card.innerHTML = `
           <div class="flex items-center space-x-3">
-            <div class="p-3 rounded-2xl ${isAhorro ? 'bg-emerald-50 text-app-mint' : (isIncome ? 'bg-indigo-50 text-app-purple' : 'bg-rose-50 text-app-pink')}">
-              ${isAhorro 
-                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>'
-                : (isIncome 
-                  ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>'
-                  : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>')}
+            <div class="p-3 rounded-2xl ${isTransfer ? 'bg-indigo-50 text-app-purple' : (isAhorro ? 'bg-emerald-50 text-app-mint' : (isIncome ? 'bg-indigo-50 text-app-purple' : 'bg-rose-50 text-app-pink'))}">
+              ${isTransfer 
+                ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>'
+                : (isAhorro 
+                  ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>'
+                  : (isIncome 
+                    ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>'
+                    : '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>'))}
             </div>
             <div>
               <div class="flex items-center space-x-1.5">
-                <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md ${isAhorro ? 'bg-emerald-100 text-app-mint' : 'bg-indigo-50 text-app-purple'}">
-                  ${isAhorro ? 'Ahorro' : 'Gasto'}
+                <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md ${isTransfer ? 'bg-indigo-100 text-app-purple' : (isAhorro ? 'bg-emerald-100 text-app-mint' : 'bg-indigo-50 text-app-purple')}">
+                  ${isTransfer ? 'Traspaso' : (isAhorro ? 'Ahorro' : 'Gasto')}
                 </span>
                 <p class="text-xs font-bold theme-text-navy">${item.concept}</p>
                 ${isLocked ? '<svg class="w-3 h-3 theme-text-sub" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>' : ''}
@@ -969,8 +1236,8 @@
             </div>
           </div>
           <div class="flex items-center space-x-2">
-            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'theme-text-navy'} mr-1">
-              ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
+            <span class="text-xs font-extrabold ${displayColor} mr-1">
+              ${displaySign}${formatCurrency(item.amount)}
             </span>
             <button onclick="openTransactionModal(${originalIndex})" title="Editar" class="text-gray-300 hover:text-app-purple p-1">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
@@ -1000,12 +1267,18 @@
         title.textContent = 'Editar Movimiento';
         btn.textContent = 'Actualizar Movimiento';
 
-        document.querySelector(`input[name="account"][value="${item.account || 'gasto'}"]`).checked = true;
         document.querySelector(`input[name="type"][value="${item.type}"]`).checked = true;
         updateFormUI();
+
+        if (item.type === 'transfer') {
+          document.getElementById('transfer-direction').value = item.transferDirection || 'gasto_to_ahorro';
+        } else {
+          document.querySelector(`input[name="account"][value="${item.account || 'gasto'}"]`).checked = true;
+          document.getElementById('category').value = item.category;
+        }
+
         document.getElementById('amount').value = item.amount;
         document.getElementById('concept').value = item.concept;
-        document.getElementById('category').value = item.category;
         if (item.linkedLoanId) document.getElementById('linked-loan').value = item.linkedLoanId;
       } else {
         title.textContent = 'Nuevo Movimiento';
@@ -1025,15 +1298,25 @@
 
     function saveTransaction(e) {
       e.preventDefault();
-      const account = document.querySelector('input[name="account"]:checked').value;
       const type = document.querySelector('input[name="type"]:checked').value;
       const amount = parseFloat(document.getElementById('amount').value);
       const concept = document.getElementById('concept').value.trim();
-      const category = document.getElementById('category').value;
       const linkedLoanId = document.getElementById('linked-loan').value;
       
       const now = new Date();
       const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+
+      let account = 'gasto';
+      let category = 'Traspaso Interno';
+      let transferDirection = null;
+
+      if (type === 'transfer') {
+        transferDirection = document.getElementById('transfer-direction').value;
+        account = (transferDirection === 'gasto_to_ahorro') ? 'gasto' : 'ahorro';
+      } else {
+        account = document.querySelector('input[name="account"]:checked').value;
+        category = document.getElementById('category').value;
+      }
 
       let loanName = '';
       if (linkedLoanId && type === 'expense') {
@@ -1041,23 +1324,35 @@
         if (loan) {
           loanName = loan.name;
           loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
-          localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_fixed_v9', JSON.stringify(fixedItems));
         }
       }
 
+      const transactionData = {
+        account,
+        type,
+        amount,
+        concept,
+        category,
+        date,
+        timestamp: (editingIndex !== null) ? transactions[editingIndex].timestamp : now.getTime(),
+        linkedLoanId,
+        loanName,
+        transferDirection
+      };
+
       if (editingIndex !== null) {
-        const original = transactions[editingIndex];
-        transactions[editingIndex] = { ...original, account, type, amount, concept, category, linkedLoanId, loanName };
+        transactions[editingIndex] = transactionData;
         editingIndex = null;
       } else {
-        transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
+        transactions.unshift(transactionData);
       }
 
-      localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
+      localStorage.setItem('my_finances_data_v9', JSON.stringify(transactions));
       document.getElementById('transaction-form').reset();
       updateFormUI();
       closeModal('modal-transaction');
-      setAccountFilter(account);
+      renderAll();
       updateAppBadge();
     }
 
@@ -1068,11 +1363,11 @@
           const loan = fixedItems.find(l => l.id === item.linkedLoanId);
           if (loan) {
             loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
-            localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
+            localStorage.setItem('my_finances_fixed_v9', JSON.stringify(fixedItems));
           }
         }
         const removed = transactions.splice(index, 1)[0];
-        localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v9', JSON.stringify(transactions));
         moveToTrash(removed, 'transaction');
         renderAll();
       };
@@ -1086,6 +1381,59 @@
           executeDelete();
         }
       }
+    }
+
+    function updateFormUI() {
+      const type = document.querySelector('input[name="type"]:checked').value;
+      const accountSelector = document.getElementById('standard-account-selector');
+      const transferSelector = document.getElementById('transfer-direction-selector');
+      const categoryGroup = document.getElementById('category-input-group');
+      const quickChips = document.getElementById('quick-chips-container');
+      const scanTicketBtn = document.getElementById('scan-ticket-container');
+      const loanContainer = document.getElementById('linked-loan-container');
+
+      if (type === 'transfer') {
+        accountSelector.classList.add('hidden');
+        transferSelector.classList.remove('hidden');
+        categoryGroup.classList.add('hidden');
+        quickChips.classList.add('hidden');
+        scanTicketBtn.classList.add('hidden');
+        loanContainer.classList.add('hidden');
+        if (!document.getElementById('concept').value) {
+          document.getElementById('concept').value = "Traspaso entre cuentas";
+        }
+      } else {
+        accountSelector.classList.remove('hidden');
+        transferSelector.classList.add('hidden');
+        categoryGroup.classList.remove('hidden');
+        quickChips.classList.remove('hidden');
+        scanTicketBtn.classList.remove('hidden');
+
+        const account = document.querySelector('input[name="account"]:checked').value;
+        if (type === 'expense' && account === 'gasto' && fixedItems.some(i => i.type === 'credit')) {
+          loanContainer.classList.remove('hidden');
+        } else {
+          loanContainer.classList.add('hidden');
+        }
+        updateCategories();
+      }
+    }
+
+    function updateCategories() {
+      const type = document.querySelector('input[name="type"]:checked').value;
+      if (type === 'transfer') return;
+
+      const account = document.querySelector('input[name="account"]:checked').value;
+      const select = document.getElementById('category');
+      select.innerHTML = '';
+
+      const list = categoryOptions[account][type] || [];
+      list.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
     }
 
     // ==========================================
@@ -1179,7 +1527,7 @@
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       const now = Date.now();
       trash = trash.filter(item => (now - item.deletedAt) < THIRTY_DAYS);
-      localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v9', JSON.stringify(trash));
       updateTrashBadge();
     }
 
@@ -1187,7 +1535,7 @@
       item.deletedAt = Date.now();
       item.itemType = itemType;
       trash.unshift(item);
-      localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v9', JSON.stringify(trash));
       updateTrashBadge();
       updateAppBadge();
     }
@@ -1227,7 +1575,7 @@
           <div>
             <div class="flex items-center space-x-1.5">
               <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700">
-                ${item.itemType === 'fixed' ? 'Fijo' : (item.account === 'ahorro' ? 'Ahorro' : 'Gasto')}
+                ${item.type === 'transfer' ? 'Traspaso' : (item.itemType === 'fixed' ? 'Fijo' : (item.account === 'ahorro' ? 'Ahorro' : 'Gasto'))}
               </span>
               <p class="text-xs font-bold theme-text-navy">${item.concept || item.name}</p>
             </div>
@@ -1254,13 +1602,13 @@
 
       if (type === 'fixed') {
         fixedItems.unshift(item);
-        localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v9', JSON.stringify(fixedItems));
       } else {
         transactions.unshift(item);
-        localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v9', JSON.stringify(transactions));
       }
 
-      localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v9', JSON.stringify(trash));
       renderTrashList();
       renderAll();
       updateAppBadge();
@@ -1269,7 +1617,7 @@
     function deleteFromTrashPermanently(index) {
       if (confirm("¿Eliminar definitivamente este elemento?")) {
         trash.splice(index, 1);
-        localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v9', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
         updateAppBadge();
@@ -1280,7 +1628,7 @@
       if (trash.length === 0) return;
       if (confirm("¿Vaciar toda la papelera definitivamente?")) {
         trash = [];
-        localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v9', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
         updateAppBadge();
@@ -1298,6 +1646,9 @@
       const monthlyTotals = {}, categoryTotals = {}, microExpenses = [];
 
       transactions.forEach(t => {
+        // Ignorar traspasos internos para no falsear ingresos / gastos reales
+        if (t.type === 'transfer') return;
+
         const amt = parseFloat(t.amount);
         const tDate = t.timestamp ? new Date(t.timestamp) : now;
         const monthKey = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}`;
@@ -1319,12 +1670,13 @@
         }
       });
 
+      const { balanceAhorro } = calculateBalances();
       fixedItems.filter(i => i.type === 'credit').forEach(i => totalDebt += (i.remainingAmount || 0));
 
       document.getElementById('study-income-total').textContent = formatCurrency(currentMonthIncome);
       document.getElementById('study-expense-total').textContent = formatCurrency(currentMonthExpense);
       document.getElementById('study-credit-total').textContent = formatCurrency(totalDebt);
-      document.getElementById('study-savings-total').textContent = formatCurrency(totalSavings);
+      document.getElementById('study-savings-total').textContent = formatCurrency(balanceAhorro);
 
       renderIntermonthlyComparison(monthlyTotals, currentMonthKey, currentMonthExpense);
       renderLeaksDetector(microExpenses, categoryTotals, currentMonthExpense);
@@ -1650,7 +2002,7 @@
       }
 
       fixedItems.push(itemData);
-      localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
+      localStorage.setItem('my_finances_fixed_v9', JSON.stringify(fixedItems));
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
       renderAll();
@@ -1661,7 +2013,7 @@
       const item = fixedItems[index];
       const executeDelete = () => {
         const removed = fixedItems.splice(index, 1)[0];
-        localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v9', JSON.stringify(fixedItems));
         moveToTrash(removed, 'fixed');
         renderAll();
       };
@@ -1721,8 +2073,15 @@
       });
 
       if (tabId === 'estudio') renderFinancialStudy();
-      else if (tabId === 'fijos') { renderFixedItems(); populateSimLoanDropdown(); runAmortizationSimulation(); }
-      else { renderTransactions(); initMiniTrendChart(); }
+      else if (tabId === 'fijos') { 
+        renderFixedItems(); 
+        populateSimLoanDropdown(); 
+        runAmortizationSimulation();
+        renderCalendarSchedule();
+      } else { 
+        renderTransactions(); 
+        initMiniTrendChart(); 
+      }
     }
 
     function renderAll() {
@@ -1730,6 +2089,7 @@
       renderFixedItems();
       populateSimLoanDropdown();
       runAmortizationSimulation();
+      renderCalendarSchedule();
       updateTrashBadge();
     }
 
@@ -1777,7 +2137,7 @@
         transactions.unshift({
           account: 'gasto', type: 'expense', amount, concept, category: 'Apple Pay / Tarjeta', date, timestamp: now.getTime()
         });
-        localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v9', JSON.stringify(transactions));
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
@@ -1820,44 +2180,6 @@
       setTimeout(() => { modal.classList.add('hidden'); }, 200);
     }
 
-    function updateFormUI() {
-      const account = document.querySelector('input[name="account"]:checked').value;
-      const type = document.querySelector('input[name="type"]:checked').value;
-      const labelIncome = document.getElementById('label-income');
-      const labelExpense = document.getElementById('label-expense');
-      const loanContainer = document.getElementById('linked-loan-container');
-
-      if (account === 'ahorro') {
-        labelIncome.textContent = '+ Añadir Ahorro';
-        labelExpense.textContent = '- Retirar Ahorro';
-        loanContainer.classList.add('hidden');
-      } else {
-        labelIncome.textContent = '+ Ingreso';
-        labelExpense.textContent = '- Gasto';
-        if (type === 'expense' && fixedItems.some(i => i.type === 'credit')) {
-          loanContainer.classList.remove('hidden');
-        } else {
-          loanContainer.classList.add('hidden');
-        }
-      }
-      updateCategories();
-    }
-
-    function updateCategories() {
-      const account = document.querySelector('input[name="account"]:checked').value;
-      const type = document.querySelector('input[name="type"]:checked').value;
-      const select = document.getElementById('category');
-      select.innerHTML = '';
-
-      const list = categoryOptions[account][type] || [];
-      list.forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat;
-        opt.textContent = cat;
-        select.appendChild(opt);
-      });
-    }
-
     function toggleFixedFormFields() {
       const type = document.querySelector('input[name="fixed_type"]:checked').value;
       if (type === 'credit') {
@@ -1874,6 +2196,7 @@
         transactions, 
         fixedItems, 
         trash,
+        categoryOptions,
         masterKey: localStorage.getItem('finances_master_key'),
         themePreference: localStorage.getItem('theme_preference'),
         exportDate: new Date().toISOString() 
@@ -1897,12 +2220,14 @@
           if (parsed.transactions) transactions = parsed.transactions;
           if (parsed.fixedItems) fixedItems = parsed.fixedItems;
           if (parsed.trash) trash = parsed.trash;
+          if (parsed.categoryOptions) categoryOptions = parsed.categoryOptions;
           if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
           if (parsed.themePreference) setManualTheme(parsed.themePreference);
           
-          localStorage.setItem('my_finances_data_v8', JSON.stringify(transactions));
-          localStorage.setItem('my_finances_fixed_v8', JSON.stringify(fixedItems));
-          localStorage.setItem('my_finances_trash_v8', JSON.stringify(trash));
+          localStorage.setItem('my_finances_data_v9', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v9', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_trash_v9', JSON.stringify(trash));
+          localStorage.setItem('my_finances_categories_v9', JSON.stringify(categoryOptions));
           
           alert("Datos importados con éxito.");
           toggleSidebar(false);
