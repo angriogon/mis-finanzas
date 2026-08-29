@@ -2,11 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!-- Bloqueo estricto de zoom en iOS / Android -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Control de Finanzas</title>
 
-  <!-- Configuración iOS Web App -->
+  <!-- PWA & iOS Metatags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Finanzas">
@@ -14,7 +13,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#FFFFFF">
 
-  <!-- Tipografía Google Fonts: Plus Jakarta Sans -->
+  <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -83,8 +82,6 @@
          VISTA 1: MOVIMIENTOS
          ========================================== -->
     <main id="view-movimientos" class="view-panel space-y-4">
-      
-      <!-- Barra Superior -->
       <header class="flex justify-between items-center py-2">
         <div class="flex items-center space-x-3">
           <button onclick="toggleSidebar(true)" class="p-2.5 bg-white rounded-2xl shadow-card-soft text-app-navy active:scale-95 transition-transform relative">
@@ -101,7 +98,6 @@
         </button>
       </header>
 
-      <!-- Tarjetas de Cuentas -->
       <section class="space-y-3">
         <!-- Tarjeta Gasto -->
         <div onclick="setAccountFilter('gasto')" id="card-gasto" class="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft cursor-pointer transition-all active:scale-[0.98] border-2 border-white/20">
@@ -143,7 +139,7 @@
         </div>
       </section>
 
-      <!-- Patrimonio Total y Tendencia -->
+      <!-- Patrimonio Total y Gráfico Ondas -->
       <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50">
         <div class="text-center">
           <p class="text-[11px] font-bold uppercase tracking-wider text-app-subtext">Patrimonio Total</p>
@@ -154,14 +150,12 @@
         </div>
       </section>
 
-      <!-- Pestañas Filtro -->
       <div class="flex bg-white p-1 rounded-2xl shadow-card-soft text-xs font-bold border border-indigo-50/40">
         <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Todos</button>
         <button onclick="setAccountFilter('gasto')" id="tab-gasto" class="flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all">Cta. Gasto</button>
         <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-2 rounded-xl text-app-subtext transition-all">Cta. Ahorro</button>
       </div>
 
-      <!-- Lista de Movimientos -->
       <section class="mt-2 space-y-3">
         <div class="flex justify-between items-center px-1">
           <h3 id="list-title" class="text-xs font-bold text-app-subtext uppercase tracking-wider">Historial de Pagos</h3>
@@ -179,27 +173,28 @@
     </main>
 
     <!-- ==========================================
-         VISTA 2: ESTUDIO FINANCIERO
+         VISTA 2: ESTUDIO FINANCIERO & COMPARATIVO
          ========================================== -->
     <main id="view-estudio" class="view-panel hidden space-y-4">
       <header class="py-2">
         <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Estudio Financiero</h1>
-        <p class="text-[11px] font-semibold text-app-subtext">Diagnóstico y Previsiones</p>
+        <p class="text-[11px] font-semibold text-app-subtext">Diagnóstico, Histórico y Fugas</p>
       </header>
 
+      <!-- 4 Tarjetas de Resumen -->
       <section class="grid grid-cols-2 gap-3">
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-purple to-app-purpleLight text-white shadow-purple-soft flex flex-col justify-between h-28">
-          <span class="text-[11px] font-bold text-white/80">Ingresos</span>
+          <span class="text-[11px] font-bold text-white/80">Ingresos Mes</span>
           <div>
             <h3 id="study-income-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
-            <span class="text-[10px] text-white/70 font-medium">Total acumulado</span>
+            <span class="text-[10px] text-white/70 font-medium">Mes actual</span>
           </div>
         </div>
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-pink to-app-pinkLight text-white shadow-pink-soft flex flex-col justify-between h-28">
-          <span class="text-[11px] font-bold text-white/80">Gastos</span>
+          <span class="text-[11px] font-bold text-white/80">Gastos Mes</span>
           <div>
             <h3 id="study-expense-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
-            <span class="text-[10px] text-white/70 font-medium">Total pagado</span>
+            <span class="text-[10px] text-white/70 font-medium">Mes actual</span>
           </div>
         </div>
         <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-blue to-app-blueLight text-white shadow-blue-soft flex flex-col justify-between h-28">
@@ -213,23 +208,41 @@
           <span class="text-[11px] font-bold text-white/80">Ahorro</span>
           <div>
             <h3 id="study-savings-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
-            <span class="text-[10px] text-white/70 font-medium">Fondo actual</span>
+            <span class="text-[10px] text-white/70 font-medium">Fondo total</span>
           </div>
         </div>
       </section>
 
-      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-2">
-        <div class="flex items-center space-x-2 text-app-purple">
-          <div class="p-1.5 bg-indigo-50 rounded-xl"><i data-lucide="sparkles" class="w-4 h-4 text-app-purple"></i></div>
-          <span class="text-xs font-bold uppercase tracking-wider text-app-navy">Diagnóstico Financiero</span>
+      <!-- Comparativo Intermensual (Mes actual vs Promedio) -->
+      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-3">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Histórico Intermensual</h3>
+            <p class="text-[11px] text-app-subtext" id="intermensual-comparison-text">Calculando comparación...</p>
+          </div>
+          <span id="intermensual-badge" class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-app-mint">0%</span>
         </div>
-        <p id="advice-text" class="text-xs font-semibold leading-relaxed text-app-subtext">
-          Registra tus primeros movimientos para generar previsiones personalizadas.
-        </p>
+        <div class="h-44 relative">
+          <canvas id="monthlyCompareChart"></canvas>
+        </div>
       </section>
 
+      <!-- Detector de Fugas y Micropagos -->
+      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-3">
+        <div class="flex items-center space-x-2 text-app-pink">
+          <div class="p-1.5 bg-rose-50 rounded-xl">
+            <i data-lucide="radar" class="w-4 h-4 text-app-pink"></i>
+          </div>
+          <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Detector de Fugas y Micropagos</h3>
+        </div>
+        <div id="leaks-container" class="space-y-2">
+          <!-- Render dinámico de alertas de fugas -->
+        </div>
+      </section>
+
+      <!-- Perfil de Gastos (Donut) -->
       <section class="bg-white rounded-3xl p-5 shadow-card-soft border border-indigo-50/50 space-y-4">
-        <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Perfil de Inversión y Gastos</h3>
+        <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Distribución por Categorías</h3>
         <div class="h-48 relative flex items-center justify-center">
           <canvas id="categoryDonutChart"></canvas>
         </div>
@@ -238,24 +251,25 @@
     </main>
 
     <!-- ==========================================
-         VISTA 3: GASTOS FIJOS Y CRÉDITOS
+         VISTA 3: GASTOS FIJOS & SIMULADOR DE AMORTIZACIÓN
          ========================================== -->
     <main id="view-fijos" class="view-panel hidden space-y-4">
       <header class="flex justify-between items-center py-2">
         <div>
           <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Gastos Fijos</h1>
-          <p class="text-[11px] font-semibold text-app-subtext">Seguros, IBI y Créditos</p>
+          <p class="text-[11px] font-semibold text-app-subtext">Créditos, Seguros y Estrategias</p>
         </div>
         <button onclick="openFixedModal()" class="p-2.5 bg-gradient-to-r from-app-navy to-indigo-900 text-white rounded-2xl shadow-float active:scale-95 transition-transform">
           <i data-lucide="plus" class="w-5 h-5"></i>
         </button>
       </header>
 
+      <!-- Resumen Fijos -->
       <section class="grid grid-cols-2 gap-3">
         <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
           <p class="text-[11px] font-bold text-app-subtext uppercase">Cuota Mensual Fija</p>
           <p id="total-fixed-monthly" class="text-xl font-extrabold text-app-pink mt-1">0,00 €</p>
-          <p class="text-[10px] text-app-subtext mt-0.5">Recibos recurrentes</p>
+          <p class="text-[10px] text-app-subtext mt-0.5">Compromisos recurrentes</p>
         </div>
         <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
           <p class="text-[11px] font-bold text-app-subtext uppercase">Deuda Total Activa</p>
@@ -264,11 +278,66 @@
         </div>
       </section>
 
+      <!-- Tarjeta Simulador de Amortización & Estrategias -->
+      <section class="bg-gradient-to-br from-indigo-900 via-app-navy to-gray-900 text-white p-5 rounded-3xl shadow-float space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="p-2 bg-white/10 rounded-2xl">
+              <i data-lucide="calculator" class="w-5 h-5 text-app-mint"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-extrabold">Simulador de Amortización</h3>
+              <p class="text-[10px] text-white/70">Calcula el ahorro exacto de intereses</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-1">
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">Seleccionar Crédito</label>
+            <select id="sim-loan-select" onchange="runAmortizationSimulation()" class="w-full bg-white/10 border border-white/20 rounded-2xl px-3.5 py-2.5 text-xs font-semibold text-white focus:outline-none">
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">Aportación Extra (€)</label>
+              <input type="number" id="sim-extra-amount" value="1000" oninput="runAmortizationSimulation()" class="w-full bg-white/10 border border-white/20 rounded-2xl px-3 py-2 text-xs font-bold text-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-white/70 mb-1">Interés Estimado (%)</label>
+              <input type="number" step="0.1" id="sim-interest-rate" value="3.5" oninput="runAmortizationSimulation()" class="w-full bg-white/10 border border-white/20 rounded-2xl px-3 py-2 text-xs font-bold text-white focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Resultados de la Simulación -->
+          <div class="grid grid-cols-2 gap-2.5 pt-2">
+            <div class="bg-white/10 p-3 rounded-2xl border border-white/10">
+              <p class="text-[10px] font-semibold text-app-mint">Opción A: Reducir Plazo</p>
+              <h4 id="sim-term-saved-months" class="text-base font-extrabold mt-0.5">0 meses</h4>
+              <p id="sim-term-saved-interest" class="text-[10px] text-white/70 font-medium">Ahorro: 0,00 €</p>
+            </div>
+            <div class="bg-white/10 p-3 rounded-2xl border border-white/10">
+              <p class="text-[10px] font-semibold text-app-blue">Opción B: Reducir Cuota</p>
+              <h4 id="sim-fee-new" class="text-base font-extrabold mt-0.5">0,00 €/m</h4>
+              <p id="sim-fee-saved" class="text-[10px] text-white/70 font-medium">Rebaja: 0,00 €/m</p>
+            </div>
+          </div>
+
+          <!-- Recomendación Estratégica: Avalancha vs Bola de Nieve -->
+          <div class="p-3 bg-white/5 rounded-2xl border border-white/10 text-[11px] leading-relaxed" id="sim-strategy-text">
+            Analizando tus deudas activas para recomendarte la estrategia óptima...
+          </div>
+        </div>
+      </section>
+
+      <!-- Lista de Créditos Activos -->
       <section class="space-y-2.5">
-        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos Activos</h3>
+        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos en Curso</h3>
         <div id="loans-list" class="space-y-3"></div>
       </section>
 
+      <!-- Lista de Seguros e IBI -->
       <section class="space-y-2.5 mt-4">
         <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Seguros, IBI y Recibos Periódicos</h3>
         <div id="fixed-costs-list" class="space-y-2.5"></div>
@@ -278,7 +347,7 @@
   </div>
 
   <!-- ==========================================
-       BARRA INFERIOR DE NAVEGACIÓN
+       BARRA DE NAVEGACIÓN INFERIOR
        ========================================== -->
   <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-indigo-50 px-6 py-2.5 flex justify-around items-center z-40 shadow-float" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8px);">
     <button onclick="switchTab('movimientos')" id="nav-movimientos" class="flex flex-col items-center space-y-1 text-app-purple transition-all">
@@ -296,28 +365,21 @@
   </nav>
 
   <!-- ==========================================
-       PANEL LATERAL (DRAWER) CON PAPELERA Y AJUSTES
+       PANEL LATERAL: AJUSTES & PAPELERA
        ========================================== -->
   <div id="sidebar-drawer" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300">
     <div id="sidebar-panel" class="fixed left-0 top-0 bottom-0 w-4/5 max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out">
-      
       <div class="space-y-6">
         <div class="flex justify-between items-center border-b border-gray-100 pb-4">
           <div class="flex items-center space-x-2">
-            <div class="p-2 bg-indigo-50 text-app-purple rounded-xl">
-              <i data-lucide="shield" class="w-5 h-5"></i>
-            </div>
-            <h2 class="text-lg font-extrabold text-app-navy">Panel y Seguridad</h2>
+            <div class="p-2 bg-indigo-50 text-app-purple rounded-xl"><i data-lucide="shield" class="w-5 h-5"></i></div>
+            <h2 class="text-lg font-extrabold text-app-navy">Panel y Ajustes</h2>
           </div>
-          <button onclick="toggleSidebar(false)" class="p-1 text-app-subtext hover:text-app-navy">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
+          <button onclick="toggleSidebar(false)" class="p-1 text-app-subtext hover:text-app-navy"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
 
-        <!-- Papelera y Protección -->
         <div class="space-y-2">
           <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Seguridad y Papelera</p>
-          
           <button onclick="openTrashModal()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-indigo-50/60 hover:bg-indigo-50 text-left transition-colors border border-indigo-100/50">
             <div class="flex items-center space-x-3">
               <i data-lucide="trash-2" class="w-4 h-4 text-app-purple"></i>
@@ -328,7 +390,6 @@
             </div>
             <span id="trash-count-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-app-purple text-white">0</span>
           </button>
-
           <button onclick="promptChangeMasterKey()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
             <div class="flex items-center space-x-3">
               <i data-lucide="key-round" class="w-4 h-4 text-app-blue"></i>
@@ -338,17 +399,14 @@
           </button>
         </div>
 
-        <!-- Gestión de Datos -->
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Gestión de Copias</p>
-          
+          <p class="text-[11px] font-bold uppercase text-app-subtext tracking-wider">Copias de Seguridad</p>
           <button onclick="exportData()" class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors">
             <div class="flex items-center space-x-3">
               <i data-lucide="download" class="w-4 h-4 text-app-purple"></i>
               <span class="text-xs font-bold text-app-navy">Exportar Copia (.json)</span>
             </div>
           </button>
-
           <label class="w-full flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 text-left transition-colors cursor-pointer">
             <div class="flex items-center space-x-3">
               <i data-lucide="upload" class="w-4 h-4 text-app-mint"></i>
@@ -358,112 +416,78 @@
           </label>
         </div>
       </div>
-
       <div class="pt-4 border-t border-gray-100 text-center">
-        <p class="text-[10px] text-app-subtext font-semibold">Protección 24h & Papelera 30d • v4.0</p>
+        <p class="text-[10px] text-app-subtext font-semibold">Offline PWA • v5.0 iOS</p>
       </div>
-
     </div>
   </div>
 
   <!-- ==========================================
-       MODAL: PAPELERA DE RECICLAJE (30 DÍAS)
+       MODAL: PAPELERA DE RECICLAJE
        ========================================== -->
   <div id="modal-trash" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[85vh] flex flex-col">
-      
       <div class="flex justify-between items-center mb-4">
         <div>
           <h3 class="text-lg font-extrabold text-app-navy">Papelera de Reciclaje</h3>
           <p class="text-xs text-app-subtext">Se eliminan automáticamente a los 30 días</p>
         </div>
-        <button onclick="closeModal('modal-trash')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <button onclick="closeModal('modal-trash')" class="p-2 bg-gray-100 text-app-subtext rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-
       <div id="trash-list" class="space-y-2.5 overflow-y-auto flex-1 pr-1"></div>
-
       <div id="empty-state-trash" class="hidden flex flex-col items-center justify-center py-12 text-center">
-        <div class="p-3 bg-gray-100 text-app-subtext rounded-2xl mb-2">
-          <i data-lucide="trash" class="w-6 h-6"></i>
-        </div>
+        <div class="p-3 bg-gray-100 text-app-subtext rounded-2xl mb-2"><i data-lucide="trash" class="w-6 h-6"></i></div>
         <p class="text-sm font-bold text-app-navy">La papelera está vacía</p>
-        <p class="text-xs text-app-subtext mt-0.5">Los elementos eliminados se guardarán aquí durante 30 días.</p>
       </div>
-
       <div class="pt-4 mt-2 border-t border-gray-100 flex space-x-2">
-        <button onclick="emptyTrashPermanently()" class="flex-1 py-3 rounded-2xl bg-rose-50 text-app-pink text-xs font-bold hover:bg-rose-100 transition-colors">
-          Vaciar Todo
-        </button>
+        <button onclick="emptyTrashPermanently()" class="flex-1 py-3 rounded-2xl bg-rose-50 text-app-pink text-xs font-bold hover:bg-rose-100 transition-colors">Vaciar Todo</button>
       </div>
     </div>
   </div>
 
   <!-- ==========================================
-       MODAL: CLAVE MAESTRA & SEGURIDAD (>24H)
+       MODAL: SEGURIDAD (>24H)
        ========================================== -->
   <div id="modal-security" class="fixed inset-0 bg-app-navy/60 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-5">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-float transform scale-95 transition-transform duration-200 space-y-4">
-      
       <div class="text-center space-y-1">
         <div class="w-12 h-12 bg-indigo-50 text-app-purple rounded-2xl flex items-center justify-center mx-auto mb-2">
           <i data-lucide="lock" class="w-6 h-6"></i>
         </div>
-        <h3 id="security-modal-title" class="text-lg font-extrabold text-app-navy">Clave Maestra Requerida</h3>
+        <h3 id="security-modal-title" class="text-lg font-extrabold text-app-navy">Clave Maestra</h3>
         <p id="security-modal-desc" class="text-xs text-app-subtext">Han pasado más de 24 horas desde la creación de este registro.</p>
       </div>
 
       <div id="security-normal-flow" class="space-y-3">
         <input type="password" id="security-key-input" placeholder="Introduce tu clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
-        
-        <button onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform text-sm">
-          Confirmar
-        </button>
-
-        <button onclick="showRecoveryFlow()" class="w-full text-center text-xs font-bold text-app-purple hover:underline pt-1">
-          ¿Has olvidado tu clave maestra?
-        </button>
+        <button onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform text-sm">Confirmar</button>
+        <button onclick="showRecoveryFlow()" class="w-full text-center text-xs font-bold text-app-purple hover:underline pt-1">¿Has olvidado tu clave?</button>
       </div>
 
-      <!-- Flujo de Emergencia: SERRANITO -->
       <div id="security-recovery-flow" class="hidden space-y-3 border-t border-gray-100 pt-3">
         <div class="p-3 bg-amber-50 rounded-2xl border border-amber-100">
-          <p class="text-[11px] font-semibold text-amber-800">
-            Escribe la palabra de desbloqueo de emergencia para restablecer tu clave.
-          </p>
+          <p class="text-[11px] font-semibold text-amber-800">Escribe la palabra de desbloqueo de emergencia para restablecer tu clave.</p>
         </div>
-        <input type="text" id="recovery-word-input" placeholder="Palabra de desbloqueo" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-app-purple">
-        <input type="password" id="new-master-key-input" placeholder="Nueva clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-app-purple">
-        
-        <button onclick="submitEmergencyRecovery()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs active:scale-[0.98] transition-transform">
-          Restablecer Clave
-        </button>
-        <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs text-app-subtext font-bold">
-          Volver
-        </button>
+        <input type="text" id="recovery-word-input" placeholder="Palabra de desbloqueo" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none">
+        <input type="password" id="new-master-key-input" placeholder="Nueva clave maestra" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none">
+        <button onclick="submitEmergencyRecovery()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs">Restablecer Clave</button>
+        <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs text-app-subtext font-bold">Volver</button>
       </div>
-
-      <button onclick="closeModal('modal-security')" class="w-full text-center text-xs text-app-subtext font-bold pt-1">
-        Cancelar
-      </button>
-
+      <button onclick="closeModal('modal-security')" class="w-full text-center text-xs text-app-subtext font-bold pt-1">Cancelar</button>
     </div>
   </div>
 
   <!-- ==========================================
-       MODAL 1: REGISTRAR / EDITAR MOVIMIENTO
+       MODAL: MOVIMIENTO (CREAR / EDITAR)
        ========================================== -->
   <div id="modal-transaction" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
         <div>
           <h3 id="transaction-modal-title" class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
-          <p id="transaction-modal-subtitle" class="text-xs text-app-subtext">Registra ingresos o gastos</p>
+          <p class="text-xs text-app-subtext">Registra ingresos o gastos</p>
         </div>
-        <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <button onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
 
       <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-4">
@@ -517,9 +541,7 @@
           <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none"></select>
         </div>
 
-        <button type="submit" id="submit-transaction-btn" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">
-          Guardar Movimiento
-        </button>
+        <button type="submit" id="submit-transaction-btn" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">Guardar Movimiento</button>
       </form>
     </div>
   </div>
@@ -532,9 +554,7 @@
           <h3 class="text-lg font-extrabold text-app-navy">Compromiso Fijo</h3>
           <p class="text-xs text-app-subtext">Hipotecas, préstamos y seguros</p>
         </div>
-        <button onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext rounded-full">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <button onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
 
       <form id="fixed-form" onsubmit="saveFixedItem(event)" class="space-y-4">
@@ -592,14 +612,25 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-gradient-to-r from-app-navy to-indigo-900 text-white font-bold py-3.5 rounded-2xl shadow-float active:scale-[0.98] transition-transform mt-3 text-sm">
-          Guardar Compromiso
-        </button>
+        <button type="submit" class="w-full bg-gradient-to-r from-app-navy to-indigo-900 text-white font-bold py-3.5 rounded-2xl shadow-float active:scale-[0.98] transition-transform mt-3 text-sm">Guardar Compromiso</button>
       </form>
     </div>
   </div>
 
   <script>
+    // ==========================================
+    // 1. REGISTRO SERVICE WORKER (OFFLINE PWA)
+    // ==========================================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('PWA Service Worker registrado correctamente:', reg.scope);
+        }).catch((err) => {
+          console.log('Fallo al registrar Service Worker:', err);
+        });
+      });
+    }
+
     // ==========================================
     // BLOQUEO TOTAL DE ZOOM EN iOS
     // ==========================================
@@ -627,25 +658,26 @@
       }
     };
 
-    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v4')) || [];
-    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v4')) || [
+    let transactions = JSON.parse(localStorage.getItem('my_finances_data_v5')) || [];
+    let fixedItems = JSON.parse(localStorage.getItem('my_finances_fixed_v5')) || [
       { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01', timestamp: Date.now() },
       { id: '2', type: 'bill', name: 'Seguro Hogar Mapfre', monthlyFee: 240, frequency: 'annual', date: '2026-10-15', timestamp: Date.now() },
       { id: '3', type: 'bill', name: 'IBI Vivienda Principal', monthlyFee: 380, frequency: 'annual', date: '2026-09-20', timestamp: Date.now() }
     ];
-    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v4')) || [];
+    let trash = JSON.parse(localStorage.getItem('my_finances_trash_v5')) || [];
 
     let activeFilter = 'gasto';
     let currentTab = 'movimientos';
     let editingIndex = null;
     let pendingSecurityAction = null;
     let miniTrendChartInstance = null;
+    let monthlyCompareChartInstance = null;
     let donutChartInstance = null;
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       updateFormUI();
-      purgeOldTrash(); // Eliminar elementos con >30 días
+      purgeOldTrash();
       checkURLForApplePayParams();
       renderAll();
       initMiniTrendChart();
@@ -654,12 +686,11 @@
     const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount || 0);
 
     // ==========================================
-    // SISTEMA DE SEGURIDAD & CLAVE MAESTRA
+    // SEGURIDAD & CLAVE MAESTRA
     // ==========================================
     function isOlderThan24Hours(timestamp) {
       if (!timestamp) return false;
-      const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-      return (Date.now() - timestamp) > TWENTY_FOUR_HOURS;
+      return (Date.now() - timestamp) > (24 * 60 * 60 * 1000);
     }
 
     function requireSecurityAuth(callback) {
@@ -667,13 +698,12 @@
       pendingSecurityAction = callback;
 
       if (!storedKey) {
-        // Primera vez: crear clave maestra
         document.getElementById('security-modal-title').textContent = 'Crear Clave Maestra';
-        document.getElementById('security-modal-desc').textContent = 'Establece tu contraseña maestra de seguridad para proteger modificaciones futuras.';
+        document.getElementById('security-modal-desc').textContent = 'Establece tu contraseña maestra de seguridad.';
         document.getElementById('security-key-input').placeholder = 'Crea tu nueva clave';
       } else {
         document.getElementById('security-modal-title').textContent = 'Clave Maestra Requerida';
-        document.getElementById('security-modal-desc').textContent = 'Han pasado más de 24 horas desde la creación de este registro.';
+        document.getElementById('security-modal-desc').textContent = 'Han pasado más de 24 horas desde la creación del registro.';
         document.getElementById('security-key-input').placeholder = 'Introduce tu clave maestra';
       }
 
@@ -686,13 +716,9 @@
       const input = document.getElementById('security-key-input').value.trim();
       const storedKey = localStorage.getItem('finances_master_key');
 
-      if (!input) {
-        alert('Por favor, introduce una clave.');
-        return;
-      }
+      if (!input) { alert('Introduce una clave.'); return; }
 
       if (!storedKey) {
-        // Guardar por primera vez
         localStorage.setItem('finances_master_key', input);
         alert('¡Clave maestra establecida con éxito!');
         closeModal('modal-security');
@@ -724,15 +750,8 @@
       const recoveryWord = document.getElementById('recovery-word-input').value.trim().toUpperCase();
       const newKey = document.getElementById('new-master-key-input').value.trim();
 
-      if (recoveryWord !== 'SERRANITO') {
-        alert('Palabra de desbloqueo incorrecta.');
-        return;
-      }
-
-      if (!newKey) {
-        alert('Introduce la nueva clave maestra.');
-        return;
-      }
+      if (recoveryWord !== 'SERRANITO') { alert('Palabra de desbloqueo incorrecta.'); return; }
+      if (!newKey) { alert('Introduce la nueva clave maestra.'); return; }
 
       localStorage.setItem('finances_master_key', newKey);
       alert('¡Clave maestra restablecida con éxito!');
@@ -751,21 +770,21 @@
     }
 
     // ==========================================
-    // PAPELERA DE RECICLAJE (RETENCIÓN 30 DÍAS)
+    // PAPELERA DE RECICLAJE (30 DÍAS)
     // ==========================================
     function purgeOldTrash() {
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
       const now = Date.now();
       trash = trash.filter(item => (now - item.deletedAt) < THIRTY_DAYS);
-      localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
       updateTrashBadge();
     }
 
     function moveToTrash(item, itemType) {
       item.deletedAt = Date.now();
-      item.itemType = itemType; // 'transaction' o 'fixed'
+      item.itemType = itemType;
       trash.unshift(item);
-      localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
       updateTrashBadge();
     }
 
@@ -788,10 +807,7 @@
       const empty = document.getElementById('empty-state-trash');
       container.innerHTML = '';
 
-      if (trash.length === 0) {
-        empty.classList.remove('hidden');
-        return;
-      }
+      if (trash.length === 0) { empty.classList.remove('hidden'); return; }
       empty.classList.add('hidden');
 
       const now = Date.now();
@@ -824,7 +840,6 @@
         `;
         container.appendChild(card);
       });
-
       lucide.createIcons();
     }
 
@@ -836,21 +851,21 @@
 
       if (type === 'fixed') {
         fixedItems.unshift(item);
-        localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
       } else {
         transactions.unshift(item);
-        localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
       }
 
-      localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+      localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
       renderTrashList();
       renderAll();
     }
 
     function deleteFromTrashPermanently(index) {
-      if (confirm("¿Eliminar definitivamente este elemento? Esta acción no se puede deshacer.")) {
+      if (confirm("¿Eliminar definitivamente este elemento?")) {
         trash.splice(index, 1);
-        localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
       }
@@ -860,14 +875,14 @@
       if (trash.length === 0) return;
       if (confirm("¿Vaciar toda la papelera definitivamente?")) {
         trash = [];
-        localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+        localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
         renderTrashList();
         updateTrashBadge();
       }
     }
 
     // ==========================================
-    // MOVIMIENTOS: EDICIÓN & BORRADO SEGURO
+    // MOVIMIENTOS: CRUD & APPLE PAY
     // ==========================================
     function openTransactionModal(editIdx = null) {
       editingIndex = editIdx;
@@ -877,8 +892,6 @@
 
       if (editIdx !== null) {
         const item = transactions[editIdx];
-        
-        // Comprobar regla de 24 horas
         if (isOlderThan24Hours(item.timestamp)) {
           requireSecurityAuth(() => openTransactionModal(editIdx));
           return;
@@ -900,7 +913,6 @@
         form.reset();
         updateFormUI();
       }
-
       openModal('modal-transaction');
     }
 
@@ -922,39 +934,19 @@
         if (loan) {
           loanName = loan.name;
           loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
-          localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
         }
       }
 
       if (editingIndex !== null) {
-        // Actualizar registro conservando timestamp original
         const original = transactions[editingIndex];
-        transactions[editingIndex] = {
-          ...original,
-          account,
-          type,
-          amount,
-          concept,
-          category,
-          linkedLoanId,
-          loanName
-        };
+        transactions[editingIndex] = { ...original, account, type, amount, concept, category, linkedLoanId, loanName };
         editingIndex = null;
       } else {
-        transactions.unshift({ 
-          account, 
-          type, 
-          amount, 
-          concept, 
-          category, 
-          date, 
-          timestamp: now.getTime(),
-          linkedLoanId,
-          loanName
-        });
+        transactions.unshift({ account, type, amount, concept, category, date, timestamp: now.getTime(), linkedLoanId, loanName });
       }
 
-      localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+      localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
       document.getElementById('transaction-form').reset();
       updateFormUI();
       closeModal('modal-transaction');
@@ -968,11 +960,11 @@
           const loan = fixedItems.find(l => l.id === item.linkedLoanId);
           if (loan) {
             loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
-            localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+            localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
           }
         }
         const removed = transactions.splice(index, 1)[0];
-        localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
+        localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
         moveToTrash(removed, 'transaction');
         renderAll();
       };
@@ -988,8 +980,362 @@
       }
     }
 
+    function checkURLForApplePayParams() {
+      const params = new URLSearchParams(window.location.search);
+      const amount = parseFloat(params.get('amount'));
+      const concept = params.get('concept') || 'Pago Apple Pay';
+      
+      if (amount && !isNaN(amount)) {
+        const now = new Date();
+        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        
+        transactions.unshift({
+          account: 'gasto',
+          type: 'expense',
+          amount: amount,
+          concept: concept,
+          category: 'Apple Pay / Tarjeta',
+          date: date,
+          timestamp: now.getTime()
+        });
+
+        localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
     // ==========================================
-    // RENDERIZADO GENERAL & VISTAS
+    // 2. ESTUDIO FINANCIERO: COMPARATIVO & FUGAS
+    // ==========================================
+    function renderFinancialStudy() {
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+      let currentMonthIncome = 0;
+      let currentMonthExpense = 0;
+      let totalSavings = 0;
+      let totalDebt = 0;
+
+      const monthlyTotals = {}; // { '2026-07': { income: X, expense: Y }, ... }
+      const categoryTotals = {};
+      const microExpenses = [];
+
+      transactions.forEach(t => {
+        const amt = parseFloat(t.amount);
+        const tDate = t.timestamp ? new Date(t.timestamp) : now;
+        const monthKey = `${tDate.getFullYear()}-${String(tDate.getMonth() + 1).padStart(2, '0')}`;
+
+        if (!monthlyTotals[monthKey]) monthlyTotals[monthKey] = { income: 0, expense: 0 };
+
+        if (t.account === 'ahorro' && t.type === 'income') {
+          totalSavings += amt;
+        } else if (t.type === 'income') {
+          monthlyTotals[monthKey].income += amt;
+          if (monthKey === currentMonthKey) currentMonthIncome += amt;
+        } else if (t.type === 'expense') {
+          monthlyTotals[monthKey].expense += amt;
+          if (monthKey === currentMonthKey) {
+            currentMonthExpense += amt;
+            categoryTotals[t.category] = (categoryTotals[t.category] || 0) + amt;
+            
+            // Detección de micropagos (< 15€)
+            if (amt <= 15) {
+              microExpenses.push(t);
+            }
+          }
+        }
+      });
+
+      fixedItems.filter(i => i.type === 'credit').forEach(i => totalDebt += (i.remainingAmount || 0));
+
+      document.getElementById('study-income-total').textContent = formatCurrency(currentMonthIncome);
+      document.getElementById('study-expense-total').textContent = formatCurrency(currentMonthExpense);
+      document.getElementById('study-credit-total').textContent = formatCurrency(totalDebt);
+      document.getElementById('study-savings-total').textContent = formatCurrency(totalSavings);
+
+      // Comparativa Intermensual
+      renderIntermonthlyComparison(monthlyTotals, currentMonthKey, currentMonthExpense);
+
+      // Detector de Fugas
+      renderLeaksDetector(microExpenses, categoryTotals, currentMonthExpense);
+
+      // Gráfico Donut de Categorías
+      renderDonutChart(categoryTotals, currentMonthExpense);
+    }
+
+    function renderIntermonthlyComparison(monthlyTotals, currentMonthKey, currentMonthExpense) {
+      const pastMonths = Object.keys(monthlyTotals).filter(k => k !== currentMonthKey);
+      let avgPastExpense = 0;
+
+      if (pastMonths.length > 0) {
+        const totalPast = pastMonths.reduce((acc, k) => acc + monthlyTotals[k].expense, 0);
+        avgPastExpense = totalPast / pastMonths.length;
+      } else {
+        avgPastExpense = currentMonthExpense; // Si no hay histórico previo
+      }
+
+      const compText = document.getElementById('intermensual-comparison-text');
+      const compBadge = document.getElementById('intermensual-badge');
+
+      if (avgPastExpense > 0 && pastMonths.length > 0) {
+        const diffPct = Math.round(((currentMonthExpense - avgPastExpense) / avgPastExpense) * 100);
+        if (diffPct > 0) {
+          compText.textContent = `Gastas un ${diffPct}% MÁS que tu promedio histórico (${formatCurrency(avgPastExpense)})`;
+          compBadge.textContent = `+${diffPct}%`;
+          compBadge.className = "text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-rose-50 text-app-pink";
+        } else {
+          compText.textContent = `Ahorras un ${Math.abs(diffPct)}% respecto a tu media (${formatCurrency(avgPastExpense)})`;
+          compBadge.textContent = `${diffPct}%`;
+          compBadge.className = "text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-50 text-app-mint";
+        }
+      } else {
+        compText.textContent = `Primer mes de registro. Promedio actual: ${formatCurrency(currentMonthExpense)}`;
+        compBadge.textContent = 'En curso';
+        compBadge.className = "text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-indigo-50 text-app-purple";
+      }
+
+      // Render gráfico de barras comparativo mensual
+      const ctx = document.getElementById('monthlyCompareChart');
+      if (!ctx) return;
+      if (monthlyCompareChartInstance) monthlyCompareChartInstance.destroy();
+
+      const sortedMonths = Object.keys(monthlyTotals).sort();
+      const labels = sortedMonths.length > 0 ? sortedMonths : ['Mes actual'];
+      const dataExpenses = sortedMonths.length > 0 ? sortedMonths.map(m => monthlyTotals[m].expense) : [currentMonthExpense];
+      const dataIncomes = sortedMonths.length > 0 ? sortedMonths.map(m => monthlyTotals[m].income) : [0];
+
+      monthlyCompareChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Gastos',
+              data: dataExpenses,
+              backgroundColor: '#F8678C',
+              borderRadius: 8
+            },
+            {
+              label: 'Ingresos',
+              data: dataIncomes,
+              backgroundColor: '#5F5AF6',
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+          scales: {
+            y: { grid: { color: '#F3F4F6' }, ticks: { font: { size: 9 } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } }
+          }
+        }
+      });
+    }
+
+    function renderLeaksDetector(microExpenses, categoryTotals, totalExpense) {
+      const container = document.getElementById('leaks-container');
+      container.innerHTML = '';
+
+      const alerts = [];
+
+      // 1. Detección de suma de micropagos (fuga de café, snacks, compras hormiga)
+      const totalMicro = microExpenses.reduce((acc, t) => acc + t.amount, 0);
+      if (totalMicro > 30) {
+        alerts.push({
+          type: 'danger',
+          title: `Fuga de micropagos: ${formatCurrency(totalMicro)} acumulados`,
+          desc: `Tienes ${microExpenses.length} compras de menos de 15€ registradas este mes (cafés, compras rápidas o delivery).`
+        });
+      }
+
+      // 2. Detección de concentración excesiva en una sola categoría (> 40% del gasto)
+      Object.keys(categoryTotals).forEach(cat => {
+        const catAmount = categoryTotals[cat];
+        if (totalExpense > 0 && (catAmount / totalExpense) > 0.40) {
+          alerts.push({
+            type: 'warning',
+            title: `Partida elevada en ${cat}`,
+            desc: `Esta categoría absorbe el ${Math.round((catAmount / totalExpense) * 100)}% de tu gasto total del mes (${formatCurrency(catAmount)}).`
+          });
+        }
+      });
+
+      if (alerts.length === 0) {
+        container.innerHTML = `
+          <div class="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-100/60 flex items-center space-x-2.5">
+            <i data-lucide="check-circle" class="w-4 h-4 text-app-mint flex-shrink-0"></i>
+            <p class="text-xs text-emerald-900 font-semibold">Sin fugas de capital detectadas este mes. ¡Excelente control!</p>
+          </div>
+        `;
+      } else {
+        alerts.forEach(al => {
+          const el = document.createElement('div');
+          el.className = `p-3 rounded-2xl border ${al.type === 'danger' ? 'bg-rose-50/70 border-rose-100 text-rose-900' : 'bg-amber-50/70 border-amber-100 text-amber-900'} space-y-0.5`;
+          el.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <i data-lucide="${al.type === 'danger' ? 'alert-triangle' : 'info'}" class="w-3.5 h-3.5 ${al.type === 'danger' ? 'text-app-pink' : 'text-amber-600'}"></i>
+              <h4 class="text-xs font-bold">${al.title}</h4>
+            </div>
+            <p class="text-[11px] opacity-90 pl-5 font-medium">${al.desc}</p>
+          `;
+          container.appendChild(el);
+        });
+      }
+      lucide.createIcons();
+    }
+
+    function renderDonutChart(categoryTotals, totalExpense) {
+      const ctx = document.getElementById('categoryDonutChart');
+      if (!ctx) return;
+      if (donutChartInstance) donutChartInstance.destroy();
+
+      const palette = ['#5F5AF6', '#F8678C', '#24D297', '#4D96FF', '#FFB800', '#9333EA'];
+      const labels = Object.keys(categoryTotals);
+      const data = Object.values(categoryTotals);
+
+      donutChartInstance = new Chart(ctx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: labels.length > 0 ? labels : ['Sin datos'],
+          datasets: [{
+            data: data.length > 0 ? data : [1],
+            backgroundColor: labels.length > 0 ? palette.slice(0, labels.length) : ['#E5E7EB'],
+            borderWidth: 0,
+            borderRadius: 6,
+            spacing: 4
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '72%' }
+      });
+
+      const legendContainer = document.getElementById('donut-legend');
+      legendContainer.innerHTML = '';
+      if (labels.length === 0) {
+        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos clasificados</p>';
+        return;
+      }
+
+      labels.forEach((label, i) => {
+        const amt = categoryTotals[label];
+        const pct = totalExpense > 0 ? Math.round((amt / totalExpense) * 100) : 0;
+        const color = palette[i % palette.length];
+
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center py-1";
+        row.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
+            <span class="text-xs font-bold text-app-navy">${label}</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-extrabold text-app-navy">${formatCurrency(amt)}</span>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style="background-color: ${color}">${pct}%</span>
+          </div>
+        `;
+        legendContainer.appendChild(row);
+      });
+    }
+
+    // ==========================================
+    // 3. SIMULADOR DE AMORTIZACIÓN Y ESTRATEGIAS
+    // ==========================================
+    function populateSimLoanDropdown() {
+      const select = document.getElementById('sim-loan-select');
+      if (!select) return;
+      select.innerHTML = '';
+
+      const credits = fixedItems.filter(i => i.type === 'credit');
+      if (credits.length === 0) {
+        select.innerHTML = '<option value="">Sin créditos registrados</option>';
+        return;
+      }
+
+      credits.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name} (Pendiente: ${formatCurrency(c.remainingAmount)})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function runAmortizationSimulation() {
+      const credits = fixedItems.filter(i => i.type === 'credit');
+      const select = document.getElementById('sim-loan-select');
+      const strategyEl = document.getElementById('sim-strategy-text');
+      
+      if (!select || credits.length === 0) {
+        if (strategyEl) strategyEl.innerHTML = "Añade al menos un crédito o préstamo para calcular simulaciones.";
+        return;
+      }
+
+      const selectedId = select.value;
+      const loan = credits.find(c => c.id === selectedId) || credits[0];
+      const extra = parseFloat(document.getElementById('sim-extra-amount').value) || 0;
+      const rateAnnual = parseFloat(document.getElementById('sim-interest-rate').value) || 3.5;
+      const r = (rateAnnual / 100) / 12; // Tipo de interés mensual
+
+      const balance = loan.remainingAmount || 1;
+      const fee = loan.monthlyFee || 1;
+
+      // 1. Cálculo Reducción de Plazo
+      // Meses restantes aprox: n = -ln(1 - (balance * r) / fee) / ln(1 + r)
+      let monthsRemaining = 0;
+      if (fee > balance * r && r > 0) {
+        monthsRemaining = Math.log(fee / (fee - balance * r)) / Math.log(1 + r);
+      } else {
+        monthsRemaining = balance / fee;
+      }
+
+      const newBalance = Math.max(0, balance - extra);
+      let newMonths = 0;
+      if (fee > newBalance * r && r > 0) {
+        newMonths = Math.log(fee / (fee - newBalance * r)) / Math.log(1 + r);
+      } else {
+        newMonths = newBalance / fee;
+      }
+
+      const monthsSaved = Math.max(0, Math.round(monthsRemaining - newMonths));
+      const interestSavedTerm = Math.max(0, (monthsSaved * fee) - extra);
+
+      document.getElementById('sim-term-saved-months').textContent = `${monthsSaved} meses menos`;
+      document.getElementById('sim-term-saved-interest').textContent = `Ahorras ${formatCurrency(interestSavedTerm)} en intereses`;
+
+      // 2. Cálculo Reducción de Cuota
+      // Nueva cuota para los mismos meses restantes:
+      let newFee = fee;
+      if (monthsRemaining > 0 && r > 0) {
+        newFee = (newBalance * r) / (1 - Math.pow(1 + r, -monthsRemaining));
+      } else {
+        newFee = newBalance / (monthsRemaining || 1);
+      }
+      const monthlySaved = Math.max(0, fee - newFee);
+
+      document.getElementById('sim-fee-new').textContent = `${formatCurrency(newFee)}/mes`;
+      document.getElementById('sim-fee-saved').textContent = `Baja ${formatCurrency(monthlySaved)}/mes`;
+
+      // 3. Recomendación de Estrategia: Avalancha vs Bola de Nieve
+      if (credits.length > 1) {
+        // Ordenar para Avalancha (mayor cuota/importe) vs Bola de nieve (menor capital)
+        const smallestLoan = [...credits].sort((a, b) => a.remainingAmount - b.remainingAmount)[0];
+        const largestFeeLoan = [...credits].sort((a, b) => b.monthlyFee - a.monthlyFee)[0];
+
+        strategyEl.innerHTML = `
+          ⚡ <strong>Recomendación Estratégica:</strong><br>
+          • <strong>Avalancha Financiera:</strong> Amortiza primero <em>"${largestFeeLoan.name}"</em> para eliminar la cuota más pesada y ahorrar el máximo de intereses.<br>
+          • <strong>Bola de Nieve:</strong> Liquida primero <em>"${smallestLoan.name}"</em> (${formatCurrency(smallestLoan.remainingAmount)}) para una victoria rápida e impulso motivacional.
+        `;
+      } else {
+        strategyEl.innerHTML = `
+          💡 <strong>Consejo Financiero:</strong> Reducir plazo te ofrece un <strong>ahorro matemático superior</strong> de intereses a largo plazo, mientras que reducir cuota te otorga mayor <strong>liquidez y desahogo mensual</strong> inmediato.
+        `;
+      }
+    }
+
+    // ==========================================
+    // RENDERIZADO GENERAL & HERRAMIENTAS
     // ==========================================
     function switchTab(tabId) {
       currentTab = tabId;
@@ -1009,7 +1355,7 @@
       });
 
       if (tabId === 'estudio') renderFinancialStudy();
-      else if (tabId === 'fijos') renderFixedItems();
+      else if (tabId === 'fijos') { renderFixedItems(); populateSimLoanDropdown(); runAmortizationSimulation(); }
       else { renderTransactions(); initMiniTrendChart(); }
       lucide.createIcons();
     }
@@ -1017,6 +1363,8 @@
     function renderAll() {
       renderTransactions();
       renderFixedItems();
+      populateSimLoanDropdown();
+      runAmortizationSimulation();
       updateTrashBadge();
     }
 
@@ -1039,8 +1387,7 @@
       const listTitle = document.getElementById('list-title');
       list.innerHTML = '';
 
-      let balanceGasto = 0;
-      let balanceAhorro = 0;
+      let balanceGasto = 0, balanceAhorro = 0;
 
       transactions.forEach(t => {
         const amount = parseFloat(t.amount);
@@ -1097,7 +1444,6 @@
         `;
         list.appendChild(card);
       });
-
       lucide.createIcons();
     }
 
@@ -1137,90 +1483,6 @@
           plugins: { legend: { display: false }, tooltip: { enabled: false } },
           scales: { x: { display: false }, y: { display: false } }
         }
-      });
-    }
-
-    function renderFinancialStudy() {
-      let totalIncome = 0, totalExpense = 0, totalSavings = 0, totalDebt = 0;
-      const categoryTotals = {};
-
-      transactions.forEach(t => {
-        const amt = parseFloat(t.amount);
-        if (t.account === 'ahorro' && t.type === 'income') totalSavings += amt;
-        else if (t.type === 'income') totalIncome += amt;
-        else if (t.type === 'expense') {
-          totalExpense += amt;
-          categoryTotals[t.category] = (categoryTotals[t.category] || 0) + amt;
-        }
-      });
-
-      fixedItems.filter(i => i.type === 'credit').forEach(i => totalDebt += (i.remainingAmount || 0));
-
-      document.getElementById('study-income-total').textContent = formatCurrency(totalIncome);
-      document.getElementById('study-expense-total').textContent = formatCurrency(totalExpense);
-      document.getElementById('study-credit-total').textContent = formatCurrency(totalDebt);
-      document.getElementById('study-savings-total').textContent = formatCurrency(totalSavings);
-
-      const rate = totalIncome > 0 ? Math.round(((totalSavings + Math.max(0, totalIncome - totalExpense)) / totalIncome) * 100) : 0;
-      const adviceEl = document.getElementById('advice-text');
-
-      if (transactions.length === 0) adviceEl.innerHTML = "Comienza a registrar movimientos para diagnósticos.";
-      else if (totalExpense > totalIncome && totalIncome > 0) adviceEl.innerHTML = `⚠️ <strong class="text-app-pink">Déficit:</strong> Gastos superan ingresos en <strong>${formatCurrency(totalExpense - totalIncome)}</strong>.`;
-      else if (rate >= 25) adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud óptima:</strong> Ahorras el <strong>${rate}%</strong> de tus ingresos.`;
-      else adviceEl.innerHTML = `📊 <strong class="text-app-purple">Equilibrio:</strong> Finanzas estables.`;
-
-      renderDonutChart(categoryTotals, totalExpense);
-    }
-
-    function renderDonutChart(categoryTotals, totalExpense) {
-      const ctx = document.getElementById('categoryDonutChart');
-      if (!ctx) return;
-      if (donutChartInstance) donutChartInstance.destroy();
-
-      const palette = ['#5F5AF6', '#F8678C', '#24D297', '#4D96FF', '#FFB800', '#9333EA'];
-      const labels = Object.keys(categoryTotals);
-      const data = Object.values(categoryTotals);
-
-      donutChartInstance = new Chart(ctx.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: labels.length > 0 ? labels : ['Sin datos'],
-          datasets: [{
-            data: data.length > 0 ? data : [1],
-            backgroundColor: labels.length > 0 ? palette.slice(0, labels.length) : ['#E5E7EB'],
-            borderWidth: 0,
-            borderRadius: 6,
-            spacing: 4
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '72%' }
-      });
-
-      const legendContainer = document.getElementById('donut-legend');
-      legendContainer.innerHTML = '';
-      if (labels.length === 0) {
-        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos clasificados</p>';
-        return;
-      }
-
-      labels.forEach((label, i) => {
-        const amt = categoryTotals[label];
-        const pct = totalExpense > 0 ? Math.round((amt / totalExpense) * 100) : 0;
-        const color = palette[i % palette.length];
-
-        const row = document.createElement('div');
-        row.className = "flex justify-between items-center py-1";
-        row.innerHTML = `
-          <div class="flex items-center space-x-2">
-            <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
-            <span class="text-xs font-bold text-app-navy">${label}</span>
-          </div>
-          <div class="flex items-center space-x-3">
-            <span class="text-xs font-extrabold text-app-navy">${formatCurrency(amt)}</span>
-            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style="background-color: ${color}">${pct}%</span>
-          </div>
-        `;
-        legendContainer.appendChild(row);
       });
     }
 
@@ -1310,19 +1572,19 @@
       }
 
       fixedItems.push(itemData);
-      localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+      localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
       document.getElementById('fixed-form').reset();
       closeModal('modal-fixed');
-      renderFixedItems();
+      renderAll();
     }
 
     function deleteFixedItem(index) {
       const item = fixedItems[index];
       const executeDelete = () => {
         const removed = fixedItems.splice(index, 1)[0];
-        localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
+        localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
         moveToTrash(removed, 'fixed');
-        renderFixedItems();
+        renderAll();
       };
 
       if (isOlderThan24Hours(item.timestamp)) {
@@ -1356,33 +1618,6 @@
           document.getElementById('concept').value = `Cuota: ${loan.name}`;
           document.getElementById('category').value = 'Hipoteca / Préstamo';
         }
-      }
-    }
-
-    // ==========================================
-    // UTILIDADES & APPLE PAY VIA URL
-    // ==========================================
-    function checkURLForApplePayParams() {
-      const params = new URLSearchParams(window.location.search);
-      const amount = parseFloat(params.get('amount'));
-      const concept = params.get('concept') || 'Pago Apple Pay';
-      
-      if (amount && !isNaN(amount)) {
-        const now = new Date();
-        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-        
-        transactions.unshift({
-          account: 'gasto',
-          type: 'expense',
-          amount: amount,
-          concept: concept,
-          category: 'Apple Pay / Tarjeta',
-          date: date,
-          timestamp: now.getTime()
-        });
-
-        localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
-        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
 
@@ -1502,15 +1737,15 @@
           if (parsed.trash) trash = parsed.trash;
           if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
           
-          localStorage.setItem('my_finances_data_v4', JSON.stringify(transactions));
-          localStorage.setItem('my_finances_fixed_v4', JSON.stringify(fixedItems));
-          localStorage.setItem('my_finances_trash_v4', JSON.stringify(trash));
+          localStorage.setItem('my_finances_data_v5', JSON.stringify(transactions));
+          localStorage.setItem('my_finances_fixed_v5', JSON.stringify(fixedItems));
+          localStorage.setItem('my_finances_trash_v5', JSON.stringify(trash));
           
           alert("Datos importados con éxito.");
           toggleSidebar(false);
           renderAll();
         } catch (err) {
-          alert("Archivo de copia no válido.");
+          alert("Archivo no válido.");
         }
       };
       reader.readAsText(file);
