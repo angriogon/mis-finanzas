@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Control de Finanzas</title>
 
-  <!-- Configuración iOS PWA -->
+  <!-- Configuración iOS Web App -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Finanzas">
@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#F9FAFB">
 
-  <!-- Tailwind CSS & Lucide Icons -->
+  <!-- Tailwind CSS & Iconos Lucide -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -32,7 +32,7 @@
 
   <div class="w-full max-w-md px-5 flex flex-col flex-1 pb-10">
     
-    <!-- Encabezado / Patrimonio Total -->
+    <!-- Patrimonio Total y Acciones -->
     <header class="flex justify-between items-center py-4">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Patrimonio Total</p>
@@ -48,10 +48,10 @@
       </div>
     </header>
 
-    <!-- Tarjetas de las Dos Cuentas -->
+    <!-- Tarjetas de Cuentas (Gasto / Ahorro) -->
     <section class="grid grid-cols-2 gap-3 my-3">
       
-      <!-- Tarjeta Cuenta Gastos -->
+      <!-- Cuenta Gasto -->
       <div onclick="setAccountFilter('gasto')" id="card-gasto" class="bg-white p-4 rounded-2xl border-2 border-gray-900 shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2 text-gray-800">
@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta Cuenta Ahorro -->
+      <!-- Cuenta Ahorro -->
       <div onclick="setAccountFilter('ahorro')" id="card-ahorro" class="bg-white p-4 rounded-2xl border-2 border-transparent shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2 text-emerald-600">
@@ -81,37 +81,34 @@
 
     </section>
 
-    <!-- Selector de Pestañas / Filtro de Cuentas -->
+    <!-- Filtros de Pestaña -->
     <div class="flex bg-gray-200/70 p-1 rounded-xl my-2 text-xs font-semibold">
       <button onclick="setAccountFilter('all')" id="tab-all" class="flex-1 py-1.5 rounded-lg text-gray-600 transition-all">Todos</button>
       <button onclick="setAccountFilter('gasto')" id="tab-gasto" class="flex-1 py-1.5 rounded-lg bg-white text-gray-900 shadow-sm transition-all">Cta. Gasto</button>
       <button onclick="setAccountFilter('ahorro')" id="tab-ahorro" class="flex-1 py-1.5 rounded-lg text-gray-600 transition-all">Cta. Ahorro</button>
     </div>
 
-    <!-- Lista de Movimientos -->
+    <!-- Lista de Transacciones -->
     <section class="flex-1 mt-3">
       <div class="flex justify-between items-center mb-3">
         <h2 id="list-title" class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Movimientos: Gasto</h2>
         <span id="items-count" class="text-xs text-gray-400">0 registros</span>
       </div>
 
-      <div id="transactions-list" class="space-y-2.5">
-        <!-- Render dinámico -->
-      </div>
+      <div id="transactions-list" class="space-y-2.5"></div>
       
-      <!-- Estado Vacío -->
       <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 text-center">
         <div class="p-4 bg-gray-100 rounded-full text-gray-400 mb-3">
           <i data-lucide="receipt" class="w-7 h-7"></i>
         </div>
-        <p class="text-sm font-medium text-gray-500">Sin movimientos en esta cuenta</p>
-        <p class="text-xs text-gray-400 mt-1">Usa el botón (+) para añadir un ingreso, gasto o ahorro.</p>
+        <p class="text-sm font-medium text-gray-500">Sin movimientos registrados</p>
+        <p class="text-xs text-gray-400 mt-1">Pulsa (+) para añadir un movimiento a esta cuenta.</p>
       </div>
     </section>
 
   </div>
 
-  <!-- Modal / Formulario Flotante -->
+  <!-- Formulario Modal -->
   <div id="modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
     <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 transition-transform duration-200">
       
@@ -124,9 +121,9 @@
 
       <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-4">
         
-        <!-- 1. Cuenta de Destino -->
+        <!-- Selector de Cuenta -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Cuenta</label>
+          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Cuenta Destino</label>
           <div class="flex bg-gray-100 p-1 rounded-xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="account" value="gasto" class="hidden peer" checked onchange="updateFormUI()">
@@ -139,9 +136,9 @@
           </div>
         </div>
 
-        <!-- 2. Tipo (Ingreso / Salida) -->
+        <!-- Tipo de Registro -->
         <div>
-          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tipo de Movimiento</label>
+          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tipo</label>
           <div class="flex bg-gray-100 p-1 rounded-xl">
             <label class="flex-1 text-center cursor-pointer">
               <input type="radio" name="type" value="income" class="hidden peer" checked onchange="updateCategories()">
@@ -154,26 +151,26 @@
           </div>
         </div>
 
-        <!-- 3. Importe -->
+        <!-- Importe -->
         <div>
           <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Importe (€)</label>
           <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-black">
         </div>
 
-        <!-- 4. Concepto -->
+        <!-- Concepto -->
         <div>
           <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Concepto</label>
-          <input type="text" id="concept" required placeholder="Ej. Nómina, Ahorro mes, Supermercado..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado, Aporte ahorro..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black">
         </div>
 
-        <!-- 5. Categoría -->
+        <!-- Categoría -->
         <div>
           <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Categoría</label>
           <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black"></select>
         </div>
 
         <button type="submit" class="w-full bg-black text-white font-semibold py-3.5 rounded-xl active:scale-[0.98] transition-transform mt-3 text-sm">
-          Guardar Registro
+          Guardar Movimiento
         </button>
       </form>
 
@@ -181,20 +178,19 @@
   </div>
 
   <script>
-    // Estructura de categorías según cuenta y tipo
     const categoryOptions = {
       gasto: {
-        income: ['Nómina / Salario', 'Freelance / Honorarios', 'Bizum / Reembolso', 'Otros ingresos'],
-        expense: ['Vivienda / Alquiler', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Suscripciones y Facturas', 'Salud', 'Compras', 'Otros']
+        income: ['Nómina / Salario', 'Freelance / Extras', 'Bizum / Devolución', 'Otros ingresos'],
+        expense: ['Vivienda / Alquiler', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas / Luz / Agua', 'Salud', 'Compras', 'Otros']
       },
       ahorro: {
-        income: ['Aporte mensual', 'Traspaso desde Gastos', 'Intereses / Rendimiento', 'Fondo de Emergencia', 'Meta de Ahorro'],
-        expense: ['Retirada para Imprevisto', 'Uso para Meta / Compra', 'Inversión Externa', 'Otros']
+        income: ['Aporte mensual', 'Traspaso desde Gasto', 'Intereses / Rendimiento', 'Fondo de Emergencia', 'Meta de Ahorro'],
+        expense: ['Retirada Imprevisto', 'Uso para Meta', 'Inversión Externa', 'Otros']
       }
     };
 
     let transactions = JSON.parse(localStorage.getItem('my_finances_data_v2')) || [];
-    let activeFilter = 'gasto'; // 'all', 'gasto', 'ahorro'
+    let activeFilter = 'gasto';
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
@@ -202,25 +198,19 @@
       render();
     });
 
-    const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
-    };
+    const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
 
     function setAccountFilter(account) {
       activeFilter = account;
 
-      // Actualizar estilo visual de las pestañas
       const tabs = { all: 'tab-all', gasto: 'tab-gasto', ahorro: 'tab-ahorro' };
       Object.keys(tabs).forEach(key => {
         const el = document.getElementById(tabs[key]);
-        if (key === account) {
-          el.className = "flex-1 py-1.5 rounded-lg bg-white text-gray-900 shadow-sm transition-all";
-        } else {
-          el.className = "flex-1 py-1.5 rounded-lg text-gray-600 transition-all";
-        }
+        el.className = key === account
+          ? "flex-1 py-1.5 rounded-lg bg-white text-gray-900 shadow-sm transition-all"
+          : "flex-1 py-1.5 rounded-lg text-gray-600 transition-all";
       });
 
-      // Resaltar tarjetas
       document.getElementById('card-gasto').className = `bg-white p-4 rounded-2xl border-2 ${account === 'gasto' ? 'border-gray-900' : 'border-transparent'} shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95`;
       document.getElementById('card-ahorro').className = `bg-white p-4 rounded-2xl border-2 ${account === 'ahorro' ? 'border-emerald-600' : 'border-transparent'} shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-95`;
 
@@ -268,7 +258,6 @@
       let balanceGasto = 0;
       let balanceAhorro = 0;
 
-      // Calcular balances
       transactions.forEach(t => {
         const amount = parseFloat(t.amount);
         if (t.account === 'ahorro') {
@@ -282,7 +271,6 @@
       document.getElementById('balance-ahorro').textContent = formatCurrency(balanceAhorro);
       document.getElementById('total-net-worth').textContent = formatCurrency(balanceGasto + balanceAhorro);
 
-      // Filtrar transacciones para la lista
       const filtered = transactions.filter(t => activeFilter === 'all' || (t.account || 'gasto') === activeFilter);
 
       listTitle.textContent = activeFilter === 'all' ? 'Todos los movimientos' : (activeFilter === 'ahorro' ? 'Movimientos: Ahorro' : 'Movimientos: Gasto');
@@ -348,7 +336,7 @@
       document.getElementById('transaction-form').reset();
       updateFormUI();
       closeModal();
-      setAccountFilter(account); // Enfoca automáticamente la cuenta donde se registró
+      setAccountFilter(account);
     }
 
     function deleteTransaction(index) {
@@ -373,7 +361,6 @@
       downloadAnchor.remove();
     }
 
-    // Modal
     const modal = document.getElementById('modal');
     const modalContent = modal.querySelector('div');
 
@@ -393,3 +380,4 @@
   </script>
 </body>
 </html>
+
