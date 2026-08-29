@@ -239,4 +239,1342 @@
           <span class="text-[11px] font-bold text-white/80">Ingresos</span>
           <div>
             <h3 id="study-income-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
-            <span class="text-[10px] text-white
+            <span class="text-[10px] text-white/70 font-medium">Total acumulado</span>
+          </div>
+        </div>
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-pink to-app-pinkLight text-white shadow-pink-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Gastos</span>
+          <div>
+            <h3 id="study-expense-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Total pagado</span>
+          </div>
+        </div>
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-blue to-app-blueLight text-white shadow-blue-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Créditos</span>
+          <div>
+            <h3 id="study-credit-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Deuda viva</span>
+          </div>
+        </div>
+        <div class="rounded-3xl p-4 bg-gradient-to-tr from-app-mint to-app-mintLight text-white shadow-mint-soft flex flex-col justify-between h-28">
+          <span class="text-[11px] font-bold text-white/80">Ahorro</span>
+          <div>
+            <h3 id="study-savings-total" class="text-xl font-extrabold tracking-tight">0,00 €</h3>
+            <span class="text-[10px] text-white/70 font-medium">Fondo actual</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-3xl p-4 shadow-card-soft border border-indigo-50/50 space-y-2">
+        <div class="flex items-center space-x-2 text-app-purple">
+          <div class="p-1.5 bg-indigo-50 rounded-xl"><i data-lucide="sparkles" class="w-4 h-4 text-app-purple"></i></div>
+          <span class="text-xs font-bold uppercase tracking-wider text-app-navy">Diagnóstico de Salud Financiera</span>
+        </div>
+        <p id="advice-text" class="text-xs font-semibold leading-relaxed text-app-subtext">
+          Registra tus primeros movimientos para generar diagnósticos personalizados.
+        </p>
+      </section>
+
+      <section class="bg-white rounded-3xl p-5 shadow-card-soft border border-indigo-50/50 space-y-4">
+        <h3 class="text-xs font-bold text-app-navy uppercase tracking-wider">Perfil de Inversión y Gastos</h3>
+        <div class="h-48 relative flex items-center justify-center">
+          <canvas id="categoryDonutChart"></canvas>
+        </div>
+        <div id="donut-legend" class="space-y-2 pt-2 border-t border-gray-100"></div>
+      </section>
+    </main>
+
+    <main id="view-fijos" class="view-panel hidden space-y-4">
+      <header class="flex justify-between items-center py-2">
+        <div>
+          <h1 class="text-xl font-extrabold text-app-navy tracking-tight">Gastos Fijos</h1>
+          <p class="text-[11px] font-semibold text-app-subtext">Seguros, IBI y Créditos</p>
+        </div>
+        <button type="button" onclick="openFixedModal()" class="p-2.5 bg-gradient-to-r from-app-navy to-indigo-900 text-white rounded-2xl shadow-float active:scale-95 transition-transform">
+          <i data-lucide="plus" class="w-5 h-5"></i>
+        </button>
+      </header>
+
+      <section class="grid grid-cols-2 gap-3">
+        <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
+          <p class="text-[11px] font-bold text-app-subtext uppercase">Cuota Mensual Fija</p>
+          <p id="total-fixed-monthly" class="text-xl font-extrabold text-app-pink mt-1">0,00 €</p>
+          <p class="text-[10px] text-app-subtext mt-0.5">Recibos recurrentes</p>
+        </div>
+        <div class="bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50">
+          <p class="text-[11px] font-bold text-app-subtext uppercase">Deuda Total Activa</p>
+          <p id="total-loans-debt" class="text-xl font-extrabold text-app-blue mt-1">0,00 €</p>
+          <p class="text-[10px] text-app-subtext mt-0.5">Hipotecas y créditos</p>
+        </div>
+      </section>
+
+      <section class="space-y-2.5">
+        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Créditos y Préstamos Activos</h3>
+        <div id="loans-list" class="space-y-3"></div>
+      </section>
+
+      <section class="space-y-2.5 mt-4">
+        <h3 class="text-xs font-bold text-app-subtext uppercase tracking-wider px-1">Seguros, IBI y Recibos Periódicos</h3>
+        <div id="fixed-costs-list" class="space-y-2.5"></div>
+      </section>
+    </main>
+
+  </div>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-indigo-50 px-6 py-2.5 flex justify-around items-center z-40 shadow-float" style="padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 8px);">
+    <button type="button" onclick="switchTab('movimientos')" id="nav-movimientos" class="flex flex-col items-center space-y-1 text-app-purple transition-all">
+      <div class="p-1.5 rounded-xl bg-indigo-50">
+        <i data-lucide="credit-card" class="w-5 h-5"></i>
+      </div>
+      <span class="text-[10px] font-bold">Cuentas</span>
+    </button>
+    <button type="button" onclick="switchTab('estudio')" id="nav-estudio" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
+      <div class="p-1.5 rounded-xl">
+        <i data-lucide="pie-chart" class="w-5 h-5"></i>
+      </div>
+      <span class="text-[10px] font-bold">Estudio</span>
+    </button>
+    <button type="button" onclick="switchTab('fijos')" id="nav-fijos" class="flex flex-col items-center space-y-1 text-app-subtext transition-all">
+      <div class="p-1.5 rounded-xl">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+      </div>
+      <span class="text-[10px] font-bold">Gastos Fijos</span>
+    </button>
+  </nav>
+
+  <div id="modal-transaction" onclick="if(event.target===this)closeModal('modal-transaction')" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="text-lg font-extrabold text-app-navy">Nuevo Movimiento</h3>
+          <p class="text-xs text-app-subtext">Añade un ingreso, gasto o ahorro</p>
+        </div>
+        <button type="button" onclick="closeModal('modal-transaction')" class="p-2 bg-gray-100 text-app-subtext hover:text-app-navy rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="transaction-form" onsubmit="saveTransaction(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Cuenta Destino</label>
+          <div class="flex bg-gray-100 p-1 rounded-2xl">
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="account" value="gasto" class="hidden peer" checked onchange="updateFormUI()">
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-purple peer-checked:text-white transition-all shadow-sm">💳 Cuenta Gasto</span>
+            </label>
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="account" value="ahorro" class="hidden peer" onchange="updateFormUI()">
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-mint peer-checked:text-white transition-all shadow-sm">🐖 Cuenta Ahorro</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo</label>
+          <div class="flex bg-gray-100 p-1 rounded-2xl">
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="type" value="income" class="hidden peer" checked onchange="updateCategories()">
+              <span id="label-income" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-mint peer-checked:shadow-sm transition-all">+ Ingreso / Nómina</span>
+            </label>
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="type" value="expense" class="hidden peer" onchange="updateCategories()">
+              <span id="label-expense" class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-white peer-checked:text-app-pink peer-checked:shadow-sm transition-all">- Gasto</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="linked-loan-container" class="hidden">
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">¿Amortiza crédito activo?</label>
+          <select id="linked-loan" onchange="autoFillLoanAmount()" class="w-full bg-indigo-50/60 border border-indigo-100 rounded-2xl px-4 py-2.5 text-xs font-semibold text-app-navy focus:outline-none focus:ring-2 focus:ring-app-purple">
+            <option value="">Ninguno (Gasto general)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Importe (€)</label>
+          <input type="number" step="0.01" min="0.01" id="amount" required placeholder="0.00" class="w-full text-2xl font-extrabold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-app-purple text-app-navy">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Concepto</label>
+          <input type="text" id="concept" required placeholder="Ej. Nómina, Supermercado, Cuota..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Categoría</label>
+          <select id="category" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple"></select>
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-purple-soft active:scale-[0.98] transition-transform mt-3 text-sm">
+          Guardar Movimiento
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-fixed" onclick="if(event.target===this)closeModal('modal-fixed')" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-3xl p-6 shadow-float transform translate-y-full sm:translate-y-0 transition-transform duration-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="text-lg font-extrabold text-app-navy">Compromiso Fijo</h3>
+          <p class="text-xs text-app-subtext">Hipotecas, seguros o tributos</p>
+        </div>
+        <button type="button" onclick="closeModal('modal-fixed')" class="p-2 bg-gray-100 text-app-subtext hover:text-app-navy rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="fixed-form" onsubmit="saveFixedItem(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1.5">Tipo de Elemento</label>
+          <div class="flex bg-gray-100 p-1 rounded-2xl">
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="fixed_type" value="credit" class="hidden peer" checked onchange="toggleFixedFormFields()">
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-blue peer-checked:text-white transition-all shadow-sm">🏦 Crédito / Hipoteca</span>
+            </label>
+            <label class="flex-1 text-center cursor-pointer">
+              <input type="radio" name="fixed_type" value="bill" class="hidden peer" onchange="toggleFixedFormFields()">
+              <span class="block py-2 text-xs font-bold text-app-subtext rounded-xl peer-checked:bg-app-pink peer-checked:text-white transition-all shadow-sm">🛡️ Seguro / IBI</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Nombre / Entidad</label>
+          <input type="text" id="fixed-name" required placeholder="Ej. Hipoteca Casa, Mapfre, IBI..." class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Cuota Periódica (€)</label>
+          <input type="number" step="0.01" min="0.01" id="fixed-monthly-fee" required placeholder="0.00" class="w-full text-xl font-bold bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-app-purple text-app-navy">
+        </div>
+
+        <div id="credit-fields" class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Total Solicitado (€)</label>
+              <input type="number" step="0.01" id="fixed-total-amount" placeholder="Ej. 120000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Saldo Pendiente (€)</label>
+              <input type="number" step="0.01" id="fixed-remaining-amount" placeholder="Ej. 95000" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+            </div>
+          </div>
+        </div>
+
+        <div id="bill-fields" class="hidden space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Periodicidad</label>
+              <select id="fixed-frequency" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+                <option value="monthly">Mensual</option>
+                <option value="quarterly">Trimestral</option>
+                <option value="annual" selected>Anual</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-app-subtext uppercase tracking-wider mb-1">Fecha Cobro</label>
+              <input type="date" id="fixed-date" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-app-purple">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-app-navy to-indigo-900 text-white font-bold py-3.5 rounded-2xl shadow-float active:scale-[0.98] transition-transform mt-3 text-sm">
+          Guardar Compromiso
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-vault" onclick="if(event.target===this)closeModal('modal-vault')" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 transform scale-95 transition-transform duration-200">
+      
+      <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+        <div class="flex items-center space-x-2">
+          <div class="p-2 bg-indigo-50 text-app-purple rounded-xl">
+            <i data-lucide="cloud" class="w-4 h-4"></i>
+          </div>
+          <h3 class="text-base font-extrabold text-app-navy">Bóveda de Datos</h3>
+        </div>
+        <button type="button" onclick="closeModal('modal-vault')" class="p-1.5 text-gray-400 hover:text-app-navy rounded-full">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="vault-view-unlinked" class="space-y-4">
+        <p class="text-xs text-app-subtext leading-relaxed">
+          Sincroniza tus finanzas en tiempo real entre tu iPhone y ordenador al instante.
+        </p>
+
+        <button type="button" onclick="crearNuevaBoveda()" class="w-full py-3 bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold rounded-2xl shadow-purple-soft text-xs active:scale-[0.98] transition">
+          ✨ Crear Bóveda y Subir Datos
+        </button>
+
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-gray-100"></div>
+          <span class="flex-shrink mx-3 text-[10px] uppercase text-app-subtext font-bold">o vincular</span>
+          <div class="flex-grow border-t border-gray-100"></div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[11px] font-bold text-app-subtext uppercase">Código de Bóveda:</label>
+          <div class="flex gap-2">
+            <input type="text" id="input-vault-code" placeholder="Ej: BVD-9481-22" class="flex-1 uppercase px-3 py-2 border rounded-xl font-mono text-xs font-bold text-app-navy focus:outline-none focus:ring-2 focus:ring-app-purple">
+            <button type="button" onclick="vincularBovedaExistente()" class="px-4 py-2 bg-app-navy text-white text-xs font-bold rounded-xl active:scale-95 transition">
+              Vincular
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="vault-view-linked" class="hidden space-y-4">
+        <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 text-center">
+          <span class="text-[10px] font-extrabold text-app-purple uppercase tracking-wider">Código de tu Bóveda</span>
+          <div class="flex items-center justify-center gap-2 mt-1">
+            <span id="active-vault-code" class="text-xl font-mono font-extrabold text-app-navy">---</span>
+            <button type="button" onclick="copiarCodigoBoveda()" class="p-1.5 hover:bg-indigo-100 text-app-purple rounded-lg transition" title="Copiar">
+              <i data-lucide="copy" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p class="text-[10px] text-app-subtext mt-1.5">Introduce este código en tus otros dispositivos.</p>
+        </div>
+
+        <div class="flex items-center justify-between text-xs bg-gray-50 p-3 rounded-xl border border-gray-100">
+          <span class="text-app-subtext font-medium">Estado de conexión:</span>
+          <span id="vault-sync-status" class="font-bold text-app-mint flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-app-mint animate-pulse"></span>
+            En vivo
+          </span>
+        </div>
+
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="sincronizarConBoveda(true)" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-app-navy text-xs font-bold rounded-xl transition">
+            🔄 Forzar Sync
+          </button>
+          <button type="button" onclick="desvincularBoveda()" class="py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-app-pink text-xs font-bold rounded-xl transition">
+            Desvincular
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="modal-security" onclick="if(event.target===this)closeModal('modal-security')" class="fixed inset-0 bg-app-navy/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 transform scale-95 transition-transform duration-200 text-center">
+      <div class="w-12 h-12 bg-indigo-50 text-app-purple rounded-2xl flex items-center justify-center mx-auto">
+        <i data-lucide="lock" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h3 class="text-base font-extrabold text-app-navy">Clave Maestra</h3>
+        <p class="text-xs text-app-subtext mt-1">Se requiere autorización para modificar este elemento antiguo.</p>
+      </div>
+      <input type="password" id="security-key-input" placeholder="Introduce tu clave" class="w-full bg-gray-50 border rounded-2xl px-4 py-2.5 text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-app-purple">
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal('modal-security')" class="flex-1 py-2.5 bg-gray-100 text-app-subtext text-xs font-bold rounded-xl">Cancelar</button>
+        <button type="button" onclick="verifyMasterKey()" class="flex-1 py-2.5 bg-app-navy text-white text-xs font-bold rounded-xl">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. VARIABLES Y ESTADO CON PROTECCIÓN
+    // ==========================================
+    const SUPABASE_URL = "https://TU_PROYECTO.supabase.co";
+    const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY";
+
+    let supabaseClient = null;
+    try {
+      if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes("TU_PROYECTO")) {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(e) { 
+      console.warn("Supabase en modo local:", e); 
+    }
+
+    const STORAGE_KEY_VAULT = 'my_vault_code_v1';
+    const STORAGE_KEY_DATA = 'my_finances_data_v3';
+    const STORAGE_KEY_FIXED = 'my_finances_fixed_v3';
+    const STORAGE_KEY_MASTER = 'my_finances_master_key';
+
+    let realtimeChannel = null;
+
+    const categoryOptions = {
+      gasto: {
+        income: ['Nómina / Salario', 'Freelance / Extras', 'Bizum / Reembolso', 'Otros ingresos'],
+        expense: ['Hipoteca / Préstamo', 'Vivienda / Alquiler', 'Seguros / IBI', 'Supermercado', 'Restaurantes y Ocio', 'Transporte', 'Facturas y Suministros', 'Salud', 'Compras', 'Otros']
+      },
+      ahorro: {
+        income: ['Aporte mensual', 'Traspaso desde Gasto', 'Rendimientos / Intereses', 'Fondo de Emergencia', 'Meta de Ahorro'],
+        expense: ['Retirada Imprevisto', 'Uso para Meta', 'Inversión Externa', 'Otros']
+      }
+    };
+
+    // Recuperar datos con salvaguarda contra corrupción
+    let transactions = [];
+    try {
+      const rawT = localStorage.getItem(STORAGE_KEY_DATA);
+      transactions = rawT ? JSON.parse(rawT) : [];
+      if (!Array.isArray(transactions)) transactions = [];
+    } catch(e) { transactions = []; }
+
+    let fixedItems = [];
+    try {
+      const rawF = localStorage.getItem(STORAGE_KEY_FIXED);
+      fixedItems = rawF ? JSON.parse(rawF) : [
+        { id: '1', type: 'credit', name: 'Préstamo Coche', monthlyFee: 215, totalAmount: 12000, remainingAmount: 5800, date: '2026-12-01' },
+        { id: '2', type: 'bill', name: 'Seguro Hogar', monthlyFee: 240, frequency: 'annual', date: '2026-10-15' },
+        { id: '3', type: 'bill', name: 'IBI Vivienda', monthlyFee: 380, frequency: 'annual', date: '2026-09-20' }
+      ];
+      if (!Array.isArray(fixedItems)) fixedItems = [];
+    } catch(e) { fixedItems = []; }
+
+    let activeFilter = 'gasto';
+    let currentTab = 'movimientos';
+    let pendingSecurityCallback = null;
+    let miniTrendChartInstance = null;
+    let donutChartInstance = null;
+
+    const formatCurrency = (amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(amount) || 0);
+
+    function safeLucide() {
+      try {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch(e) { console.warn("Lucide error:", e); }
+    }
+
+    // ==========================================
+    // 2. INICIALIZACIÓN
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      try { updateFormUI(); } catch(e) {}
+      try { renderAll(); } catch(e) { console.error("Error renderAll:", e); }
+      try { initMiniTrendChart(); } catch(e) {}
+      try { initVaultSync(); } catch(e) {}
+      try { checkURLShortcuts(); } catch(e) {}
+      safeLucide();
+    });
+
+    function renderAll() {
+      renderTransactions();
+      renderFixedItems();
+      safeLucide();
+    }
+
+    function saveLocalData() {
+      try {
+        localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(transactions));
+        localStorage.setItem(STORAGE_KEY_FIXED, JSON.stringify(fixedItems));
+      } catch(e) { console.error("Error guardando datos locales:", e); }
+    }
+
+    // ==========================================
+    // 3. MOVIMIENTOS & CUENTAS
+    // ==========================================
+    function setAccountFilter(account) {
+      activeFilter = account;
+      const tabs = { all: 'tab-all', gasto: 'tab-gasto', ahorro: 'tab-ahorro' };
+      Object.keys(tabs).forEach(key => {
+        const el = document.getElementById(tabs[key]);
+        if (el) {
+          el.className = key === account
+            ? "flex-1 py-2 rounded-xl bg-app-navy text-white shadow-sm transition-all"
+            : "flex-1 py-2 rounded-xl text-app-subtext transition-all";
+        }
+      });
+      renderTransactions();
+    }
+
+    function renderTransactions() {
+      const list = document.getElementById('transactions-list');
+      const emptyState = document.getElementById('empty-state-transactions');
+      const countLabel = document.getElementById('items-count');
+      const listTitle = document.getElementById('list-title');
+      if (!list) return;
+
+      list.innerHTML = '';
+
+      let balanceGasto = 0;
+      let balanceAhorro = 0;
+
+      transactions.forEach(t => {
+        const amount = parseFloat(t.amount) || 0;
+        if (t.account === 'ahorro') {
+          balanceAhorro += (t.type === 'income' ? amount : -amount);
+        } else {
+          balanceGasto += (t.type === 'income' ? amount : -amount);
+        }
+      });
+
+      const bgEl = document.getElementById('balance-gasto');
+      const baEl = document.getElementById('balance-ahorro');
+      const nwEl = document.getElementById('total-net-worth');
+      if (bgEl) bgEl.textContent = formatCurrency(balanceGasto);
+      if (baEl) baEl.textContent = formatCurrency(balanceAhorro);
+      if (nwEl) nwEl.textContent = formatCurrency(balanceGasto + balanceAhorro);
+
+      const filtered = transactions.filter(t => activeFilter === 'all' || (t.account || 'gasto') === activeFilter);
+      if (listTitle) listTitle.textContent = activeFilter === 'all' ? 'Todos los movimientos' : (activeFilter === 'ahorro' ? 'Movimientos: Ahorro' : 'Movimientos: Gasto');
+      if (countLabel) countLabel.textContent = `${filtered.length} registros`;
+
+      if (filtered.length === 0) {
+        if (emptyState) emptyState.classList.remove('hidden');
+      } else {
+        if (emptyState) emptyState.classList.add('hidden');
+      }
+
+      filtered.forEach(item => {
+        const originalIndex = transactions.indexOf(item);
+        const isIncome = item.type === 'income';
+        const isAhorro = item.account === 'ahorro';
+        
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-2xl shadow-card-soft border border-indigo-50/40 flex items-center justify-between";
+        card.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="p-3 rounded-2xl ${isAhorro ? 'bg-emerald-50 text-app-mint' : (isIncome ? 'bg-indigo-50 text-app-purple' : 'bg-rose-50 text-app-pink')}">
+              <i data-lucide="${isAhorro ? 'piggy-bank' : (isIncome ? 'arrow-down-left' : 'arrow-up-right')}" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md ${isAhorro ? 'bg-emerald-100 text-app-mint' : 'bg-indigo-50 text-app-purple'}">
+                  ${isAhorro ? 'Ahorro' : 'Gasto'}
+                </span>
+                <p class="text-xs font-bold text-app-navy">${item.concept || 'Sin concepto'}</p>
+              </div>
+              <p class="text-[11px] text-app-subtext mt-0.5 font-medium">${item.category || 'General'} • ${item.date || ''} ${item.loanName ? `• <span class="text-app-blue font-bold">${item.loanName}</span>` : ''}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-extrabold ${isIncome ? 'text-app-mint' : 'text-app-navy'}">
+              ${isIncome ? '+' : '-'}${formatCurrency(item.amount)}
+            </span>
+            <button type="button" onclick="requestDeleteTransaction(${originalIndex})" class="text-gray-300 hover:text-app-pink p-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      safeLucide();
+    }
+
+    function saveTransaction(e) {
+      if (e) e.preventDefault();
+      try {
+        const accountEl = document.querySelector('input[name="account"]:checked');
+        const typeEl = document.querySelector('input[name="type"]:checked');
+        const account = accountEl ? accountEl.value : 'gasto';
+        const type = typeEl ? typeEl.value : 'expense';
+        const amount = parseFloat(document.getElementById('amount').value);
+        const concept = document.getElementById('concept').value.trim();
+        const category = document.getElementById('category').value;
+        const linkedLoanId = document.getElementById('linked-loan').value;
+        
+        if (isNaN(amount) || amount <= 0) {
+          alert("Introduce un importe válido mayor que 0.");
+          return;
+        }
+
+        const now = new Date();
+        const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+
+        let loanName = '';
+        if (linkedLoanId && type === 'expense') {
+          const loan = fixedItems.find(item => item.id === linkedLoanId);
+          if (loan) {
+            loanName = loan.name;
+            loan.remainingAmount = Math.max(0, (loan.remainingAmount || 0) - amount);
+          }
+        }
+
+        transactions.unshift({ 
+          account, type, amount, concept, category, date, timestamp: now.getTime(),
+          linkedLoanId, loanName
+        });
+
+        saveLocalData();
+        sincronizarConBoveda();
+
+        document.getElementById('transaction-form').reset();
+        updateFormUI();
+        closeModal('modal-transaction');
+        setAccountFilter(account);
+      } catch(err) {
+        console.error("Error guardando movimiento:", err);
+      }
+    }
+
+    function requestDeleteTransaction(index) {
+      const item = transactions[index];
+      if (!item) return;
+      const isOld = (Date.now() - (item.timestamp || 0)) > 24 * 60 * 60 * 1000;
+      const masterKey = localStorage.getItem(STORAGE_KEY_MASTER);
+
+      if (isOld && masterKey) {
+        pendingSecurityCallback = () => executeDeleteTransaction(index);
+        openModal('modal-security');
+      } else {
+        if (confirm("¿Deseas eliminar este movimiento?")) {
+          executeDeleteTransaction(index);
+        }
+      }
+    }
+
+    function executeDeleteTransaction(index) {
+      const item = transactions[index];
+      if (item && item.linkedLoanId && item.type === 'expense') {
+        const loan = fixedItems.find(l => l.id === item.linkedLoanId);
+        if (loan) loan.remainingAmount = (loan.remainingAmount || 0) + item.amount;
+      }
+      transactions.splice(index, 1);
+      saveLocalData();
+      sincronizarConBoveda();
+      renderAll();
+    }
+
+    // ==========================================
+    // 4. GASTOS FIJOS Y CRÉDITOS
+    // ==========================================
+    function renderFixedItems() {
+      const loansList = document.getElementById('loans-list');
+      const fixedCostsList = document.getElementById('fixed-costs-list');
+      if (!loansList || !fixedCostsList) return;
+
+      loansList.innerHTML = '';
+      fixedCostsList.innerHTML = '';
+
+      let totalMonthlyCommitment = 0;
+      let totalDebt = 0;
+
+      fixedItems.forEach((item, index) => {
+        if (item.type === 'credit') {
+          totalDebt += parseFloat(item.remainingAmount || 0);
+          totalMonthlyCommitment += parseFloat(item.monthlyFee || 0);
+
+          const progress = item.totalAmount > 0 
+            ? Math.round(((item.totalAmount - item.remainingAmount) / item.totalAmount) * 100) 
+            : 0;
+
+          const card = document.createElement('div');
+          card.className = "bg-white p-4 rounded-3xl shadow-card-soft border border-indigo-50/50 space-y-3";
+          card.innerHTML = `
+            <div class="flex justify-between items-start">
+              <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-blue-50 text-app-blue rounded-2xl">
+                  <i data-lucide="landmark" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-app-navy">${item.name}</h4>
+                  <p class="text-[11px] text-app-subtext">Cuota: <strong class="text-app-navy">${formatCurrency(item.monthlyFee)}/mes</strong></p>
+                </div>
+              </div>
+              <button type="button" onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-[11px] font-bold">
+                <span class="text-app-subtext">Pendiente: <span class="text-app-navy">${formatCurrency(item.remainingAmount)}</span></span>
+                <span class="text-app-mint">${progress}% amortizado</span>
+              </div>
+              <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-app-blue to-app-purple h-full rounded-full transition-all duration-500" style="width: ${progress}%"></div>
+              </div>
+            </div>
+          `;
+          loansList.appendChild(card);
+
+        } else {
+          const fee = parseFloat(item.monthlyFee || 0);
+          if (item.frequency === 'monthly') totalMonthlyCommitment += fee;
+          else if (item.frequency === 'quarterly') totalMonthlyCommitment += (fee / 3);
+          else if (item.frequency === 'annual') totalMonthlyCommitment += (fee / 12);
+
+          const card = document.createElement('div');
+          card.className = "bg-white p-3.5 rounded-2xl shadow-card-soft border border-indigo-50/50 flex items-center justify-between";
+          card.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <div class="p-2.5 rounded-2xl bg-rose-50 text-app-pink">
+                <i data-lucide="${item.name && item.name.toLowerCase().includes('seguro') ? 'shield-check' : 'calendar'}" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-app-navy">${item.name}</p>
+                <p class="text-[10px] text-app-subtext font-medium">
+                  ${item.frequency === 'annual' ? 'Anual' : (item.frequency === 'quarterly' ? 'Trimestral' : 'Mensual')} 
+                  ${item.date ? `• Cobro: <strong class="text-app-navy">${item.date}</strong>` : ''}
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-extrabold text-app-navy">${formatCurrency(item.monthlyFee)}</span>
+              <button type="button" onclick="deleteFixedItem(${index})" class="text-gray-300 hover:text-app-pink p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+          fixedCostsList.appendChild(card);
+        }
+      });
+
+      const tfEl = document.getElementById('total-fixed-monthly');
+      const tdEl = document.getElementById('total-loans-debt');
+      if (tfEl) tfEl.textContent = formatCurrency(totalMonthlyCommitment);
+      if (tdEl) tdEl.textContent = formatCurrency(totalDebt);
+
+      populateLoanSelectDropdown();
+      safeLucide();
+    }
+
+    function saveFixedItem(e) {
+      if (e) e.preventDefault();
+      try {
+        const typeEl = document.querySelector('input[name="fixed_type"]:checked');
+        const type = typeEl ? typeEl.value : 'credit';
+        const name = document.getElementById('fixed-name').value.trim();
+        const monthlyFee = parseFloat(document.getElementById('fixed-monthly-fee').value);
+        
+        if (!name || isNaN(monthlyFee)) {
+          alert("Por favor rellena el nombre y la cuota.");
+          return;
+        }
+
+        let itemData = { id: Date.now().toString(), type, name, monthlyFee };
+
+        if (type === 'credit') {
+          const totalAmount = parseFloat(document.getElementById('fixed-total-amount').value) || monthlyFee;
+          const remainingAmount = parseFloat(document.getElementById('fixed-remaining-amount').value) || totalAmount;
+          itemData.totalAmount = totalAmount;
+          itemData.remainingAmount = remainingAmount;
+        } else {
+          itemData.frequency = document.getElementById('fixed-frequency').value;
+          itemData.date = document.getElementById('fixed-date').value;
+        }
+
+        fixedItems.push(itemData);
+        saveLocalData();
+        sincronizarConBoveda();
+
+        document.getElementById('fixed-form').reset();
+        closeModal('modal-fixed');
+        renderFixedItems();
+      } catch(err) {
+        console.error("Error guardando compromiso fijo:", err);
+      }
+    }
+
+    function deleteFixedItem(index) {
+      if (confirm("¿Deseas eliminar este registro fijo?")) {
+        fixedItems.splice(index, 1);
+        saveLocalData();
+        sincronizarConBoveda();
+        renderFixedItems();
+      }
+    }
+
+    function populateLoanSelectDropdown() {
+      const select = document.getElementById('linked-loan');
+      if (!select) return;
+      select.innerHTML = '<option value="">Ninguno (Gasto general)</option>';
+      fixedItems.filter(i => i.type === 'credit').forEach(loan => {
+        const opt = document.createElement('option');
+        opt.value = loan.id;
+        opt.textContent = `${loan.name} (Pendiente: ${formatCurrency(loan.remainingAmount)})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function autoFillLoanAmount() {
+      const loanId = document.getElementById('linked-loan').value;
+      if (loanId) {
+        const loan = fixedItems.find(l => l.id === loanId);
+        if (loan) {
+          document.getElementById('amount').value = loan.monthlyFee || '';
+          document.getElementById('concept').value = `Cuota: ${loan.name}`;
+          document.getElementById('category').value = 'Hipoteca / Préstamo';
+        }
+      }
+    }
+
+    // ==========================================
+    // 5. ESTUDIO FINANCIERO & GRÁFICAS
+    // ==========================================
+    function renderFinancialStudy() {
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let totalSavings = 0;
+      let totalDebt = 0;
+      const categoryTotals = {};
+
+      transactions.forEach(t => {
+        const amt = parseFloat(t.amount) || 0;
+        if (t.account === 'ahorro' && t.type === 'income') {
+          totalSavings += amt;
+        } else if (t.type === 'income') {
+          totalIncome += amt;
+        } else if (t.type === 'expense') {
+          totalExpense += amt;
+          const cat = t.category || 'General';
+          categoryTotals[cat] = (categoryTotals[cat] || 0) + amt;
+        }
+      });
+
+      fixedItems.filter(i => i.type === 'credit').forEach(i => totalDebt += (parseFloat(i.remainingAmount) || 0));
+
+      const iEl = document.getElementById('study-income-total');
+      const eEl = document.getElementById('study-expense-total');
+      const dEl = document.getElementById('study-credit-total');
+      const sEl = document.getElementById('study-savings-total');
+
+      if (iEl) iEl.textContent = formatCurrency(totalIncome);
+      if (eEl) eEl.textContent = formatCurrency(totalExpense);
+      if (dEl) dEl.textContent = formatCurrency(totalDebt);
+      if (sEl) sEl.textContent = formatCurrency(totalSavings);
+
+      const rate = totalIncome > 0 ? Math.round(((totalSavings + Math.max(0, totalIncome - totalExpense)) / totalIncome) * 100) : 0;
+      const adviceEl = document.getElementById('advice-text');
+
+      if (adviceEl) {
+        if (transactions.length === 0) {
+          adviceEl.innerHTML = "Comienza a registrar tu salario y gastos diarios para generar diagnósticos y previsiones inteligentes.";
+        } else if (totalExpense > totalIncome && totalIncome > 0) {
+          adviceEl.innerHTML = `⚠️ <strong class="text-app-pink">Déficit detectado:</strong> Tus gastos superan tus ingresos en <strong>${formatCurrency(totalExpense - totalIncome)}</strong>. Conviene moderar partidas no esenciales.`;
+        } else if (rate >= 25) {
+          adviceEl.innerHTML = `🌟 <strong class="text-app-mint">Salud óptima:</strong> Estás ahorrando el <strong>${rate}%</strong> de tus ingresos. Excelente ritmo financiero.`;
+        } else {
+          adviceEl.innerHTML = `📊 <strong class="text-app-purple">Equilibrio activo:</strong> Mantienes finanzas saludables. Intenta fijar el ahorro mensual por encima del 20%.`;
+        }
+      }
+
+      renderDonutChart(categoryTotals, totalExpense);
+      safeLucide();
+    }
+
+    function renderDonutChart(categoryTotals, totalExpense) {
+      const ctx = document.getElementById('categoryDonutChart');
+      if (!ctx || typeof Chart === 'undefined') return;
+
+      if (donutChartInstance) {
+        try { donutChartInstance.destroy(); } catch(e) {}
+      }
+
+      const palette = ['#5F5AF6', '#F8678C', '#24D297', '#4D96FF', '#FFB800', '#9333EA'];
+      const labels = Object.keys(categoryTotals);
+      const data = Object.values(categoryTotals);
+
+      const chartLabels = labels.length > 0 ? labels : ['Sin gastos'];
+      const chartData = data.length > 0 ? data : [1];
+      const chartColors = labels.length > 0 ? palette.slice(0, labels.length) : ['#E5E7EB'];
+
+      try {
+        donutChartInstance = new Chart(ctx.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: chartLabels,
+            datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, borderRadius: 6, spacing: 4 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            cutout: '72%'
+          }
+        });
+      } catch(e) { console.warn("DonutChart error:", e); }
+
+      const legendContainer = document.getElementById('donut-legend');
+      if (!legendContainer) return;
+      legendContainer.innerHTML = '';
+      if (labels.length === 0) {
+        legendContainer.innerHTML = '<p class="text-xs text-app-subtext text-center py-2">No hay gastos clasificados</p>';
+        return;
+      }
+
+      labels.forEach((label, i) => {
+        const amt = categoryTotals[label];
+        const pct = totalExpense > 0 ? Math.round((amt / totalExpense) * 100) : 0;
+        const color = palette[i % palette.length];
+
+        const row = document.createElement('div');
+        row.className = "flex justify-between items-center py-1";
+        row.innerHTML = `
+          <div class="flex items-center space-x-2">
+            <span class="w-3 h-3 rounded-full" style="background-color: ${color}"></span>
+            <span class="text-xs font-bold text-app-navy">${label}</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-extrabold text-app-navy">${formatCurrency(amt)}</span>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full text-white" style="background-color: ${color}">${pct}%</span>
+          </div>
+        `;
+        legendContainer.appendChild(row);
+      });
+    }
+
+    function initMiniTrendChart() {
+      const ctx = document.getElementById('miniTrendChart');
+      if (!ctx || typeof Chart === 'undefined') return;
+
+      if (miniTrendChartInstance) {
+        try { miniTrendChartInstance.destroy(); } catch(e) {}
+      }
+
+      try {
+        miniTrendChartInstance = new Chart(ctx.getContext('2d'), {
+          type: 'line',
+          data: {
+            labels: ['1', '2', '3', '4', '5', '6', '7'],
+            datasets: [
+              {
+                data: [12, 19, 15, 33, 22, 28, 35],
+                borderColor: '#5F5AF6',
+                borderWidth: 3,
+                tension: 0.45,
+                pointRadius: 0,
+                fill: true,
+                backgroundColor: 'rgba(95, 90, 246, 0.06)'
+              },
+              {
+                data: [8, 11, 14, 12, 16, 18, 20],
+                borderColor: '#F8678C',
+                borderWidth: 2,
+                borderDash: [4, 4],
+                tension: 0.45,
+                pointRadius: 0,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: { x: { display: false }, y: { display: false } }
+          }
+        });
+      } catch(e) { console.warn("MiniTrend error:", e); }
+    }
+
+    // ==========================================
+    // 6. BÓVEDA CLOUD (SINCRONIZACIÓN)
+    // ==========================================
+    function initVaultSync() {
+      const vaultCode = localStorage.getItem(STORAGE_KEY_VAULT);
+      updateVaultUI();
+      if (vaultCode && supabaseClient) {
+        subscribeToVault(vaultCode);
+      }
+    }
+
+    function generateVaultCode() {
+      const n1 = Math.floor(1000 + Math.random() * 9000);
+      const n2 = Math.floor(10 + Math.random() * 90);
+      return `BVD-${n1}-${n2}`;
+    }
+
+    async function crearNuevaBoveda() {
+      if (!supabaseClient) {
+        alert("Para activar la Bóveda en la nube, debes colocar tus credenciales de Supabase en SUPABASE_URL y SUPABASE_ANON_KEY dentro del código.");
+        return;
+      }
+      try {
+        const nuevoCodigo = generateVaultCode();
+        const payload = { transactions, fixedItems };
+
+        const { error } = await supabaseClient
+          .from('bovedas')
+          .insert([{ codigo: nuevoCodigo, datos: payload, actualizado_el: new Date() }]);
+
+        if (error) {
+          alert("Error al crear la bóveda: " + error.message);
+          return;
+        }
+
+        localStorage.setItem(STORAGE_KEY_VAULT, nuevoCodigo);
+        updateVaultUI();
+        subscribeToVault(nuevoCodigo);
+        alert(`¡Bóveda creada!\nCódigo: ${nuevoCodigo}\nÚsalo en tus otros dispositivos.`);
+      } catch(err) {
+        alert("Error de conexión: " + err.message);
+      }
+    }
+
+    async function vincularBovedaExistente() {
+      if (!supabaseClient) {
+        alert("Configura las credenciales de Supabase en el código para conectar con la nube.");
+        return;
+      }
+      try {
+        const input = document.getElementById('input-vault-code');
+        const codigo = input ? input.value.trim().toUpperCase() : '';
+
+        if (!codigo) {
+          alert("Introduce un código de bóveda válido.");
+          return;
+        }
+
+        const { data, error } = await supabaseClient
+          .from('bovedas')
+          .select('datos')
+          .eq('codigo', codigo)
+          .single();
+
+        if (error || !data) {
+          alert("No se encontró ninguna bóveda con ese código. Verifica que esté bien escrito.");
+          return;
+        }
+
+        if (data.datos) {
+          transactions = data.datos.transactions || [];
+          fixedItems = data.datos.fixedItems || [];
+          saveLocalData();
+        }
+
+        localStorage.setItem(STORAGE_KEY_VAULT, codigo);
+        updateVaultUI();
+        subscribeToVault(codigo);
+        renderAll();
+        alert("¡Bóveda vinculada con éxito! Tus datos se han sincronizado.");
+      } catch(err) {
+        alert("Error al vincular: " + err.message);
+      }
+    }
+
+    async function sincronizarConBoveda(mostrarAlerta = false) {
+      const codigo = localStorage.getItem(STORAGE_KEY_VAULT);
+      if (!codigo || !supabaseClient) return;
+
+      try {
+        const payload = { transactions, fixedItems };
+        const { error } = await supabaseClient
+          .from('bovedas')
+          .update({ datos: payload, actualizado_el: new Date() })
+          .eq('codigo', codigo);
+
+        if (error) {
+          console.error("Error al sincronizar:", error);
+        } else if (mostrarAlerta) {
+          alert("Sincronización manual completada.");
+        }
+      } catch(e) { console.error("Error en sincronización:", e); }
+    }
+
+    function subscribeToVault(codigo) {
+      if (!supabaseClient) return;
+      try {
+        if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+
+        realtimeChannel = supabaseClient
+          .channel(`boveda-${codigo}`)
+          .on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'bovedas',
+            filter: `codigo=eq.${codigo}`
+          }, (payload) => {
+            if (payload.new && payload.new.datos) {
+              console.log("Cambios en tiempo real recibidos...");
+              transactions = payload.new.datos.transactions || [];
+              fixedItems = payload.new.datos.fixedItems || [];
+              saveLocalData();
+              renderAll();
+            }
+          })
+          .subscribe();
+      } catch(e) { console.warn("Realtime error:", e); }
+    }
+
+    function desvincularBoveda() {
+      if (confirm("¿Deseas desvincular este dispositivo? Tus datos actuales se mantendrán guardados.")) {
+        if (realtimeChannel && supabaseClient) {
+          try { supabaseClient.removeChannel(realtimeChannel); } catch(e) {}
+        }
+        localStorage.removeItem(STORAGE_KEY_VAULT);
+        updateVaultUI();
+      }
+    }
+
+    function copiarCodigoBoveda() {
+      const codigo = localStorage.getItem(STORAGE_KEY_VAULT);
+      if (codigo) {
+        try {
+          navigator.clipboard.writeText(codigo);
+          alert("Código copiado: " + codigo);
+        } catch(e) {
+          prompt("Copia tu código:", codigo);
+        }
+      }
+    }
+
+    function updateVaultUI() {
+      const codigo = localStorage.getItem(STORAGE_KEY_VAULT);
+      const viewUnlinked = document.getElementById('vault-view-unlinked');
+      const viewLinked = document.getElementById('vault-view-linked');
+      const activeCode = document.getElementById('active-vault-code');
+      const topIndicator = document.getElementById('top-vault-indicator');
+      const topText = document.getElementById('top-vault-text');
+      const sidebarDot = document.getElementById('sidebar-vault-dot');
+      const sidebarStatus = document.getElementById('sidebar-vault-status');
+
+      if (codigo) {
+        if (viewUnlinked) viewUnlinked.classList.add('hidden');
+        if (viewLinked) viewLinked.classList.remove('hidden');
+        if (activeCode) activeCode.textContent = codigo;
+        if (topIndicator) topIndicator.className = "w-2 h-2 rounded-full bg-app-mint animate-pulse";
+        if (topText) topText.textContent = codigo;
+        if (sidebarDot) sidebarDot.className = "w-3 h-3 rounded-full bg-app-mint animate-pulse";
+        if (sidebarStatus) sidebarStatus.textContent = "Conectado: " + codigo;
+      } else {
+        if (viewUnlinked) viewUnlinked.classList.remove('hidden');
+        if (viewLinked) viewLinked.classList.add('hidden');
+        if (topIndicator) topIndicator.className = "w-2 h-2 rounded-full bg-amber-500";
+        if (topText) topText.textContent = "Bóveda";
+        if (sidebarDot) sidebarDot.className = "w-3 h-3 rounded-full bg-amber-500";
+        if (sidebarStatus) sidebarStatus.textContent = "No vinculada";
+      }
+      safeLucide();
+    }
+
+    function openVaultModal() {
+      openModal('modal-vault');
+      updateVaultUI();
+    }
+
+    // ==========================================
+    // 7. PESTAÑAS, FORMULARIOS Y MODALES
+    // ==========================================
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
+      const activePanel = document.getElementById(`view-${tabId}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+
+      ['movimientos', 'estudio', 'fijos'].forEach(t => {
+        const btn = document.getElementById(`nav-${t}`);
+        if (!btn) return;
+        const iconDiv = btn.querySelector('div');
+        if (t === tabId) {
+          btn.className = 'flex flex-col items-center space-y-1 text-app-purple transition-all';
+          if (iconDiv) iconDiv.className = 'p-1.5 rounded-xl bg-indigo-50';
+        } else {
+          btn.className = 'flex flex-col items-center space-y-1 text-app-subtext transition-all';
+          if (iconDiv) iconDiv.className = 'p-1.5 rounded-xl';
+        }
+      });
+
+      if (tabId === 'estudio') renderFinancialStudy();
+      else if (tabId === 'fijos') renderFixedItems();
+      else { renderTransactions(); initMiniTrendChart(); }
+      safeLucide();
+    }
+
+    function openTransactionModal() { openModal('modal-transaction'); }
+    function openFixedModal() { openModal('modal-fixed'); toggleFixedFormFields(); }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      const content = modal.querySelector('div');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        if (content) content.classList.remove('translate-y-full', 'scale-95');
+      }, 10);
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      const content = modal.querySelector('div');
+      modal.classList.add('opacity-0');
+      if (content) content.classList.add('translate-y-full', 'scale-95');
+      setTimeout(() => { modal.classList.add('hidden'); }, 200);
+    }
+
+    function updateFormUI() {
+      const accountEl = document.querySelector('input[name="account"]:checked');
+      const typeEl = document.querySelector('input[name="type"]:checked');
+      const account = accountEl ? accountEl.value : 'gasto';
+      const type = typeEl ? typeEl.value : 'income';
+      const labelIncome = document.getElementById('label-income');
+      const labelExpense = document.getElementById('label-expense');
+      const loanContainer = document.getElementById('linked-loan-container');
+
+      if (account === 'ahorro') {
+        if (labelIncome) labelIncome.textContent = '+ Añadir Ahorro';
+        if (labelExpense) labelExpense.textContent = '- Retirar Ahorro';
+        if (loanContainer) loanContainer.classList.add('hidden');
+      } else {
+        if (labelIncome) labelIncome.textContent = '+ Ingreso / Nómina';
+        if (labelExpense) labelExpense.textContent = '- Gasto';
+        if (type === 'expense' && fixedItems.some(i => i.type === 'credit')) {
+          if (loanContainer) loanContainer.classList.remove('hidden');
+        } else {
+          if (loanContainer) loanContainer.classList.add('hidden');
+        }
+      }
+      updateCategories();
+    }
+
+    function updateCategories() {
+      const accountEl = document.querySelector('input[name="account"]:checked');
+      const typeEl = document.querySelector('input[name="type"]:checked');
+      const account = accountEl ? accountEl.value : 'gasto';
+      const type = typeEl ? typeEl.value : 'income';
+      const select = document.getElementById('category');
+      if (!select) return;
+
+      select.innerHTML = '';
+      const list = (categoryOptions[account] && categoryOptions[account][type]) ? categoryOptions[account][type] : ['General'];
+      list.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+
+      const loanContainer = document.getElementById('linked-loan-container');
+      if (account === 'gasto' && type === 'expense' && fixedItems.some(i => i.type === 'credit')) {
+        if (loanContainer) loanContainer.classList.remove('hidden');
+      } else {
+        if (loanContainer) loanContainer.classList.add('hidden');
+      }
+    }
+
+    function toggleFixedFormFields() {
+      const typeEl = document.querySelector('input[name="fixed_type"]:checked');
+      const type = typeEl ? typeEl.value : 'credit';
+      const creditFields = document.getElementById('credit-fields');
+      const billFields = document.getElementById('bill-fields');
+
+      if (type === 'credit') {
+        if (creditFields) creditFields.classList.remove('hidden');
+        if (billFields) billFields.classList.add('hidden');
+      } else {
+        if (creditFields) creditFields.classList.add('hidden');
+        if (billFields) billFields.classList.remove('hidden');
+      }
+    }
+
+    // ==========================================
+    // 8. SIDEBAR & SEGURIDAD
+    // ==========================================
+    function toggleSidebar(show) {
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const panel = document.getElementById('sidebar-panel');
+      if (!backdrop || !panel) return;
+
+      if (show) {
+        backdrop.classList.remove('hidden');
+        setTimeout(() => {
+          backdrop.classList.remove('opacity-0');
+          panel.classList.remove('-translate-x-full');
+        }, 10);
+      } else {
+        backdrop.classList.add('opacity-0');
+        panel.classList.add('-translate-x-full');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+      }
+    }
+
+    function configMasterKey() {
+      const current = localStorage.getItem(STORAGE_KEY_MASTER);
+      const pass = prompt(current ? "Introduce nueva Clave Maestra (vacío para eliminar):" : "Crea una Clave Maestra para proteger registros mayores a 24h:");
+      if (pass !== null) {
+        if (pass.trim()) {
+          localStorage.setItem(STORAGE_KEY_MASTER, pass.trim());
+          alert("Clave Maestra guardada correctamente.");
+        } else {
+          localStorage.removeItem(STORAGE_KEY_MASTER);
+          alert("Clave Maestra eliminada.");
+        }
+      }
+    }
+
+    function verifyMasterKey() {
+      const input = document.getElementById('security-key-input').value;
+      const realKey = localStorage.getItem(STORAGE_KEY_MASTER);
+      if (input === realKey) {
+        closeModal('modal-security');
+        document.getElementById('security-key-input').value = '';
+        if (pendingSecurityCallback) {
+          pendingSecurityCallback();
+          pendingSecurityCallback = null;
+        }
+      } else {
+        alert("Clave incorrecta.");
+      }
+    }
+
+    function exportData() {
+      const backup = { transactions, fixedItems, date: new Date().toISOString() };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = `finanzas_backup_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (parsed.transactions) transactions = parsed.transactions;
+          if (parsed.fixedItems) fixedItems = parsed.fixedItems;
+          saveLocalData();
+          sincronizarConBoveda();
+          renderAll();
+          alert("Backup importado con éxito.");
+        } catch(err) {
+          alert("El archivo no tiene un formato válido.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetApp() {
+      if (confirm("⚠️ ¿Estás seguro de borrar todos tus datos y reiniciar de fábrica?")) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    function checkURLShortcuts() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const amount = params.get('amount');
+        const concept = params.get('concept') || 'Gasto Apple Pay';
+        const account = params.get('account') || 'gasto';
+
+        if (amount && !isNaN(parseFloat(amount))) {
+          const now = new Date();
+          const date = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+          transactions.unshift({
+            account,
+            type: 'expense',
+            amount: parseFloat(amount),
+            concept: decodeURIComponent(concept),
+            category: 'Compras',
+            date,
+            timestamp: now.getTime()
+          });
+          saveLocalData();
+          sincronizarConBoveda();
+          renderAll();
+          try { window.history.replaceState({}, document.title, window.location.pathname); } catch(e) {}
+        }
+      } catch(e) {}
+    }
+  </script>
+</body>
+</html>
