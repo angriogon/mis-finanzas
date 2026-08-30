@@ -553,10 +553,13 @@
             </div>
             <span id="trash-count-badge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-app-purple text-white">0</span>
           </button>
-          <button onclick="promptChangeMasterKey()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
+          <button onclick="openVaultSettings()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
             <div class="flex items-center space-x-3">
               <svg class="w-4 h-4 text-app-blue" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-              <span class="text-xs font-bold theme-text-navy">Cambiar Clave Maestra</span>
+              <div>
+                <span class="text-xs font-bold theme-text-navy block">Código de Bóveda</span>
+                <span id="vault-status" class="text-[10px] theme-text-sub">Configurar protección</span>
+              </div>
             </div>
           </button>
         </div>
@@ -689,33 +692,38 @@
     </div>
   </div>
 
-  <!-- Modal Seguridad Clave Maestra -->
+  <!-- Modal Sistema de Código de Bóveda -->
   <div id="modal-security" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-5">
     <div class="theme-modal bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-200 space-y-4">
       <div class="text-center space-y-1">
         <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/40 text-app-purple rounded-2xl flex items-center justify-center mx-auto mb-2">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
         </div>
-        <h3 id="security-modal-title" class="text-lg font-extrabold theme-text-navy">Clave Maestra</h3>
-        <p id="security-modal-desc" class="text-xs theme-text-sub">Han pasado más de 24 horas desde la creación del registro.</p>
+        <h3 id="security-modal-title" class="text-lg font-extrabold theme-text-navy">Código de Bóveda</h3>
+        <p id="security-modal-desc" class="text-xs theme-text-sub">Introduce tu código para continuar.</p>
       </div>
 
       <div id="security-normal-flow" class="space-y-3">
-        <input type="password" id="security-key-input" placeholder="Introduce tu clave maestra" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
-        <button onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-sm active:scale-[0.98] transition-transform text-sm">Confirmar</button>
-        <button onclick="showRecoveryFlow()" class="w-full text-center text-xs font-bold text-app-purple hover:underline pt-1">¿Has olvidado tu clave?</button>
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" id="security-key-input" placeholder="Código de 6 dígitos" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" id="security-key-confirm-input" placeholder="Repite el código" class="hidden w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
+        <p id="security-message" class="hidden text-[11px] font-semibold text-center text-app-pink" role="alert" aria-live="polite"></p>
+        <button id="security-submit-button" onclick="submitSecurityKey()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl shadow-sm active:scale-[0.98] transition-transform text-sm">Desbloquear</button>
+        <button id="security-recovery-button" onclick="showRecoveryFlow()" class="w-full text-center text-xs font-bold text-app-purple hover:underline pt-1">¿Has olvidado tu código?</button>
       </div>
 
       <div id="security-recovery-flow" class="hidden space-y-3 border-t border-gray-100 dark:border-gray-800 pt-3">
         <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-100 dark:border-amber-900/40">
-          <p class="text-[11px] font-semibold text-amber-800 dark:text-amber-300">Escribe la palabra de desbloqueo de emergencia.</p>
+          <p class="text-[11px] font-semibold text-amber-800 dark:text-amber-300">Introduce el código de recuperación que recibiste al crear la bóveda.</p>
         </div>
-        <input type="text" id="recovery-word-input" placeholder="Palabra de desbloqueo" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none">
-        <input type="password" id="new-master-key-input" placeholder="Nueva clave maestra" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none">
-        <button onclick="submitEmergencyRecovery()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs">Restablecer Clave</button>
+        <input type="text" id="recovery-word-input" autocomplete="off" placeholder="Código de recuperación" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold uppercase tracking-wider focus:outline-none">
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" id="new-master-key-input" placeholder="Nuevo código de 6 dígitos" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none">
+        <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="new-password" id="new-master-key-confirm-input" placeholder="Repite el nuevo código" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-sm font-bold focus:outline-none">
+        <p id="recovery-message" class="hidden text-[11px] font-semibold text-center text-app-pink" role="alert" aria-live="polite"></p>
+        <button id="recovery-submit-button" onclick="submitEmergencyRecovery()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs">Restablecer Código</button>
         <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs theme-text-sub font-bold">Volver</button>
       </div>
-      <button onclick="closeModal('modal-security')" class="w-full text-center text-xs theme-text-sub font-bold pt-1">Cancelar</button>
+      <button onclick="cancelSecurityModal()" class="w-full text-center text-xs theme-text-sub font-bold pt-1">Cancelar</button>
+      <button id="security-cancel-button" onclick="cancelSecurityModal()" class="w-full text-center text-xs theme-text-sub font-bold pt-1">Cancelar</button>
     </div>
   </div>
 
@@ -946,8 +954,20 @@
     let currentTab = 'inicio';
     let editingIndex = null;
     let pendingSecurityAction = null;
+    let securityMode = 'verify';
+    let securityBusy = false;
     let calendarCurrentDate = new Date();
     let selectedCalendarDateString = null;
+
+    const VAULT_STORAGE_KEY = 'finances_vault_v2';
+    const LEGACY_MASTER_KEY = 'finances_master_key';
+    const VAULT_SESSION_KEY = 'finances_vault_session_until';
+    const VAULT_ATTEMPTS_KEY = 'finances_vault_attempts';
+    const VAULT_LOCK_KEY = 'finances_vault_locked_until';
+    const VAULT_ITERATIONS = 210000;
+    const VAULT_SESSION_MS = 10 * 60 * 1000;
+    const VAULT_MAX_ATTEMPTS = 5;
+    const VAULT_LOCK_MS = 5 * 60 * 1000;
 
     let homeOverviewChartInstance = null;
     let miniTrendChartInstance = null;
@@ -964,8 +984,22 @@
       renderAll();
       switchTab('inicio');
       updateAppBadge();
+      updateVaultStatus();
 
-      setInterval(checkCalendarAlerts, 60000);
+      document.getElementById('security-key-input').addEventListener('keydown', event => {
+        if (event.key === 'Enter') submitSecurityKey();
+      });
+      document.getElementById('security-key-confirm-input').addEventListener('keydown', event => {
+        if (event.key === 'Enter') submitSecurityKey();
+      });
+      document.getElementById('new-master-key-confirm-input').addEventListener('keydown', event => {
+        if (event.key === 'Enter') submitEmergencyRecovery();
+      });
+
+      setInterval(() => {
+        checkCalendarAlerts();
+        updateVaultStatus();
+      }, 60000);
       checkCalendarAlerts();
     });
 
@@ -1789,87 +1823,378 @@
     }
 
     // ==========================================
-    // SEGURIDAD & CLAVE MAESTRA
+    // SISTEMA DE CÓDIGO DE BÓVEDA
     // ==========================================
     function isOlderThan24Hours(timestamp) {
       if (!timestamp) return false;
       return (Date.now() - timestamp) > (24 * 60 * 60 * 1000);
     }
 
-    function requireSecurityAuth(callback) {
-      const storedKey = localStorage.getItem('finances_master_key');
-      pendingSecurityAction = callback;
+    function bytesToBase64(bytes) {
+      let binary = '';
+      bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+      return btoa(binary);
+    }
 
-      if (!storedKey) {
-        document.getElementById('security-modal-title').textContent = 'Crear Clave Maestra';
-        document.getElementById('security-modal-desc').textContent = 'Establece tu contraseña maestra de seguridad.';
-        document.getElementById('security-key-input').placeholder = 'Crea tu nueva clave';
+    function base64ToBytes(value) {
+      const binary = atob(value);
+      return Uint8Array.from(binary, character => character.charCodeAt(0));
+    }
+
+    async function deriveSecretHash(secret, saltBase64, iterations = VAULT_ITERATIONS) {
+      if (!window.crypto?.subtle) throw new Error('Web Crypto no está disponible en este navegador.');
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secret),
+        'PBKDF2',
+        false,
+        ['deriveBits']
+      );
+      const bits = await crypto.subtle.deriveBits({
+        name: 'PBKDF2',
+        hash: 'SHA-256',
+        salt: base64ToBytes(saltBase64),
+        iterations
+      }, keyMaterial, 256);
+      return bytesToBase64(new Uint8Array(bits));
+    }
+
+    function createSalt() {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      return bytesToBase64(bytes);
+    }
+
+    function generateRecoveryCode() {
+      const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      const random = new Uint8Array(16);
+      crypto.getRandomValues(random);
+      const characters = Array.from(random, byte => alphabet[byte % alphabet.length]);
+      return `${characters.slice(0, 4).join('')}-${characters.slice(4, 8).join('')}-${characters.slice(8, 12).join('')}-${characters.slice(12, 16).join('')}`;
+    }
+
+    function normalizeRecoveryCode(value) {
+      return value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    }
+
+    function readVaultRecord() {
+      try {
+        const record = JSON.parse(localStorage.getItem(VAULT_STORAGE_KEY));
+        if (!record || record.version !== 2 || !record.codeHash || !record.codeSalt || !record.recoveryHash || !record.recoverySalt) return null;
+        if (!Number.isInteger(record.iterations) || record.iterations < 100000 || record.iterations > 1000000) return null;
+        return record;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    async function createVaultRecord(code) {
+      const recoveryCode = generateRecoveryCode();
+      const codeSalt = createSalt();
+      const recoverySalt = createSalt();
+      const now = new Date().toISOString();
+      const record = {
+        version: 2,
+        algorithm: 'PBKDF2-SHA256',
+        iterations: VAULT_ITERATIONS,
+        codeSalt,
+        codeHash: await deriveSecretHash(code, codeSalt),
+        recoverySalt,
+        recoveryHash: await deriveSecretHash(normalizeRecoveryCode(recoveryCode), recoverySalt),
+        createdAt: readVaultRecord()?.createdAt || now,
+        updatedAt: now
+      };
+      localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(record));
+      return recoveryCode;
+    }
+
+    async function verifySecret(secret, expectedHash, salt, iterations) {
+      const actualHash = await deriveSecretHash(secret, salt, iterations);
+      const actual = base64ToBytes(actualHash);
+      const expected = base64ToBytes(expectedHash);
+      if (actual.length !== expected.length) return false;
+      let difference = 0;
+      for (let index = 0; index < actual.length; index++) difference |= actual[index] ^ expected[index];
+      return difference === 0;
+    }
+
+    function isValidVaultCode(code) {
+      return /^\d{6}$/.test(code);
+    }
+
+    function isVaultSessionActive() {
+      return Number(sessionStorage.getItem(VAULT_SESSION_KEY) || 0) > Date.now();
+    }
+
+    function grantVaultSession() {
+      sessionStorage.setItem(VAULT_SESSION_KEY, String(Date.now() + VAULT_SESSION_MS));
+    }
+
+    function clearVaultFailures() {
+      localStorage.removeItem(VAULT_ATTEMPTS_KEY);
+      localStorage.removeItem(VAULT_LOCK_KEY);
+    }
+
+    function getVaultLockSeconds() {
+      const lockedUntil = Number(localStorage.getItem(VAULT_LOCK_KEY) || 0);
+      if (lockedUntil <= Date.now()) {
+        if (lockedUntil) clearVaultFailures();
+        return 0;
+      }
+      return Math.ceil((lockedUntil - Date.now()) / 1000);
+    }
+
+    function registerVaultFailure() {
+      const attempts = Number(localStorage.getItem(VAULT_ATTEMPTS_KEY) || 0) + 1;
+      if (attempts >= VAULT_MAX_ATTEMPTS) {
+        localStorage.setItem(VAULT_LOCK_KEY, String(Date.now() + VAULT_LOCK_MS));
+        localStorage.setItem(VAULT_ATTEMPTS_KEY, '0');
+        return 0;
+      }
+      localStorage.setItem(VAULT_ATTEMPTS_KEY, String(attempts));
+      return VAULT_MAX_ATTEMPTS - attempts;
+    }
+
+    function setSecurityMessage(message, targetId = 'security-message') {
+      const element = document.getElementById(targetId);
+      element.textContent = message;
+      element.classList.toggle('hidden', !message);
+    }
+
+    function setSecurityLoading(isLoading, buttonId = 'security-submit-button') {
+      const button = document.getElementById(buttonId);
+      const cancelButton = document.getElementById('security-cancel-button');
+      securityBusy = isLoading;
+      button.disabled = isLoading;
+      button.classList.toggle('opacity-60', isLoading);
+      cancelButton.disabled = isLoading;
+      cancelButton.classList.toggle('opacity-60', isLoading);
+    }
+
+    function updateVaultStatus() {
+      const status = document.getElementById('vault-status');
+      if (!status) return;
+      if (readVaultRecord()) status.textContent = isVaultSessionActive() ? 'Bóveda desbloqueada' : 'Protección activa';
+      else if (localStorage.getItem(LEGACY_MASTER_KEY)) status.textContent = 'Actualización pendiente';
+      else status.textContent = 'Configurar protección';
+    }
+
+    function configureSecurityModal(mode) {
+      securityMode = mode;
+      const title = document.getElementById('security-modal-title');
+      const description = document.getElementById('security-modal-desc');
+      const input = document.getElementById('security-key-input');
+      const confirmation = document.getElementById('security-key-confirm-input');
+      const submit = document.getElementById('security-submit-button');
+      const recovery = document.getElementById('security-recovery-button');
+
+      document.getElementById('security-normal-flow').classList.remove('hidden');
+      document.getElementById('security-recovery-flow').classList.add('hidden');
+      input.value = '';
+      confirmation.value = '';
+      setSecurityMessage('');
+      confirmation.classList.toggle('hidden', !['setup', 'change', 'migrate'].includes(mode));
+      recovery.classList.toggle('hidden', mode !== 'verify');
+
+      if (mode === 'verify') {
+        title.textContent = 'Código de Bóveda';
+        description.textContent = 'Introduce tu código para autorizar esta acción.';
+        input.placeholder = 'Código de 6 dígitos';
+        submit.textContent = 'Desbloquear';
+      } else if (mode === 'legacy') {
+        title.textContent = 'Actualizar Seguridad';
+        description.textContent = 'Introduce tu antigua clave maestra para migrarla de forma segura.';
+        input.placeholder = 'Clave maestra actual';
+        submit.textContent = 'Continuar';
       } else {
-        document.getElementById('security-modal-title').textContent = 'Clave Maestra Requerida';
-        document.getElementById('security-modal-desc').textContent = 'Han pasado más de 24 horas desde la creación del registro.';
-        document.getElementById('security-key-input').placeholder = 'Introduce tu clave maestra';
+        title.textContent = mode === 'change' ? 'Cambiar Código de Bóveda' : 'Crear Código de Bóveda';
+        description.textContent = 'Elige un código personal de 6 dígitos y confírmalo.';
+        input.placeholder = 'Nuevo código de 6 dígitos';
+        submit.textContent = mode === 'change' ? 'Actualizar Código' : 'Activar Bóveda';
       }
 
-      hideRecoveryFlow();
-      document.getElementById('security-key-input').value = '';
+      const isLegacy = mode === 'legacy';
+      input.maxLength = isLegacy ? 128 : 6;
+      input.setAttribute('inputmode', isLegacy ? 'text' : 'numeric');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function runPendingSecurityAction() {
+      const action = pendingSecurityAction;
+      pendingSecurityAction = null;
+      if (typeof action === 'function') action();
+    }
+
+    function requireSecurityAuth(callback) {
+      pendingSecurityAction = callback;
+      if (readVaultRecord() && isVaultSessionActive()) {
+        runPendingSecurityAction();
+        return;
+      }
+      configureSecurityModal(readVaultRecord() ? 'verify' : (localStorage.getItem(LEGACY_MASTER_KEY) ? 'legacy' : 'setup'));
       openModal('modal-security');
     }
 
-    function submitSecurityKey() {
+    async function submitSecurityKey() {
       const input = document.getElementById('security-key-input').value.trim();
-      const storedKey = localStorage.getItem('finances_master_key');
-
-      if (!input) { alert('Introduce una clave.'); return; }
-
-      if (!storedKey) {
-        localStorage.setItem('finances_master_key', input);
-        alert('¡Clave maestra establecida con éxito!');
-        closeModal('modal-security');
-        if (pendingSecurityAction) pendingSecurityAction();
+      const confirmation = document.getElementById('security-key-confirm-input').value.trim();
+      const lockSeconds = getVaultLockSeconds();
+      if (lockSeconds) {
+        setSecurityMessage(`Demasiados intentos. Espera ${Math.ceil(lockSeconds / 60)} min.`);
         return;
       }
 
-      if (input === storedKey) {
+      if (securityMode === 'legacy') {
+        if (!input) { setSecurityMessage('Introduce tu clave maestra actual.'); return; }
+        if (input !== localStorage.getItem(LEGACY_MASTER_KEY)) {
+          const remaining = registerVaultFailure();
+          setSecurityMessage(remaining ? `Clave incorrecta. Quedan ${remaining} intentos.` : 'Bóveda bloqueada durante 5 minutos.');
+          return;
+        }
+        clearVaultFailures();
+        configureSecurityModal('migrate');
+        return;
+      }
+
+      if (['setup', 'change', 'migrate'].includes(securityMode)) {
+        if (!isValidVaultCode(input)) { setSecurityMessage('El código debe contener exactamente 6 números.'); return; }
+        if (input !== confirmation) { setSecurityMessage('Los códigos no coinciden.'); return; }
+        setSecurityLoading(true);
+        try {
+          const recoveryCode = await createVaultRecord(input);
+          localStorage.removeItem(LEGACY_MASTER_KEY);
+          clearVaultFailures();
+          grantVaultSession();
+          closeModal('modal-security');
+          updateVaultStatus();
+          alert(`Bóveda activada. Guarda este código de recuperación en un lugar seguro:\n\n${recoveryCode}\n\nNo volverá a mostrarse.`);
+          runPendingSecurityAction();
+        } catch (error) {
+          setSecurityMessage(error.message || 'No se pudo crear la bóveda.');
+        } finally {
+          setSecurityLoading(false);
+        }
+        return;
+      }
+
+      if (!isValidVaultCode(input)) { setSecurityMessage('Introduce tu código de 6 dígitos.'); return; }
+      const record = readVaultRecord();
+      if (!record) { configureSecurityModal('setup'); return; }
+
+      setSecurityLoading(true);
+      try {
+        const isValid = await verifySecret(input, record.codeHash, record.codeSalt, record.iterations);
+        if (!isValid) {
+          const remaining = registerVaultFailure();
+          setSecurityMessage(remaining ? `Código incorrecto. Quedan ${remaining} intentos.` : 'Bóveda bloqueada durante 5 minutos.');
+          return;
+        }
+        clearVaultFailures();
+        grantVaultSession();
         closeModal('modal-security');
-        if (pendingSecurityAction) pendingSecurityAction();
-      } else {
-        alert('Clave maestra incorrecta.');
+        updateVaultStatus();
+        runPendingSecurityAction();
+      } catch (error) {
+        setSecurityMessage(error.message || 'No se pudo verificar el código.');
+      } finally {
+        setSecurityLoading(false);
       }
     }
 
     function showRecoveryFlow() {
+      if (!readVaultRecord()) return;
       document.getElementById('security-normal-flow').classList.add('hidden');
       document.getElementById('security-recovery-flow').classList.remove('hidden');
       document.getElementById('recovery-word-input').value = '';
       document.getElementById('new-master-key-input').value = '';
+      document.getElementById('new-master-key-confirm-input').value = '';
+      setSecurityMessage('', 'recovery-message');
+      setTimeout(() => document.getElementById('recovery-word-input').focus(), 50);
     }
 
     function hideRecoveryFlow() {
       document.getElementById('security-normal-flow').classList.remove('hidden');
       document.getElementById('security-recovery-flow').classList.add('hidden');
+      setSecurityMessage('', 'recovery-message');
     }
 
-    function submitEmergencyRecovery() {
-      const recoveryWord = document.getElementById('recovery-word-input').value.trim().toUpperCase();
-      const newKey = document.getElementById('new-master-key-input').value.trim();
+    async function submitEmergencyRecovery() {
+      const recoveryCode = normalizeRecoveryCode(document.getElementById('recovery-word-input').value);
+      const newCode = document.getElementById('new-master-key-input').value.trim();
+      const confirmation = document.getElementById('new-master-key-confirm-input').value.trim();
+      const record = readVaultRecord();
+      const lockSeconds = getVaultLockSeconds();
 
-      if (recoveryWord !== 'SERRANITO') { alert('Palabra de desbloqueo incorrecta.'); return; }
-      if (!newKey) { alert('Introduce la nueva clave maestra.'); return; }
+      if (lockSeconds) { setSecurityMessage(`Demasiados intentos. Espera ${Math.ceil(lockSeconds / 60)} min.`, 'recovery-message'); return; }
+      if (!recoveryCode) { setSecurityMessage('Introduce tu código de recuperación.', 'recovery-message'); return; }
+      if (!isValidVaultCode(newCode)) { setSecurityMessage('El nuevo código debe contener exactamente 6 números.', 'recovery-message'); return; }
+      if (newCode !== confirmation) { setSecurityMessage('Los códigos no coinciden.', 'recovery-message'); return; }
+      if (!record) { setSecurityMessage('No existe una bóveda que recuperar.', 'recovery-message'); return; }
 
-      localStorage.setItem('finances_master_key', newKey);
-      alert('¡Clave maestra restablecida con éxito!');
+      setSecurityLoading(true, 'recovery-submit-button');
+      try {
+        const isValid = await verifySecret(recoveryCode, record.recoveryHash, record.recoverySalt, record.iterations);
+        if (!isValid) {
+          const remaining = registerVaultFailure();
+          setSecurityMessage(remaining ? `Código de recuperación incorrecto. Quedan ${remaining} intentos.` : 'Bóveda bloqueada durante 5 minutos.', 'recovery-message');
+          return;
+        }
+        const nextRecoveryCode = await createVaultRecord(newCode);
+        clearVaultFailures();
+        grantVaultSession();
+        closeModal('modal-security');
+        updateVaultStatus();
+        alert(`Código actualizado. Guarda tu nuevo código de recuperación:\n\n${nextRecoveryCode}\n\nEl anterior ya no es válido.`);
+        runPendingSecurityAction();
+      } catch (error) {
+        setSecurityMessage(error.message || 'No se pudo recuperar la bóveda.', 'recovery-message');
+      } finally {
+        setSecurityLoading(false, 'recovery-submit-button');
+      }
+    }
+
+    function openVaultSettings() {
+      toggleSidebar(false);
+      const record = readVaultRecord();
+      const legacyKey = localStorage.getItem(LEGACY_MASTER_KEY);
+
+      if (!record && !legacyKey) {
+        pendingSecurityAction = null;
+        configureSecurityModal('setup');
+        openModal('modal-security');
+        return;
+      }
+
+      if (!record && legacyKey) {
+        pendingSecurityAction = null;
+        configureSecurityModal('legacy');
+        openModal('modal-security');
+        return;
+      }
+
+      const openChangeFlow = () => {
+        configureSecurityModal('change');
+        openModal('modal-security');
+      };
+      if (isVaultSessionActive()) {
+        openChangeFlow();
+      } else {
+        pendingSecurityAction = () => setTimeout(openChangeFlow, 220);
+        configureSecurityModal('verify');
+        openModal('modal-security');
+      }
+    }
+
+    function cancelSecurityModal() {
+      if (securityBusy) return;
+      pendingSecurityAction = null;
+      setSecurityMessage('');
+      setSecurityMessage('', 'recovery-message');
       closeModal('modal-security');
-      if (pendingSecurityAction) pendingSecurityAction();
     }
 
     function promptChangeMasterKey() {
-      requireSecurityAuth(() => {
-        const newKey = prompt('Introduce la nueva clave maestra:');
-        if (newKey && newKey.trim()) {
-          localStorage.setItem('finances_master_key', newKey.trim());
-          alert('Clave maestra actualizada.');
-        }
-      });
+      openVaultSettings();
     }
 
     // ==========================================
@@ -2535,7 +2860,7 @@
         trash,
         categoryOptions,
         calendarNotes,
-        masterKey: localStorage.getItem('finances_master_key'),
+        vaultRecord: readVaultRecord(),
         themePreference: localStorage.getItem('theme_preference'),
         exportDate: new Date().toISOString() 
       };
@@ -2560,7 +2885,23 @@
           if (parsed.trash) trash = parsed.trash;
           if (parsed.categoryOptions) categoryOptions = parsed.categoryOptions;
           if (parsed.calendarNotes) calendarNotes = parsed.calendarNotes;
-          if (parsed.masterKey) localStorage.setItem('finances_master_key', parsed.masterKey);
+          if (parsed.vaultRecord?.version === 2 && parsed.vaultRecord.codeHash && parsed.vaultRecord.recoveryHash) {
+            localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(parsed.vaultRecord));
+          const importedVault = parsed.vaultRecord;
+          const hasValidVault = importedVault?.version === 2
+            && importedVault.codeHash && importedVault.codeSalt
+            && importedVault.recoveryHash && importedVault.recoverySalt
+            && Number.isInteger(importedVault.iterations)
+            && importedVault.iterations >= 100000
+            && importedVault.iterations <= 1000000;
+          if (hasValidVault) {
+            localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(importedVault));
+            localStorage.removeItem(LEGACY_MASTER_KEY);
+            sessionStorage.removeItem(VAULT_SESSION_KEY);
+          } else if (parsed.masterKey && !readVaultRecord()) {
+            // Compatibilidad con copias antiguas: se migrará al nuevo sistema al usar la bóveda.
+            localStorage.setItem(LEGACY_MASTER_KEY, String(parsed.masterKey));
+          }
           if (parsed.themePreference) setManualTheme(parsed.themePreference);
           
           localStorage.setItem('my_finances_data_v11', JSON.stringify(transactions));
@@ -2573,6 +2914,7 @@
           toggleSidebar(false);
           renderAll();
           updateAppBadge();
+          updateVaultStatus();
         } catch (err) {
           alert("Archivo no válido.");
         }
@@ -2582,4 +2924,3 @@
   </script>
 </body>
 </html>
-
