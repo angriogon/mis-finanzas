@@ -1,15 +1,19 @@
 {
+  "id": "./",
   "name": "Control de Finanzas",
   "short_name": "Finanzas",
-  "description": "Registro minimalista de salario, ingresos y gastos",
-  "start_url": "./index.html",
+  "description": "Panel personal para controlar movimientos, ahorro, gastos y compromisos financieros.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#F9FAFB",
-  "theme_color": "#111827",
+  "orientation": "portrait-primary",
+  "background_color": "#F8FAFF",
+  "theme_color": "#FFFFFF",
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "512x512",
+      "src": "./app-icon.png?v=3",
+      "sizes": "1254x1254",
       "type": "image/png",
       "purpose": "any maskable"
     }

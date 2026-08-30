@@ -1,56 +1,48 @@
-const CACHE_NAME = 'finanzas-pwa-v5';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'control-finanzas-v3';
+const LOCAL_ASSETS = [
   './',
   './index.html',
-  './manifest.json',
-  './icon.png',
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/lucide@latest',
-  'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap'
+  './manifest.json?v=3',
+  './app-icon.png?v=3',
+  './apple-touch-icon.png?v=3'
 ];
 
-// Instalación y precacheo de recursos
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(LOCAL_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activación y limpieza de versiones antiguas de caché
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then(names => Promise.all(
+        names
+          .filter(name => name.startsWith('control-finanzas-') && name !== CACHE_NAME)
+          .map(name => caches.delete(name))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// Estrategia Stale-While-Revalidate (Carga instantánea + actualización en segundo plano)
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      }).catch(() => cachedResponse);
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
 
-      return cachedResponse || fetchPromise;
-    })
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request)
+        .then(cached => cached || caches.match('./index.html')))
   );
 });

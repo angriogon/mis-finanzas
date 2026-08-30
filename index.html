@@ -8,10 +8,13 @@
 
   <!-- Configuración PWA e iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Finanzas">
-  <link rel="apple-touch-icon" href="icon.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="./app-icon.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="./app-icon.png?v=3">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=3">
+  <link rel="manifest" href="./manifest.json?v=3">
   <meta name="theme-color" content="#FFFFFF" id="meta-theme-color">
 
   <!-- Tipografía Google Fonts -->
@@ -2940,6 +2943,15 @@
         }
       };
       reader.readAsText(file);
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator && /^https?:$/.test(window.location.protocol)) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=3', { scope: './' }).catch(() => {
+          // La aplicación sigue funcionando aunque el navegador rechace el modo offline.
+        });
+      });
     }
   </script>
 </body>
