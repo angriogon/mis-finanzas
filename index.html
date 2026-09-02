@@ -11,10 +11,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Finanzas">
-  <link rel="icon" type="image/png" href="./app-icon.png?v=3">
-  <link rel="shortcut icon" type="image/png" href="./app-icon.png?v=3">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=3">
-  <link rel="manifest" href="./manifest.json?v=3">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png?v=6">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=6">
+  <link rel="manifest" href="./manifest.json?v=6">
   <meta name="theme-color" content="#FFFFFF" id="meta-theme-color">
 
   <!-- Tipografía Google Fonts -->
@@ -26,6 +26,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js?v=2"></script>
 
   <script>
     tailwind.config = {
@@ -565,6 +567,16 @@
               </div>
             </div>
           </button>
+          <button onclick="openCloudSyncModal()" class="w-full flex items-center justify-between p-3 rounded-2xl theme-bg-subtle bg-gray-50 text-left transition-colors">
+            <div class="flex items-center space-x-3">
+              <svg class="w-4 h-4 text-app-mint" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5.5 5.5 0 0116.9 6.6 4.5 4.5 0 1118 16H7z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 11v7m0 0l-3-3m3 3l3-3"/></svg>
+              <div>
+                <span class="text-xs font-bold theme-text-navy block">Sincronización Supabase</span>
+                <span id="cloud-sync-status" class="text-[10px] theme-text-sub">Pendiente de configurar</span>
+              </div>
+            </div>
+            <span id="cloud-sync-indicator" class="w-2.5 h-2.5 rounded-full bg-gray-300" aria-hidden="true"></span>
+          </button>
         </div>
 
         <!-- Exportaciones -->
@@ -726,6 +738,56 @@
         <button onclick="hideRecoveryFlow()" class="w-full text-center text-xs theme-text-sub font-bold">Volver</button>
       </div>
       <button id="security-cancel-button" onclick="cancelSecurityModal()" class="w-full text-center text-xs theme-text-sub font-bold pt-1">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal Sincronización Supabase -->
+  <div id="modal-cloud-sync" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200 px-5">
+    <div class="theme-modal bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-extrabold theme-text-navy">Sincronización Segura</h3>
+          <p id="cloud-modal-description" class="text-xs theme-text-sub mt-1">Accede para sincronizar tus datos y pagos de iOS.</p>
+        </div>
+        <button onclick="closeModal('modal-cloud-sync')" class="p-2 theme-bg-subtle bg-gray-100 rounded-full" aria-label="Cerrar">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="cloud-config-required" class="hidden p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-100 dark:border-amber-900/40">
+        <p class="text-[11px] font-semibold text-amber-800 dark:text-amber-300">Falta completar <strong>supabase-config.js</strong> con la URL y la clave pública del proyecto.</p>
+      </div>
+
+      <div id="cloud-auth-flow" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-bold theme-text-sub uppercase tracking-wider mb-1">Correo electrónico</label>
+          <input type="email" id="cloud-email-input" autocomplete="email" placeholder="tu@email.com" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-app-purple">
+        </div>
+        <button id="cloud-send-code-button" onclick="sendCloudLoginCode()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3.5 rounded-2xl text-sm">Enviar código de acceso</button>
+        <div id="cloud-code-step" class="hidden space-y-3">
+          <input type="text" inputmode="numeric" maxlength="8" autocomplete="one-time-code" id="cloud-code-input" placeholder="Código recibido" class="w-full theme-input bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-center text-lg font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-app-purple">
+          <button id="cloud-verify-code-button" onclick="verifyCloudLoginCode()" class="w-full bg-app-navy text-white font-bold py-3 rounded-2xl text-xs">Verificar y sincronizar</button>
+        </div>
+      </div>
+
+      <div id="cloud-account-flow" class="hidden space-y-3">
+        <div class="p-3 theme-bg-subtle bg-gray-50 rounded-2xl">
+          <p class="text-[10px] theme-text-sub font-bold uppercase">Cuenta conectada</p>
+          <p id="cloud-account-email" class="text-xs font-extrabold theme-text-navy mt-0.5 break-all"></p>
+          <p id="cloud-last-sync" class="text-[10px] theme-text-sub mt-1">Todavía no sincronizado</p>
+        </div>
+        <button id="cloud-sync-now-button" onclick="syncCloudNow()" class="w-full bg-gradient-to-r from-app-purple to-app-purpleLight text-white font-bold py-3 rounded-2xl text-xs">Sincronizar ahora</button>
+        <button onclick="generateWalletShortcutToken()" class="w-full p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold">Crear o renovar clave del atajo iOS</button>
+        <div id="wallet-token-result" class="hidden p-3 rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40 space-y-2">
+          <p class="text-[10px] font-bold text-emerald-800 dark:text-emerald-300">Copia esta clave ahora. No volverá a mostrarse.</p>
+          <code id="wallet-token-value" class="block text-[11px] font-bold break-all select-all theme-text-navy"></code>
+          <button onclick="copyWalletToken()" class="w-full py-2 rounded-xl bg-white dark:bg-gray-800 text-app-mint text-xs font-bold">Copiar clave</button>
+          <button onclick="copyWalletShortcutSetup()" class="w-full py-2 rounded-xl bg-white dark:bg-gray-800 text-app-purple text-xs font-bold">Copiar datos completos del atajo</button>
+        </div>
+        <button onclick="signOutCloud()" class="w-full text-center text-xs theme-text-sub font-bold pt-1">Cerrar sesión de Supabase</button>
+      </div>
+
+      <p id="cloud-message" class="hidden text-[11px] font-semibold text-center text-app-pink" role="alert" aria-live="polite"></p>
     </div>
   </div>
 
@@ -1044,7 +1106,7 @@
         if (permission === 'granted') {
           alert("✅ Notificaciones activadas.");
           try {
-            new Notification("Control de Finanzas", { body: "Alertas de calendario activas.", icon: "icon.png" });
+            new Notification("Control de Finanzas", { body: "Alertas de calendario activas.", icon: "./icon-192.png" });
           } catch(e) {}
         } else {
           alert("Permiso de notificaciones no concedido. Puedes activarlo en los Ajustes de iOS.");
@@ -1065,7 +1127,7 @@
             try {
               new Notification("📅 Recordatorio Financiero", {
                 body: note.text,
-                icon: "icon.png"
+                icon: "./icon-192.png"
               });
             } catch(e) {}
             note.notified = true;
@@ -2948,11 +3010,12 @@
   <script>
     if ('serviceWorker' in navigator && /^https?:$/.test(window.location.protocol)) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=3', { scope: './' }).catch(() => {
+        navigator.serviceWorker.register('./sw.js?v=6', { scope: './', updateViaCache: 'none' }).catch(() => {
           // La aplicación sigue funcionando aunque el navegador rechace el modo offline.
         });
       });
     }
   </script>
+  <script src="./cloud-sync.js?v=2"></script>
 </body>
 </html>

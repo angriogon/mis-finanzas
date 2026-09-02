@@ -1,10 +1,15 @@
-const CACHE_NAME = 'control-finanzas-v3';
+const CACHE_NAME = 'control-finanzas-v6';
 const LOCAL_ASSETS = [
   './',
   './index.html',
-  './manifest.json?v=3',
-  './app-icon.png?v=3',
-  './apple-touch-icon.png?v=3'
+  './manifest.json?v=6',
+  './supabase-config.js?v=2',
+  './cloud-sync.js?v=2',
+  './favicon-32.png?v=6',
+  './apple-touch-icon.png?v=6',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -33,6 +38,21 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
 
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then(response => {
@@ -42,7 +62,6 @@ self.addEventListener('fetch', event => {
         }
         return response;
       })
-      .catch(() => caches.match(event.request)
-        .then(cached => cached || caches.match('./index.html')))
+      .catch(() => caches.match(event.request))
   );
 });
